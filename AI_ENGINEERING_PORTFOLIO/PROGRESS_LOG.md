@@ -356,3 +356,72 @@ CI at merge time: #103 18/18 green, #14 3/3 green, #15 2/2 green.
 - `HFPolicy` remains untested; the next useful step is a 10-step GPU smoke.
 - The local workspace branch `docs/ai-engineering-portfolio` records the final
   hashes and merge state.
+
+---
+
+## 2026-11-02 - Session 06: GPU environment, prompt fix, and 500-step launch
+
+### GPU environment
+
+`nvidia-smi` exposed the host RTX 2060 6 GB, but the original test venv had
+`torch 2.15.0+cpu` and `torch.cuda.is_available()` was false. A separate venv was
+created at `%TEMP%\opencode\heros-gpu-venv` with:
+
+- torch `2.14.1+cu130`
+- transformers `5.22.1`
+- peft `0.21.2`
+- accelerate `1.15.0`
+- bitsandbytes `0.50.2`
+- numpy `2.4.6`
+
+`torch.cuda.is_available()` is now true and reports the RTX 2060.
+
+### HFPolicy test
+
+A tiny-model test exercised `HFPolicy.load`, `generate`, `token_logprobs`,
+backward, `optimizer.step`, and `save`. It produced an adapter at 24.8 MB VRAM
+with the tiny model. This closed the "HFPolicy untested" gap at the mechanism
+level.
+
+### 0.5B negative smoke
+
+Qwen2.5-Coder-0.5B-Instruct, fp16, 10 steps, group size 2, 96 completion tokens:
+
+- 0 optimizer steps; 10/10 skipped as zero-variance.
+- All rewards `-1.0`, error `MISSING_BLOCKS`.
+- 224.92 s, 1.97 GB peak.
+- The model wrote prose/Markdown instead of the required tags.
+
+Evidence: `runs/2026-11-02-gpu-smoke-0.5b/`.
+
+### Prompt fix and 1.5B positive smoke
+
+A one-shot literal tag exemplar was added and tested. The 1.5B model then
+emitted exact `<think>`, `<sql_migration>`, `<forge_manifest>` blocks and scored
+`1.0` instead of `-1.0`. The fix is PR #104, merged at `d38a603`; the suite is
+now 79 tests (66 pass + 13 skip without torch).
+
+Qwen2.5-Coder-1.5B-Instruct, NF4 4-bit, 10 steps, group size 2, 128 completion
+tokens:
+
+- **7 optimizer steps**, 3 zero-variance skips.
+- Mean reward **0.339**, range `-0.75` to `1.75`.
+- 185.0 s, **4.15 GB** peak, ~18.5 s/step.
+- A temporary adapter was saved but is not published or called trained.
+
+Evidence: `runs/2026-11-02-gpu-smoke-1.5b/`.
+
+### 500-step run
+
+A 500-step single-arm run (Dr.GRPO + DAPO, Qwen2.5-Coder-1.5B, NF4, G=2,
+128 completion tokens, seed 42) was started in the background at 04:38 UTC.
+It writes `run.json`, `steps.jsonl`, `checkpoints.jsonl`, checkpoints every 50
+steps, and a final adapter to
+`runs/2026-11-02-a3-500-qwen1.5b/`. It was at 19 steps when this entry was
+written; the final result is recorded in the next entry.
+
+### Still not done
+
+- No completed 500-step results, held-out evaluation, or published adapter.
+- No HF token, so no model/dataset upload.
+- No npm publish.

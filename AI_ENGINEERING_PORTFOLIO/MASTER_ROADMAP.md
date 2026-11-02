@@ -69,7 +69,7 @@ Commercial work is a separate track and is out of scope for this window.
 
 | Week | Dates | Primary deliverable | Exit gate | Fallback if blocked |
 |---:|---|---|---|---|
-| 1 | Nov 2–8 | PRs #101, #103, #14, #15 merged; P01 QLoRA runner implemented | PRs merged; 500/500 dry-run; 78 CPU tests | Start P02 corpus on CPU |
+| 1 | Nov 2–8 | PRs #101/#103/#104/#14/#15 merged; P01 QLoRA runner implemented | PRs merged; 500/500 dry-run; 79 CPU tests | Start P02 corpus on CPU |
 | 2 | Nov 9–15 | P01 500-step single-arm run + held-out shadow evaluation | 500 steps, finite loss, reward/KL/length curves, 4-bit VRAM recorded | Kaggle; reduce completion length |
 | 3 | Nov 16–22 | P01 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO); MATH-500; HF adapter; W&B report | G3 + G4 for P01 | Ship 100-step negative result + protocol |
 | 4 | Nov 23–29 | P02 corpus 289 → 500 cases; Ed25519 Merkle design | Corpus runs in CI | Ship corpus only |

@@ -1,0 +1,3 @@
+# Adapter weights and optimizer checkpoints stay out of git.
+**/checkpoint-*/
+**/final/
