@@ -719,3 +719,20 @@ excluded) without importing torch. The script writes `run.json`,
 Suite: **94 tests** (81 pass + 13 skip without torch). The SFT result remains
 1.90 held-out vs base 0.02 with 45/50 at 2.0. The adapter is local and
 unpublished.
+
+---
+
+## 2026-11-02 - Session 16: P02 corpus inventory
+
+P01 is locally complete (SFT 1.90 held-out, 94 tests). Work moved to P02.
+
+- Counted the existing 289 adversarial cases in
+  `packages/mcp/test/adversarial.test.mjs`.
+- Allocated the 211-case gap across JSON-RPC, agentic schema, auth/scope, forge,
+  shadow, approval replay, and end-to-end destructive gates.
+- Wrote `projects/project-02-heros-safeagent-os/CASE_MAP.md` with the corpus
+  schema, implementation order, and gate.
+- No P02 code changes yet; the next checkpoint is the corpus JSON + runner.
+
+HF publication of the P01 SFT adapter remains blocked on credentials and explicit
+approval. No npm publish.

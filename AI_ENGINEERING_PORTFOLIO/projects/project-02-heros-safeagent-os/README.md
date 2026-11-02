@@ -16,6 +16,7 @@ scripts (36.5% of code bytes).
 
 Map the existing 289 cases to OWASP ASI01–ASI10, then add 211 deterministic
 cases. Do this before touching the signature code; the corpus is the asset.
+The inventory and gap allocation are in [`CASE_MAP.md`](CASE_MAP.md).
 
 ## Deliverables
 
