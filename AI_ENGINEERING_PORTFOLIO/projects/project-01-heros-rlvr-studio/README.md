@@ -1,8 +1,8 @@
 # Project 01 — HEROS-RLVR-Studio
 
-**Status:** verifier/loss and QLoRA runner merged; a 10-step 1.5B GPU smoke
-completed 7 optimizer steps; the **500-step run is in progress**. No adapter or
-model card is published.
+**Status:** verifier/loss and QLoRA runner merged; the **500-step run completed**
+with 209 optimizer steps; held-out evaluation is running. No adapter or model
+card is published.
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
@@ -95,7 +95,7 @@ python -m unittest discover -s rlvr/tests -v
 | No PyTorch, Python 3.11.13, Windows | **85 tests, 72 pass, 13 skip** | **[V]** |
 | 500-row dataset dry-run, no torch | **500/500 rows mapped, 10 hazard classes** | **[V]** |
 | 10-step 1.5B GPU smoke | **7 completed, 3 skipped, mean reward 0.339, 4.15 GB peak** | **[V]** |
-| 500-step single-arm run | **in progress** | — |
+| 500-step single-arm run | **500 steps, 209 optimizer steps, reward 1.0203, 4.16 GB** | **[V]** |
 
 The thirteen skips are tensor tests: seven pre-existing loss/advantage cases and
 six runner-orchestration cases. They skip by design rather than failing the
@@ -222,7 +222,7 @@ tests from the HEROS checkout, not from this directory.
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU-smoked |
 | P6 | 75+ tests | **85 now** |
-| P7 | 500-step four-arm ablation | **10-step smoke done; 500-step single-arm in progress** |
+| P7 | 500-step four-arm ablation | **500-step single-arm done; held-out eval running; A0/A1/A2 pending** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
 | P10 | HF adapter + model card | Blocked on P7 and HF credentials |
@@ -239,10 +239,10 @@ records a step-throughput baseline.
 | Tests | 75+ green | 85 tests with torch; 72 pass + 13 skip without | **[V]** |
 | GPU path | 4-bit 1.5B fits 6 GB | 4.15 GB peak in the 10-step smoke | **[V]** |
 | Training signal | Informative reward groups | 7/10 optimizer steps in the smoke | **[V]** |
-| 500-step run | 500 steps, finite loss | in progress; checkpoints every 50 | **[P]** |
-| Held-out eval | Unseen migration rows | planned `checkpoint-450` eval on rows 451–500 | **[P]** |
-| Adapter | Saved LoRA adapter | final path in the run directory; not uploaded | **[P]** |
-| Model card | Honest metrics + limits | generator prepared; waits for final run | **[P]** |
+| 500-step run | 500 steps, finite loss | 500 steps, 209 optimizer steps, mean reward 1.0203 | **[V]** |
+| Held-out eval | Unseen migration rows | `checkpoint-450` eval on rows 451-500 running | **[P]** |
+| Adapter | Saved LoRA adapter | `final/` saved locally; not uploaded | **[V]** |
+| Model card | Honest metrics + limits | generator running after held-out eval | **[P]** |
 | HF upload | Public artifact | blocked: no HF token | **[X]** |
 | Four-arm ablation | A0/A1/A2/A3 | only A3 single arm exists | **[X]** |
 | Parallel workers | >1.8× at 4 workers | not started | **[X]** |
@@ -254,12 +254,13 @@ verification, and model card are complete. The 10-step smoke is not a substitute
 
 ## 8. Limitations and non-claims
 
-- **No model has been trained to a publishable result yet.** A 10-step smoke
-  produced 7 optimizer steps and a temporary adapter, but there is no completed
-  500-step run, no loss curve with an evaluation, and no pass@1 number.
-- **`HFPolicy` is now smoke-tested, not fully validated.** It loaded 4-bit
-  Qwen2.5-Coder-1.5B, generated, computed log-probs, stepped the optimizer, and
-  saved an adapter on the RTX 2060. The 500-step run is the next validation.
+- **No model has a completed held-out result yet.** The 500-step run finished
+  with a rising training reward and a saved adapter, but the held-out evaluation
+  and model card are still running, and there is no pass@1 number.
+- **`HFPolicy` is now validated through a 500-step run.** It loaded 4-bit
+  Qwen2.5-Coder-1.5B, generated, computed log-probs, stepped the optimizer 209
+  times, and saved an adapter on the RTX 2060. The held-out result is the
+  remaining validation.
 - **The shadow gate executes SQLite, not PostgreSQL.** The runner prompts for
   SQLite-compatible SQL so training and verification agree. PostgreSQL syntax
   parity is a separate evaluation gate; the production migration target remains

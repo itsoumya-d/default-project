@@ -1,9 +1,9 @@
 # Benchmarks — Project 01: HEROS-RLVR-Studio
 
-**Status: a 10-step GPU smoke has run; no 500-step benchmark has completed.**
+**Status: the 500-step single arm has completed; held-out evaluation is running.**
 This file defines what must be measured before a number may appear in the
 project README, a model card, or a talk. It is mirrored from
-`HEROS/rlvr/BENCHMARKS.md` on `main` at `d38a603`.
+`HEROS/rlvr/BENCHMARKS.md` on `main` at `83a1b96`.
 
 The measured results today are CPU unit tests, a 500-row dry-run, and two GPU
 smokes. They validate the reward contract, loss math, schema bridge, runner
@@ -21,7 +21,7 @@ benchmark improvement.
 | Dataset dry-run | Python 3.11.13, Windows | 500/500 rows mapped | correctness |
 | 0.5B GPU smoke | RTX 2060, fp16 | 10 steps, **0** optimizer steps, all `MISSING_BLOCKS` | correctness |
 | 1.5B GPU smoke | RTX 2060, NF4 4-bit | 10 steps, **7** optimizer steps, mean reward 0.339, 4.15 GB | correctness |
-| 500-step single-arm | RTX 2060, NF4 4-bit | **in progress** | training |
+| 500-step single-arm | RTX 2060, NF4 4-bit | 500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB, 6.54 h | training |
 | Shadow verifier throughput | — | not measured | performance |
 | Training throughput | — | ~18.5 s/step in the 1.5B smoke; not a benchmark | performance |
 | MATH-500 pass@1 | — | not measured | quality |

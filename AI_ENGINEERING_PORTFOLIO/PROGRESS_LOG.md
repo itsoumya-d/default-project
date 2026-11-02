@@ -425,3 +425,55 @@ written; the final result is recorded in the next entry.
 - No completed 500-step results, held-out evaluation, or published adapter.
 - No HF token, so no model/dataset upload.
 - No npm publish.
+
+---
+
+## 2026-11-02 - Session 07: 500-step run completed, evaluation launched
+
+### Run result
+
+The 500-step single-arm A3 run completed at 11:09 UTC (16:39 local) after
+23,541.5 s (6.54 h).
+
+| Metric | Value |
+|---|---:|
+| Steps | 500 |
+| Completed optimizer steps | 209 |
+| Skipped zero-variance groups | 291 |
+| Mean reward | 1.0203 |
+| Reward, first 50 completed | 0.4975 |
+| Reward, last 50 completed | 1.3100 |
+| Reward range | -0.75 to 1.875 |
+| Mean loss | 0.015926 |
+| Mean KL | 0.021152 |
+| Mean clip fraction | 0.0 |
+| Error codes | 830 OK, 134 SQL_EXEC_ERROR, 36 MISSING_BLOCKS |
+| Peak allocated VRAM | 4,158.9 MB |
+| Final adapter | `runs/2026-11-02-a3-500-qwen1.5b/final/` |
+| Checkpoint-450 | `runs/2026-11-02-a3-500-qwen1.5b/checkpoint-450/` |
+
+This is a training-set reward curve. It does not yet include a held-out result.
+The first-vs-last window suggests learning, but that is not a significance test.
+
+### Code and docs merged
+
+- PR #104: literal tag exemplar, `d38a603`.
+- PR #105: GPU smoke docs, `a8451f6`.
+- PR #106: held-out evaluation package/CLI, `83a1b96`.
+- Suite: **85 tests**; 72 pass + 13 skip without torch.
+
+### Evaluation in progress
+
+The watcher is evaluating base vs `checkpoint-450` on rows 451-500 (50 tasks),
+then verifying the final adapter and generating `MODEL_CARD.md`. The evaluation
+is greedy, max 128 new tokens, same prompt/verifier as training.
+
+The final 500-step adapter is not used for the held-out claim because it trained
+on rows 451-500 after checkpoint-450. The 450 checkpoint is the held-out model.
+
+### Still pending
+
+- Held-out metrics and model card.
+- Adapter upload (no HF token).
+- npm publish (no package change).
+- Four-arm ablation and parallel workers.

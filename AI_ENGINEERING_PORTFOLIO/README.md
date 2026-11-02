@@ -2,7 +2,7 @@
 
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
-Status: **Stage 6 — Project 01 merged and GPU-smoked; 500-step run in progress**
+Status: **Stage 7 — Project 01 merged; 500-step run complete; held-out eval running**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -30,7 +30,8 @@ claims that are already stale. The numbers below are the ones to use.
 | HEROS `rlvr` tests | **85 total: 85 pass with torch; 72 pass + 13 skip without** | `unittest`, `main` at `83a1b96` |
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
 | GPU smoke run | **10 steps, 7 optimizer steps, mean reward 0.339, 4.15 GB peak** | RTX 2060, `runs/2026-11-02-gpu-smoke-1.5b/` |
-| 500-step run | **in progress** | `runs/2026-11-02-a3-500-qwen1.5b/` |
+| 500-step run | **500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB peak** | `runs/2026-11-02-a3-500-qwen1.5b/` |
+| Held-out eval | **running**: base vs checkpoint-450 on rows 451–500 | `eval_450/` |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -122,8 +123,9 @@ note; it does not claim a kernel or a speedup.
 
 The post-merge `main` commit is `83a1b96` (the 500-step run uses `d38a603`); the
 full `rlvr` suite was re-run at 85 pass with torch and 72 pass + 13 skip without. A 10-step 1.5B GPU smoke then
-completed 7 optimizer steps at 4.15 GB peak; the 500-step run is in progress.
-Merged remote branches were deleted.
+completed 7 optimizer steps at 4.15 GB peak. The 500-step single-arm run then
+finished 500 steps with 209 optimizer steps, mean reward 1.0203, and 4.16 GB
+peak. Held-out evaluation is running now. Merged remote branches were deleted.
 
 Review packets live in `projects/project-01-heros-rlvr-studio/PR_DESCRIPTION.md`,
 `PR_DESCRIPTION_P5.md`, and the two repository README sections. The PRs were

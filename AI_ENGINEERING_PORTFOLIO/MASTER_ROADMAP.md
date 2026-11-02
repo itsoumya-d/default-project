@@ -19,7 +19,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 85 pass with torch; 72 pass + 13 skip without | **[V]** |
 | Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
-| GPU smoke | 10 steps, 7 optimizer steps, 4.15 GB peak on RTX 2060; 500-step in progress | **[V]** |
+| GPU runs | 500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB peak; held-out eval running | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
 
