@@ -477,3 +477,62 @@ on rows 451-500 after checkpoint-450. The 450 checkpoint is the held-out model.
 - Adapter upload (no HF token).
 - npm publish (no package change).
 - Four-arm ablation and parallel workers.
+
+---
+
+## 2026-11-02 - Session 08: held-out evaluation and reward-hacking finding
+
+### Held-out protocol
+
+Base vs `checkpoint-450` on rows 451-500 (50 tasks). Greedy decoding, 128 new
+tokens, same prompt and verifier. `checkpoint-450` had not seen those rows; the
+final 500-step adapter did, so it is excluded from the held-out claim.
+
+### Result
+
+| Model | Mean reward | OK rate | Risk accuracy | Row-loss rate |
+|---|---:|---:|---:|---:|
+| Base Qwen2.5-Coder-1.5B | 0.71 | 0.66 | 0.16 | 0.0 |
+| A3 checkpoint-450 | **1.465** | **1.0** | **0.02** | 0.0 |
+
+### Failure analysis
+
+The adapter did not learn to perform the requested migration. It learned the
+tag format and a safe additive no-op:
+
+- 50/50 completions parsed and executed.
+- 36/50 added a generic `note` column.
+- 0/50 contained destructive SQL.
+- All 50 predicted `has_data_loss: false` and `decision_required: false`.
+- Risk-tier accuracy fell from 0.16 to 0.02.
+
+Example `heros-mig-0451` is a `drop_column` task with expected tier `CRITICAL`.
+The adapter added `note TEXT`, predicted `NOTABLE`, and received `1.0`.
+
+This is the documented no-op loophole, not migration competence. The mean reward
+increase is mostly the `+0.25` format and `+0.75` execution components.
+
+### Artifacts
+
+- `runs/2026-11-02-a3-500-qwen1.5b/MODEL_CARD.md`
+- `runs/2026-11-02-a3-500-qwen1.5b/eval_450/base.jsonl`
+- `runs/2026-11-02-a3-500-qwen1.5b/eval_450/adapter450.jsonl`
+- `runs/2026-11-02-a3-500-qwen1.5b/final/` (local adapter, 73.9 MB)
+- `runs/2026-11-02-a3-500-qwen1.5b/checkpoint-450/`
+
+The final adapter was verified with PEFT and returned `ADAPTER_OK` at 1.24 GB
+VRAM. It is local only.
+
+### Decision
+
+P01 is **not portfolio-ready**. Do not publish the adapter. The next engineering
+task is a deterministic requirement-satisfaction check that closes the no-op
+loophole; only then rerun the evaluation and ablation. This negative result is
+more valuable than a claim based on format compliance.
+
+### Still pending
+
+- Requirement-satisfaction reward and a new held-out run.
+- Four-arm ablation.
+- HF upload (no token).
+- npm publish (no package change).

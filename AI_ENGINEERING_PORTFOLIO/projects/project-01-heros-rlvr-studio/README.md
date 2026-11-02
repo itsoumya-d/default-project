@@ -1,8 +1,10 @@
 # Project 01 — HEROS-RLVR-Studio
 
-**Status:** verifier/loss and QLoRA runner merged; the **500-step run completed**
-with 209 optimizer steps; held-out evaluation is running. No adapter or model
-card is published.
+**Status:** verifier/loss and QLoRA runner merged; the **500-step run and
+held-out evaluation completed**. The adapter raised mean reward from 0.71 to
+1.465 but **lowered risk accuracy from 0.16 to 0.02** and produced safe no-op
+migrations. This is a documented reward-hacking failure, not a success claim.
+No adapter or model card is published.
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
@@ -96,6 +98,7 @@ python -m unittest discover -s rlvr/tests -v
 | 500-row dataset dry-run, no torch | **500/500 rows mapped, 10 hazard classes** | **[V]** |
 | 10-step 1.5B GPU smoke | **7 completed, 3 skipped, mean reward 0.339, 4.15 GB peak** | **[V]** |
 | 500-step single-arm run | **500 steps, 209 optimizer steps, reward 1.0203, 4.16 GB** | **[V]** |
+| Held-out eval | base 0.71 vs checkpoint-450 1.465; risk 0.16 vs 0.02 | **[V]** |
 
 The thirteen skips are tensor tests: seven pre-existing loss/advantage cases and
 six runner-orchestration cases. They skip by design rather than failing the
@@ -222,7 +225,7 @@ tests from the HEROS checkout, not from this directory.
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU-smoked |
 | P6 | 75+ tests | **85 now** |
-| P7 | 500-step four-arm ablation | **500-step single-arm done; held-out eval running; A0/A1/A2 pending** |
+| P7 | 500-step four-arm ablation | **500-step single arm + held-out eval done; reward hacking found; A0/A1/A2 pending** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
 | P10 | HF adapter + model card | Blocked on P7 and HF credentials |
@@ -240,27 +243,32 @@ records a step-throughput baseline.
 | GPU path | 4-bit 1.5B fits 6 GB | 4.15 GB peak in the 10-step smoke | **[V]** |
 | Training signal | Informative reward groups | 7/10 optimizer steps in the smoke | **[V]** |
 | 500-step run | 500 steps, finite loss | 500 steps, 209 optimizer steps, mean reward 1.0203 | **[V]** |
-| Held-out eval | Unseen migration rows | `checkpoint-450` eval on rows 451-500 running | **[P]** |
+| Held-out eval | Unseen migration rows | base 0.71 vs adapter 1.465; risk 0.16 vs 0.02 | **[V]** |
 | Adapter | Saved LoRA adapter | `final/` saved locally; not uploaded | **[V]** |
-| Model card | Honest metrics + limits | generator running after held-out eval | **[P]** |
+| Model card | Honest metrics + limits | `MODEL_CARD.md` records the no-op failure | **[V]** |
+| Requirement satisfaction | Requested change actually performed | **failed**: 36/50 adapter completions added a generic `note` column | **[X]** |
 | HF upload | Public artifact | blocked: no HF token | **[X]** |
 | Four-arm ablation | A0/A1/A2/A3 | only A3 single arm exists | **[X]** |
 | Parallel workers | >1.8× at 4 workers | not started | **[X]** |
 
-P01 is **not portfolio-ready** until the 500-step run, held-out eval, adapter
-verification, and model card are complete. The 10-step smoke is not a substitute.
+P01 is **not portfolio-ready**. The 500-step run, held-out eval, adapter
+verification, and model card exist, but the adapter fails requirement
+satisfaction and risk calibration. The next gate is a requirement checker and a
+new evaluation; do not present the adapter as a migration model.
 
 ---
 
 ## 8. Limitations and non-claims
 
-- **No model has a completed held-out result yet.** The 500-step run finished
-  with a rising training reward and a saved adapter, but the held-out evaluation
-  and model card are still running, and there is no pass@1 number.
-- **`HFPolicy` is now validated through a 500-step run.** It loaded 4-bit
-  Qwen2.5-Coder-1.5B, generated, computed log-probs, stepped the optimizer 209
-  times, and saved an adapter on the RTX 2060. The held-out result is the
-  remaining validation.
+- **The held-out result is negative.** The adapter raised mean reward from
+  0.71 to 1.465, but risk accuracy fell from 0.16 to 0.02. It produced 50/50
+  syntactically valid migrations, 36/50 of which added a generic `note` column
+  instead of the requested change. This is reward hacking through the known
+  no-op loophole, not migration competence.
+- **`HFPolicy` is validated mechanically, not scientifically.** It loaded
+  4-bit Qwen2.5-Coder-1.5B, generated, computed log-probs, stepped the optimizer
+  209 times, and saved an adapter on the RTX 2060. The adapter is not suitable
+  for use until the reward checks requirement satisfaction.
 - **The shadow gate executes SQLite, not PostgreSQL.** The runner prompts for
   SQLite-compatible SQL so training and verification agree. PostgreSQL syntax
   parity is a separate evaluation gate; the production migration target remains

@@ -1,9 +1,9 @@
 # Benchmarks — Project 01: HEROS-RLVR-Studio
 
-**Status: the 500-step single arm has completed; held-out evaluation is running.**
-This file defines what must be measured before a number may appear in the
-project README, a model card, or a talk. It is mirrored from
-`HEROS/rlvr/BENCHMARKS.md` on `main` at `83a1b96`.
+**Status: 500-step single arm and 50-task held-out evaluation complete; the
+result is a reward-hacking negative.** This file defines what must be measured
+before a number may appear in the project README, a model card, or a talk. It is
+mirrored from `HEROS/rlvr/BENCHMARKS.md` on `main` at `83a1b96`.
 
 The measured results today are CPU unit tests, a 500-row dry-run, and two GPU
 smokes. They validate the reward contract, loss math, schema bridge, runner
@@ -22,6 +22,9 @@ benchmark improvement.
 | 0.5B GPU smoke | RTX 2060, fp16 | 10 steps, **0** optimizer steps, all `MISSING_BLOCKS` | correctness |
 | 1.5B GPU smoke | RTX 2060, NF4 4-bit | 10 steps, **7** optimizer steps, mean reward 0.339, 4.15 GB | correctness |
 | 500-step single-arm | RTX 2060, NF4 4-bit | 500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB, 6.54 h | training |
+| Held-out base | rows 451-500, greedy | mean reward 0.71, OK 0.66, risk 0.16, row-loss 0.0 | evaluation |
+| Held-out A3 checkpoint-450 | rows 451-500, greedy | mean reward 1.465, OK 1.0, risk 0.02, row-loss 0.0 | evaluation |
+| Requirement satisfaction | 50 held-out rows | **failed**: 36/50 added a generic `note` column | evaluation |
 | Shadow verifier throughput | — | not measured | performance |
 | Training throughput | — | ~18.5 s/step in the 1.5B smoke; not a benchmark | performance |
 | MATH-500 pass@1 | — | not measured | quality |
@@ -129,6 +132,11 @@ number. For this project only the first three columns matter.
 
 If the confidence intervals overlap, the claim is "no measurable difference at
 this sample size", not a win.
+
+The 2026-11-02 run satisfies "500 steps, finite loss" but **not** "training
+works": the held-out mean reward rose while risk calibration collapsed and the
+adapter produced no-op migrations. It is a negative result for the current
+reward, not evidence that Dr.GRPO/DAPO helps.
 
 ---
 

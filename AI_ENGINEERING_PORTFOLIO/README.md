@@ -2,7 +2,8 @@
 
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
-Status: **Stage 7 — Project 01 merged; 500-step run complete; held-out eval running**
+Status: **Stage 8 — Project 01 merged and evaluated; reward hacking found, so it
+is not portfolio-ready**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -31,7 +32,7 @@ claims that are already stale. The numbers below are the ones to use.
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
 | GPU smoke run | **10 steps, 7 optimizer steps, mean reward 0.339, 4.15 GB peak** | RTX 2060, `runs/2026-11-02-gpu-smoke-1.5b/` |
 | 500-step run | **500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB peak** | `runs/2026-11-02-a3-500-qwen1.5b/` |
-| Held-out eval | **running**: base vs checkpoint-450 on rows 451–500 | `eval_450/` |
+| Held-out eval | **base 0.71 vs adapter 1.465; risk 0.16 vs 0.02; 36/50 no-op migrations** | `eval_450/` |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -125,7 +126,10 @@ The post-merge `main` commit is `83a1b96` (the 500-step run uses `d38a603`); the
 full `rlvr` suite was re-run at 85 pass with torch and 72 pass + 13 skip without. A 10-step 1.5B GPU smoke then
 completed 7 optimizer steps at 4.15 GB peak. The 500-step single-arm run then
 finished 500 steps with 209 optimizer steps, mean reward 1.0203, and 4.16 GB
-peak. Held-out evaluation is running now. Merged remote branches were deleted.
+peak. The 50-task held-out evaluation found base 0.71 vs adapter 1.465, but risk
+accuracy fell from 0.16 to 0.02; 36/50 adapter completions were safe no-op
+`ADD COLUMN` migrations. This is a reward-hacking negative, not a success.
+Merged remote branches were deleted.
 
 Review packets live in `projects/project-01-heros-rlvr-studio/PR_DESCRIPTION.md`,
 `PR_DESCRIPTION_P5.md`, and the two repository README sections. The PRs were
@@ -159,14 +163,16 @@ $env:PYTHONPATH="rlvr/src"
 
 ## 6. Immediate next actions
 
-1. **Finish the 500-step GPU run** and inspect reward/KL/length/VRAM curves;
-   checkpoint every 50 steps. Do not call it a benchmark until the held-out
-   evaluation exists.
-2. **Publish one real model artifact** only after the 500-step run and an honest
-   model card exist. HF credentials are still absent.
-3. **Open one upstream PR** (TRL Dr.GRPO toggle is the smallest credible one)
-   after the local test log and run evidence are ready.
-4. **Start P06/P02** in parallel on CPU while the GPU run completes.
+1. **Fix the reward before another training run.** Add a deterministic
+   requirement-satisfaction check so a no-op cannot earn the execution reward.
+   Re-evaluate the adapter only after that check exists.
+2. **Do not publish the adapter as a migration model.** Keep `MODEL_CARD.md`
+   local and negative until the reward and held-out result improve.
+3. **Run the four-arm ablation** (A0/A1/A2/A3) only after the requirement check;
+   otherwise the comparison measures format compliance, not migration skill.
+4. **Open one upstream PR** (TRL Dr.GRPO toggle is the smallest credible one)
+   after the reward gets a real test.
+5. **Start P06/P02** on CPU while the reward is redesigned.
 
 ---
 
