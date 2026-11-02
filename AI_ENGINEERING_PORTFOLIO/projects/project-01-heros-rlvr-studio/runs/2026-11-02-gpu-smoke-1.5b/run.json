@@ -1,0 +1,35 @@
+{
+  "config": {
+    "checkpoint_every": 0,
+    "clip_eps_high": 0.28,
+    "clip_eps_low": 0.2,
+    "dataset_path": "repos\\HEROS-RL\\data\\heros_migration_500.jsonl",
+    "gradient_accumulation": 1,
+    "group_size": 2,
+    "kl_beta": 0.01,
+    "learning_rate": 1e-05,
+    "load_in_4bit": true,
+    "lora_alpha": 32,
+    "lora_r": 16,
+    "max_completion_tokens": 128,
+    "max_grad_norm": 1.0,
+    "max_prompt_tokens": 768,
+    "max_steps": 10,
+    "model_name": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+    "output_dir": "C:\\Users\\SOUMYA~1\\AppData\\Local\\Temp\\heros-project01-smoke-1.5b",
+    "save_final": true,
+    "seed": 42,
+    "temperature": 0.7,
+    "top_p": 0.95
+  },
+  "environment": {
+    "cuda_available": true,
+    "cuda_device": "NVIDIA GeForce RTX 2060",
+    "platform": "Windows-10-10.0.21996-SP0",
+    "python": "3.11.13",
+    "sqlite": "3.50.4",
+    "torch": "2.14.1+cu130"
+  },
+  "git_commit": "unknown",
+  "started_at": "2026-11-02T04:33:12.278677+00:00"
+}

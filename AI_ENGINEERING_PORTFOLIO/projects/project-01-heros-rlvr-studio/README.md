@@ -1,11 +1,13 @@
 # Project 01 — HEROS-RLVR-Studio
 
-**Status:** verifier/loss and QLoRA runner implemented, tested on CPU, and merged
-to `main`; **no GPU run yet**.
+**Status:** verifier/loss and QLoRA runner merged; a 10-step 1.5B GPU smoke
+completed 7 optimizer steps; the **500-step run is in progress**. No adapter or
+model card is published.
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
-`d3588ca`.
+`d3588ca`; the prompt exemplar is
+[#104](https://github.com/itsoumya-d/HEROS/pull/104), merged at `d38a603`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
 (verifier, runner, tests, and the documents in `docs/`).
 
@@ -85,9 +87,11 @@ python -m unittest discover -s rlvr/tests -v
 
 | Environment | Result | Marker |
 |---|---|---|
-| PyTorch 2.15.0+cpu, Python 3.11.13, Windows | **78 tests pass, 0 fail** | **[V]** |
-| No PyTorch, Python 3.11.13, Windows | **78 tests, 65 pass, 13 skip** | **[V]** |
+| PyTorch 2.15.0+cpu, Python 3.11.13, Windows | **79 tests pass, 0 fail** | **[V]** |
+| No PyTorch, Python 3.11.13, Windows | **79 tests, 66 pass, 13 skip** | **[V]** |
 | 500-row dataset dry-run, no torch | **500/500 rows mapped, 10 hazard classes** | **[V]** |
+| 10-step 1.5B GPU smoke | **7 completed, 3 skipped, mean reward 0.339, 4.15 GB peak** | **[V]** |
+| 500-step single-arm run | **in progress** | — |
 
 The thirteen skips are tensor tests: seven pre-existing loss/advantage cases and
 six runner-orchestration cases. They skip by design rather than failing the
@@ -112,16 +116,19 @@ What the tests prove:
   seed executes in an in-memory database.
 - All five forge tiers (`SAFE`, `NOTABLE`, `MEDIUM`, `HIGH`, `CRITICAL`) are
   accepted; an unknown tier fails before training.
-- The prompt shows the hazard and schemas but not the expected labels.
+- The prompt shows the hazard and schemas but not the expected labels, and now
+  includes a literal tag exemplar with no task-label leakage.
 - A zero-variance group skips the optimizer step and is logged as skipped.
 - Gradient accumulation divides the loss, so two half-sized micro-batches match
   one full batch rather than doubling the update.
 - `run.json`, `steps.jsonl`, and `summary.json` are written, and a restart
   truncates stale step logs instead of appending to them.
 
-What the tests do **not** prove: model quality, training stability, throughput,
-the Transformers/PEFT adapter, or benchmark improvement. Those require the GPU
-run.
+The separate 10-step GPU smoke exercised `HFPolicy` on the RTX 2060: 4-bit load,
+generation, literal tag parsing, 7 optimizer steps, and adapter save at 4.15 GB
+peak. What the tests and smoke do **not** prove: model quality, training
+stability, throughput, or benchmark improvement. Those require the completed
+500-step run and a held-out evaluation.
 
 ---
 
@@ -172,9 +179,13 @@ print(receipt.total_reward, receipt.error_code)  # 2.0 OK
 ```text
 project-01-heros-rlvr-studio/
 ├── README.md                 # this file
-├── BENCHMARKS.md             # measurement protocol; results pending
+├── BENCHMARKS.md             # measurement protocol + smoke evidence
 ├── PR_DESCRIPTION.md         # review packet for #101
-├── PR_DESCRIPTION_P5.md      # review packet for stacked runner #103
+├── PR_DESCRIPTION_P5.md      # review packet for #103
+├── runs/
+│   ├── 2026-11-02-gpu-smoke-0.5b/
+│   ├── 2026-11-02-gpu-smoke-1.5b/
+│   └── 2026-11-02-a3-500-qwen1.5b/   # in progress
 ├── docs/
 │   ├── REWARD_SPEC.md        # reward contract and edge cases
 │   └── ARCHITECTURE.md       # data flow, threat model, GPU budget
@@ -188,9 +199,9 @@ project-01-heros-rlvr-studio/
     └── test_qlora_runner.py
 ```
 
-The files are copied into `HEROS/rlvr/` on the stacked PR branches. This
-directory is the portfolio-side source of truth for the design documents; the
-code of record is the PR branch. The mirror intentionally omits the pre-existing
+The files are copied into `HEROS/rlvr/` on the merged branches. This directory
+is the portfolio-side source of truth for the design documents; the code of
+record is `main` at `d38a603`. The mirror intentionally omits the pre-existing
 `advantages.py`, `sampling.py`, `losses.py`, and package metadata, so run the
 tests from the HEROS checkout, not from this directory.
 
@@ -204,26 +215,28 @@ tests from the HEROS checkout, not from this directory.
 | P2 | Architecture and threat model | **Done** |
 | P3 | Dependency extras | **Done** (`gpu` and `train` extras) |
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
-| P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged on CPU** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU adapter untested |
-| P6 | 75+ tests | **78 now** |
-| P7 | 500-step four-arm ablation | Not started |
+| P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU-smoked |
+| P6 | 75+ tests | **79 now** |
+| P7 | 500-step four-arm ablation | **10-step smoke done; 500-step single-arm in progress** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
-| P10 | HF adapter + model card | Not started |
+| P10 | HF adapter + model card | Blocked on P7 and HF credentials |
 
-P7 is blocked on GPU access, the `transformers`/`peft`/`bitsandbytes` install,
-and owner approval. P10 is blocked on P7. P8 (parallel shadow workers) can start
-after the first real run records a step-throughput baseline.
+P7 now has a GPU path: RTX 2060, 4-bit 1.5B, 4.15 GB peak. The four-arm
+ablation still needs the 500-step single-arm run plus the A0/A1/A2 arms. P10 is
+blocked on P7 and the absent HF token. P8 can start after the 500-step run
+records a step-throughput baseline.
 
 ---
 
 ## 8. Limitations and non-claims
 
-- **No model was trained for this project yet.** There is no adapter, no loss
-  curve, no pass@1 number, and no throughput number.
-- **The HF adapter is untested.** `QLoRARunner`, the schema bridge, and the
-  recorder are covered with a fake policy; `HFPolicy` needs Transformers, PEFT,
-  bitsandbytes, and a GPU that this session does not have.
+- **No model has been trained to a publishable result yet.** A 10-step smoke
+  produced 7 optimizer steps and a temporary adapter, but there is no completed
+  500-step run, no loss curve with an evaluation, and no pass@1 number.
+- **`HFPolicy` is now smoke-tested, not fully validated.** It loaded 4-bit
+  Qwen2.5-Coder-1.5B, generated, computed log-probs, stepped the optimizer, and
+  saved an adapter on the RTX 2060. The 500-step run is the next validation.
 - **The shadow gate executes SQLite, not PostgreSQL.** The runner prompts for
   SQLite-compatible SQL so training and verification agree. PostgreSQL syntax
   parity is a separate evaluation gate; the production migration target remains

@@ -2,8 +2,7 @@
 
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
-Status: **Stage 5 — Project 01 verifier + runner and docs complete; all four
-PRs merged with green CI**
+Status: **Stage 6 — Project 01 merged and GPU-smoked; 500-step run in progress**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -28,9 +27,11 @@ claims that are already stale. The numbers below are the ones to use.
 | Hugging Face public models | **0** | HF profile |
 | HF collection | 1 (`HEROS AI Systems Portfolio`) | HF profile |
 | HEROS MCP tests | **46 test functions pass; 289 adversarial cases** | `npm run test:mcp` |
-| HEROS `rlvr` tests | **78 total: 78 pass with torch; 65 pass + 13 skip without** | `unittest`, `main` at `d3588ca` |
+| HEROS `rlvr` tests | **79 total: 79 pass with torch; 66 pass + 13 skip without** | `unittest`, `main` at `d38a603` |
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
-| GPU training runs producing weights | **0** | no model artifacts on HF |
+| GPU smoke run | **10 steps, 7 optimizer steps, mean reward 0.339, 4.15 GB peak** | RTX 2060, `runs/2026-11-02-gpu-smoke-1.5b/` |
+| 500-step run | **in progress** | `runs/2026-11-02-a3-500-qwen1.5b/` |
+| Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
 The most important correction: **`HEROS-RL` already exists** and contains a
@@ -103,6 +104,7 @@ AI_ENGINEERING_PORTFOLIO/
 |---|---|---|---|---|
 | [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `f49a6c1` | `8a7951d` | merged; 18/18 green |
 | [#103](https://github.com/itsoumya-d/HEROS/pull/103) | `itsoumya-d/HEROS` | `0ac89ff` | `d3588ca` | merged; 18/18 green |
+| [#104](https://github.com/itsoumya-d/HEROS/pull/104) | `itsoumya-d/HEROS` | `52fd18b` | `d38a603` | merged; 18/18 green |
 | [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `7025352` | merged; 3/3 green |
 | [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `088c217` | merged; 2/2 green |
 
@@ -111,13 +113,15 @@ CPU-torch CI job, a benchmark protocol, and documentation. The PyTorch path
 delegates to the existing CPU references where possible; two parity tests pin the
 tensor advantage and loss implementations. #103 added the QLoRA runner: strict
 Forge-schema → SQLite bridge, 27 tests, a fake-policy rollout loop, a run
-recorder, a dry-run CLI, and a thin untested `HFPolicy` adapter. It has no GPU
-run. #14 fixed the two real README contradictions. #15 added a design-only WGSL
-paged-attention note; it does not claim a kernel or a speedup.
+recorder, a dry-run CLI, and the `HFPolicy` adapter. #104 added a literal tag
+exemplar after a GPU smoke exposed Markdown-vs-tag format failures. #14 fixed
+the two real README contradictions. #15 added a design-only WGSL paged-attention
+note; it does not claim a kernel or a speedup.
 
-The post-merge `main` commit is `d3588ca`; the full `rlvr` suite was re-run there
-(78 pass with torch, 65 pass + 13 skip without). Merged remote branches were
-deleted.
+The post-merge `main` commit is `d38a603`; the full `rlvr` suite was re-run there
+(79 pass with torch, 66 pass + 13 skip without). A 10-step 1.5B GPU smoke then
+completed 7 optimizer steps at 4.15 GB peak; the 500-step run is in progress.
+Merged remote branches were deleted.
 
 Review packets live in `projects/project-01-heros-rlvr-studio/PR_DESCRIPTION.md`,
 `PR_DESCRIPTION_P5.md`, and the two repository README sections. The PRs were
@@ -151,13 +155,14 @@ $env:PYTHONPATH="rlvr/src"
 
 ## 6. Immediate next actions
 
-1. **Run the 10-step GPU smoke** for Project 01, then the 100-step and 500-step
-   runs on Kaggle 2×T4 or the local RTX 2060. Checkpoint every 50 steps.
-2. **Publish one real model artifact.** Until a checkpoint exists, the HF
-   profile remains a demos-only profile.
+1. **Finish the 500-step GPU run** and inspect reward/KL/length/VRAM curves;
+   checkpoint every 50 steps. Do not call it a benchmark until the held-out
+   evaluation exists.
+2. **Publish one real model artifact** only after the 500-step run and an honest
+   model card exist. HF credentials are still absent.
 3. **Open one upstream PR** (TRL Dr.GRPO toggle is the smallest credible one)
-   after the local test log is ready.
-4. **Start P06/P02** in parallel on CPU while the GPU run is queued.
+   after the local test log and run evidence are ready.
+4. **Start P06/P02** in parallel on CPU while the GPU run completes.
 
 ---
 

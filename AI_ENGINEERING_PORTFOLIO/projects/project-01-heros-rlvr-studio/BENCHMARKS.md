@@ -1,14 +1,14 @@
 # Benchmarks — Project 01: HEROS-RLVR-Studio
 
-**Status: no GPU benchmark has been run.** This file defines what must be
-measured before a number may appear in the project README, a model card, or a
-talk. It is mirrored from `HEROS/rlvr/BENCHMARKS.md` on the stacked runner branch
-(base #101 `f49a6c1`).
+**Status: a 10-step GPU smoke has run; no 500-step benchmark has completed.**
+This file defines what must be measured before a number may appear in the
+project README, a model card, or a talk. It is mirrored from
+`HEROS/rlvr/BENCHMARKS.md` on `main` at `d38a603`.
 
-The only measured results in the repository today are CPU unit-test runs and a
-500-row dry-run. They validate the reward contract, the loss math, the schema
-bridge, and the runner orchestration; they say nothing about model quality or
-training throughput.
+The measured results today are CPU unit tests, a 500-row dry-run, and two GPU
+smokes. They validate the reward contract, loss math, schema bridge, runner
+orchestration, and basic adapter path; they say nothing about model quality or
+benchmark improvement.
 
 ---
 
@@ -16,16 +16,20 @@ training throughput.
 
 | Measurement | Environment | Result | Kind |
 |---|---|---|---|
-| `rlvr` unit suite | Python 3.11.13, PyTorch 2.15.0+cpu, Windows | 78 tests, 0 failures | correctness |
-| `rlvr` unit suite, no torch | Python 3.11.13, Windows | 78 tests, 65 pass, 13 skip | correctness |
+| `rlvr` unit suite | Python 3.11.13, PyTorch 2.15.0+cpu, Windows | 79 tests, 0 failures | correctness |
+| `rlvr` unit suite, no torch | Python 3.11.13, Windows | 79 tests, 66 pass, 13 skip | correctness |
 | Dataset dry-run | Python 3.11.13, Windows | 500/500 rows mapped | correctness |
-| QLoRA runner | fake policy, real SQLite verifier | orchestration tested; HF adapter untested | correctness |
+| 0.5B GPU smoke | RTX 2060, fp16 | 10 steps, **0** optimizer steps, all `MISSING_BLOCKS` | correctness |
+| 1.5B GPU smoke | RTX 2060, NF4 4-bit | 10 steps, **7** optimizer steps, mean reward 0.339, 4.15 GB | correctness |
+| 500-step single-arm | RTX 2060, NF4 4-bit | **in progress** | training |
 | Shadow verifier throughput | — | not measured | performance |
-| Training throughput | — | not measured | performance |
+| Training throughput | — | ~18.5 s/step in the 1.5B smoke; not a benchmark | performance |
 | MATH-500 pass@1 | — | not measured | quality |
 
 The skip count is the tensor-only tests; the verifier, schema-bridge, and
-recorder tests always run.
+recorder tests always run. The 0.5B smoke is a negative result: the model ignored
+the tag format and every group was zero-variance. The 1.5B smoke used the #104
+prompt exemplar and produced informative groups.
 
 ---
 
@@ -103,7 +107,7 @@ exists, the result is a training-set score and must be labeled as such.
 
 | Hardware | Role | Limits |
 |---|---|---|
-| RTX 2060 6 GB | primary local run | 1.5B NF4, `G=4`, 512 tokens, fp16 |
+| RTX 2060 6 GB | primary local run | measured: 1.5B NF4, `G=2`, 128 completion tokens, 4.15 GB peak; `G=4` not measured |
 | Kaggle 2×T4 16 GB | 3B run and the full ablation | session timeout; checkpoint every 50 steps |
 | Colab T4 16 GB | reproduction only | not a deadline dependency |
 

@@ -17,9 +17,9 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Live audit | 30 GitHub repos, 11 HF Spaces, 2 datasets, 0 models | **[V]** |
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
-| HEROS `rlvr` suite | 78 pass with torch; 65 pass + 13 skip without | **[V]** |
+| HEROS `rlvr` suite | 79 pass with torch; 66 pass + 13 skip without | **[V]** |
 | Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
-| GPU training runs | none | **[V]** |
+| GPU smoke | 10 steps, 7 optimizer steps, 4.15 GB peak on RTX 2060; 500-step in progress | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
 
@@ -70,7 +70,7 @@ Commercial work is a separate track and is out of scope for this window.
 | Week | Dates | Primary deliverable | Exit gate | Fallback if blocked |
 |---:|---|---|---|---|
 | 1 | Nov 2–8 | PRs #101, #103, #14, #15 merged; P01 QLoRA runner implemented | PRs merged; 500/500 dry-run; 78 CPU tests | Start P02 corpus on CPU |
-| 2 | Nov 9–15 | P01 GPU smoke: 4-bit load, rollout generation, verifier wiring | 10-step smoke first, then 100-step on RTX 2060; finite loss, VRAM recorded | Kaggle smoke; reduce to 0.5B |
+| 2 | Nov 9–15 | P01 500-step single-arm run + held-out shadow evaluation | 500 steps, finite loss, reward/KL/length curves, 4-bit VRAM recorded | Kaggle; reduce completion length |
 | 3 | Nov 16–22 | P01 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO); MATH-500; HF adapter; W&B report | G3 + G4 for P01 | Ship 100-step negative result + protocol |
 | 4 | Nov 23–29 | P02 corpus 289 → 500 cases; Ed25519 Merkle design | Corpus runs in CI | Ship corpus only |
 | 5 | Nov 30–Dec 6 | P02 signed inclusion proofs; 64-worker WAL torture; threat model | 100% idempotency; proof verifies | Ship unsigned Merkle + threat model |
