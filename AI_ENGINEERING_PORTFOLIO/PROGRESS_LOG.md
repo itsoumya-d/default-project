@@ -536,3 +536,23 @@ more valuable than a claim based on format compliance.
 - Four-arm ablation.
 - HF upload (no token).
 - npm publish (no package change).
+
+---
+
+## 2026-11-02 - Session 09: requirement check merged
+
+PR #107 (`f0e22d6`) closes the no-op loophole for tasks with a target schema.
+The verifier now compares tables, column names, SQLite affinity, `NOT NULL`, and
+primary keys after the migration. A valid but unrelated migration gets
+`REQUIREMENT_MISS` and `-0.75` execution reward; a matching schema earns `+0.75`.
+
+- All 500 dataset target schemas parse.
+- `heros-mig-0001` with a real `DROP COLUMN` scores 2.0; the same task with
+  `ADD COLUMN bio` scores -0.5 and `REQUIREMENT_MISS`.
+- Suite: **87 tests**; 74 pass + 13 skip without torch.
+
+The old 500-step adapter is invalid under the corrected reward and must not be
+published. A 10-step retraining smoke is running to check whether the base model
+can produce any target-satisfying groups; if every group collapses to
+`REQUIREMENT_MISS`, the next step is SFT/target-diff prompting, not a 500-step
+run.

@@ -272,3 +272,37 @@ exists. A real run still needs owner hardware, the `train` extra, and a 10-step
 smoke before the 500-step ablation. No adapter, loss curve, or throughput number
 may be claimed until then. If the HF adapter fails on GPU, the tested protocol
 layer remains valid and the fix is localized.
+
+---
+
+## ADR-013 - Execution reward requires target-schema satisfaction
+
+**Status:** Accepted
+**Date:** 2026-11-02
+
+**Context.** The 500-step adapter raised held-out mean reward from 0.71 to 1.465
+while risk accuracy fell from 0.16 to 0.02. It had learned to emit a safe
+`ALTER TABLE ... ADD COLUMN note` for every task, including `drop_column` and
+`drop_table` tasks. The verifier awarded `+0.75` for "SQL executed" without
+checking whether the requested change happened.
+
+**Decision.** When a `MigrationTask` supplies `target_schema`, compare the final
+SQLite schema to it after the migration:
+
+- table set;
+- column names;
+- SQLite type affinity;
+- `NOT NULL` (including primary-key implication);
+- primary-key flags.
+
+A matching schema earns `+0.75`. A valid migration that does not match gets
+`-0.75` and `REQUIREMENT_MISS`. Tasks without a target schema keep the old
+behavior for backward compatibility; every row in the 500-case dataset supplies
+one.
+
+**Consequences.** The old 500-step adapter is invalid under the corrected reward
+and must not be presented as a migration model. New training runs will be harder
+and may expose that 1.5B cannot satisfy many target schemas. That is the correct
+failure: the previous reward measured format compliance, not migration skill.
+The new gate is schema-level, not data-content-level; row hashing and PostgreSQL
+parity remain future work.

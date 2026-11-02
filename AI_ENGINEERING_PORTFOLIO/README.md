@@ -2,8 +2,8 @@
 
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
-Status: **Stage 8 — Project 01 merged and evaluated; reward hacking found, so it
-is not portfolio-ready**
+Status: **Stage 8 — Project 01 merged and evaluated; reward hacking found;
+requirement check merged, so the old adapter is invalid and retraining is next**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -119,9 +119,11 @@ delegates to the existing CPU references where possible; two parity tests pin th
 tensor advantage and loss implementations. #103 added the QLoRA runner: strict
 Forge-schema → SQLite bridge, 27 tests, a fake-policy rollout loop, a run
 recorder, a dry-run CLI, and the `HFPolicy` adapter. #104 added a literal tag
-exemplar after a GPU smoke exposed Markdown-vs-tag format failures. #14 fixed
-the two real README contradictions. #15 added a design-only WGSL paged-attention
-note; it does not claim a kernel or a speedup.
+exemplar after a GPU smoke exposed Markdown-vs-tag format failures. #105
+recorded the GPU smoke, #106 added held-out evaluation, and #107 added a
+target-schema requirement check that rejects no-op migrations. #14 fixed the two
+real README contradictions. #15 added a design-only WGSL paged-attention note;
+it does not claim a kernel or a speedup.
 
 The post-merge `main` commit is `f0e22d6` (the 500-step run used `d38a603`); the
 full `rlvr` suite was re-run at 87 pass with torch and 74 pass + 13 skip without. A 10-step 1.5B GPU smoke then
