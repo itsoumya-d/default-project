@@ -1,6 +1,7 @@
-# PR #1 — feat(rlvr): deterministic SQLite shadow verifier + Dr.GRPO/DAPO loss engine
+# PR #101 — feat(rlvr): deterministic SQLite shadow verifier + Dr.GRPO/DAPO loss engine
 
-**Status:** staged locally. **Not pushed.** Awaiting explicit approval.
+**Status:** **open** — CI green (18/18 checks). Awaiting review/merge.
+**Live PR:** https://github.com/itsoumya-d/HEROS/pull/101
 **Repository:** `itsoumya-d/HEROS`
 **Base:** `main` at `5b8536b`
 **Branch:** `feat/rlvr-dr-grpo-gpu-trainer`
@@ -8,10 +9,11 @@
 **Patch:** `AI_ENGINEERING_PORTFOLIO/open_source/patches/0001-feat-rlvr-add-deterministic-SQLite-shadow-verifier-a.patch`
 **Diff size:** 7 files, +869 / −4
 
-**Stacked follow-up:** the P5 QLoRA runner is staged separately as PR #4
+**Stacked follow-up:** the P5 QLoRA runner is open as
+[#102](https://github.com/itsoumya-d/HEROS/pull/102)
 (`feat/rlvr-qlora-runner`, `b1d3010`). See
 [`PR_DESCRIPTION_P5.md`](PR_DESCRIPTION_P5.md). This packet's 51-test log is the
-PR #1 commit; the stacked branch has 78 tests.
+#101 commit; the stacked branch has 78 tests.
 
 ---
 
@@ -207,16 +209,16 @@ Questions worth asking:
 - [x] No secrets, tokens, or local paths in the diff
 - [x] Limitations documented
 - [x] Patch exported for offline review
-- [ ] **Push approved by owner**
-- [ ] **PR opened**
-- [ ] **CI green on GitHub**
+- [x] Push approved by owner
+- [x] PR opened: #101
+- [x] CI green on GitHub (18/18 checks)
 
 ---
 
 ## 9. Follow-ups (not in this PR)
 
 1. ~~`qlora_runner.py`: model load, rollout loop, optimizer, checkpointing.~~
-   Staged as stacked PR #4 (`b1d3010`); still needs a real GPU run.
+   Staged as stacked #102 (`b1d3010`); still needs a real GPU run.
 2. Requirement-satisfaction check to close the no-op loophole.
 3. Process-isolated shadow worker with CPU/memory limits.
 4. Held-out shadow set and a forge-parity evaluation.
@@ -224,13 +226,8 @@ Questions worth asking:
 
 ---
 
-## 10. Approval request
+## 10. Next step
 
-Reply with one of:
-
-- **Approve PR #1** — push the branch and open the PR.
-- **Revise PR #1** — list the changes; the branch will be amended and the patch
-  regenerated.
-- **Hold** — keep it local; no remote action.
-
-Approving this PR does not approve PR #2, PR #3, an npm publish, or an HF upload.
+The PR is open and CI is green. Review and merge
+[#101](https://github.com/itsoumya-d/HEROS/pull/101) first; the runner #102
+is stacked on it. Merging #101 does not approve an npm publish or an HF upload.

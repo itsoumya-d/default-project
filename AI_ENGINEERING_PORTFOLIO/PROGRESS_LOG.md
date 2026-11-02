@@ -254,3 +254,54 @@ The schema bridge, tier validation, prompt, and recorder tests run without torch
 2. On approval: install `gh`, push #1 first, then rebase #4 on the merged branch.
 3. Owner-run GPU smoke: install `rlvr[train]`, run a 10-step smoke, inspect
    `run.json` and `steps.jsonl`, then decide on the 500-step ablation.
+
+---
+
+## 2026-11-02 - Session 04: pushed branches and opened four PRs
+
+### Approval and remote writes
+
+The owner replied "continue and do it" to the approval request. Branches were
+pushed with the existing Git credential manager. `gh` is still not installed, so
+the pull requests were opened through the authenticated Kimi browser session.
+No npm publish, HF upload, or deployment occurred.
+
+### Live pull requests
+
+Internal labels from Sessions 01-03 map as follows: PR #1 -> #101, PR #4 -> #102,
+PR #2 -> #14, PR #3 -> #15.
+
+| Live PR | Repository | Head commit | Base | CI |
+|---|---|---|---|---|
+| [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `f49a6c1` | `main` | 18/18 green |
+| [#102](https://github.com/itsoumya-d/HEROS/pull/102) | `itsoumya-d/HEROS` | `b1d3010` | `feat/rlvr-dr-grpo-gpu-trainer` | 18/18 green |
+| [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `main` | 3/3 green |
+| [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `main` | 2/2 green |
+
+#102 is stacked on #101 and must be merged after it. GitHub shows the stack
+banner on #102. #14 and #15 are independent.
+
+### Verification after push
+
+- GitHub check-runs API: all checks completed with `success` for all four head
+  commits. HEROS reports 18 checks per commit because both push and
+  pull_request events run the matrix; `RLVR unit tests` and
+  `GPU trainer smoke tests (CPU torch)` are green.
+- PR #101 body contains the reward/loss problem statement and the 51-test log.
+- PR #102 body contains the 78-test log, the 500/500 dry-run, and the explicit
+  "no GPU run" limitation.
+- PR #14 and #15 bodies are documentation-only and contain no benchmark claim.
+
+### State
+
+- Four branches are on origin and four PRs are open.
+- Local branches remain clean and tracking their remotes.
+- No `gh` binary; future PR edits can use the browser or install `gh`.
+- The 500-step GPU run, HF adapter, and model card remain undone.
+
+### Next checkpoint
+
+1. Merge #101, rebase #102 if needed, then merge #102.
+2. Review/merge #14 and #15.
+3. Owner-run 10-step GPU smoke, then the 100-step and 500-step runs.
+4. Publish an adapter/model card only after `run.json` and `steps.jsonl` exist.

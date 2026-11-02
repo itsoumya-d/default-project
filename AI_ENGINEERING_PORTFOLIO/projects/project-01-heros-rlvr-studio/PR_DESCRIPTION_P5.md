@@ -1,7 +1,8 @@
-# PR #4 — feat(rlvr): QLoRA rollout runner + dataset bridge
+# PR #102 — feat(rlvr): QLoRA rollout runner + dataset bridge
 
-**Status:** staged locally. **Not pushed.** Awaiting explicit approval.
-**Stacked on:** PR #1 (`feat/rlvr-dr-grpo-gpu-trainer`, `f49a6c1`).
+**Status:** **open** — CI green (18/18 checks). Awaiting review/merge after #101.
+**Live PR:** https://github.com/itsoumya-d/HEROS/pull/102
+**Stacked on:** #101 (`feat/rlvr-dr-grpo-gpu-trainer`, `f49a6c1`).
 **Repository:** `itsoumya-d/HEROS`
 **Base for this PR:** `feat/rlvr-dr-grpo-gpu-trainer` at `f49a6c1`
 **Branch:** `feat/rlvr-qlora-runner`
@@ -13,7 +14,7 @@
 
 ## 1. Why this PR exists
 
-PR #1 added the verifier and the tensor loss but stopped at a pure function. It
+#101 added the verifier and the tensor loss but stopped at a pure function. It
 could not sample a model, score a group, update an adapter, or leave a run log.
 This PR adds that missing orchestration layer:
 
@@ -188,7 +189,7 @@ No test asserts model quality or throughput. No test requires a GPU.
   device-map issues.
 - The shadow gate executes SQLite, a subset of PostgreSQL. A production
   PostgreSQL parity evaluation is a separate gate.
-- Requirement satisfaction is still not checked; the no-op loophole from PR #1
+- Requirement satisfaction is still not checked; the no-op loophole from #101
   remains.
 - The runner is serial. Parallel shadow workers (P8) are not in this PR.
 
@@ -196,8 +197,8 @@ No test asserts model quality or throughput. No test requires a GPU.
 
 ## 5. Compatibility and risk
 
-- **Stacked, not independent.** Review and merge PR #1 first; rebase this branch
-  if PR #1 changes.
+- **Stacked, not independent.** Review and merge #101 first; rebase this branch
+  if #101 changes.
 - **No existing API removed.** `MigrationTask` gains optional trailing fields;
   existing seven-argument construction still works.
 - **Torch remains optional.** Importing `heros_rlvr` does not import
@@ -237,7 +238,7 @@ Questions worth asking:
 ## 7. Checklist
 
 - [x] Feature branch, no commit to `main`
-- [x] Stacked on PR #1, not on a moving `main`
+- [x] Stacked on #101, not on a moving `main`
 - [x] Conventional commit message
 - [x] Full suite run with and without torch
 - [x] All 500 dataset rows mapped by the dry-run
@@ -245,21 +246,17 @@ Questions worth asking:
 - [x] Patch applies cleanly to `f49a6c1`
 - [x] No secrets, tokens, or local paths in the diff
 - [x] GPU adapter and throughput limitations documented
-- [ ] **Push approved by owner**
-- [ ] **PR opened**
-- [ ] **CI green on GitHub**
+- [x] Push approved by owner
+- [x] PR opened: #102 (stacked on #101)
+- [x] CI green on GitHub (18/18 checks)
 - [ ] **Real GPU smoke run**
 
 ---
 
-## 8. Approval request
+## 8. Next step
 
-Reply with one of:
-
-- **Approve PR #4** — push the stacked branch and open the PR after PR #1.
-- **Revise PR #4** — list the changes; the branch will be amended and the patch
-  regenerated.
-- **Hold** — keep it local; no remote action.
-
-Approving this PR does not approve PR #1, PR #2, PR #3, an npm publish, or an HF
-upload.
+The PR is open and CI is green. Merge
+[#101](https://github.com/itsoumya-d/HEROS/pull/101) first, then review
+[#102](https://github.com/itsoumya-d/HEROS/pull/102). A real GPU smoke run is
+still required before any training result is claimed. Merging this PR does not
+approve an npm publish or an HF upload.

@@ -60,10 +60,10 @@ from each README and were not all re-run in this session.
 
 | # | Repository | Stack | What it actually is | Last commit | Test evidence | Brief score | Live band | Disposition |
 |---:|---|---|---|---|---|---:|---:|---|
-| 1 | `HEROS` | JS/Node 22, Python, Zero, Shell | MCP 2025-11-25 runtime, forge/ledger, agentic SDK, rlvr | 2026-10-31 | 16 test files; 46 MCP test functions pass; 289 adversarial cases; 34→49 rlvr tests | 82 | 82–86 | **Elevate.** PR #1 adds the GPU-trainer slice. |
+| 1 | `HEROS` | JS/Node 22, Python, Zero, Shell | MCP 2025-11-25 runtime, forge/ledger, agentic SDK, rlvr | 2026-10-31 | 16 test files; 46 MCP test functions pass; 289 adversarial cases; 34→78 rlvr tests | 82 | 82–86 | **Elevate.** #101 adds the GPU-trainer slice; #102 adds the runner. |
 | 2 | `HEROS-RL` | Python | Critic-free GRPO for zero-downtime Postgres migrations; 500-case dataset | 2026-11-01 | 6 test files; **40 pass, 5 skip**; CPU-torch CI | not in brief | 78–84 | **Elevate as Project 01 base.** Run the 1.5B job. |
-| 3 | `peervault` | TypeScript, Rust→WASM, Go relay | Zero-server WebRTC E2EE transfer; ML-KEM-768 + P-256 hybrid; OPFS sink | 2026-10-31 | 11 test files; README claims 89/89 SDK tests, 100/100 KATs | 78 | 78–84 | **Elevate.** PR #2 fixes two doc contradictions. |
-| 4 | `edgeinfer` | TypeScript, WebGPU, ONNX | Browser inference, Matryoshka two-stage retrieval, γ=5 speculative decoding | 2026-10-31 | 10 test files; README claims 106 tests | 75 | 74–80 | **Elevate.** PR #3 adds the WGSL design note. |
+| 3 | `peervault` | TypeScript, Rust→WASM, Go relay | Zero-server WebRTC E2EE transfer; ML-KEM-768 + P-256 hybrid; OPFS sink | 2026-10-31 | 11 test files; README claims 89/89 SDK tests, 100/100 KATs | 78 | 78–84 | **Elevate.** #14 fixes two doc contradictions. |
+| 4 | `edgeinfer` | TypeScript, WebGPU, ONNX | Browser inference, Matryoshka two-stage retrieval, γ=5 speculative decoding | 2026-10-31 | 10 test files; README claims 106 tests | 75 | 74–80 | **Elevate.** #15 adds the WGSL design note. |
 | 5 | `Reflexion-SWE` | Python | Actor/Evaluator/Reflection code-repair agent; toy-fixture evaluation | 2026-10-31 | 7 test files; measured toy results, not HumanEval/SWE-bench | — | 72–78 | **Project 03 base.** Add mutation gate + real benchmark. |
 | 6 | `RouteLLM-Gateway` | JS/Python | Bradley-Terry router, semantic cache, schema fallback | 2026-10-31 | 6 test files; synthetic 69.40% cost reduction vs always-strong | — | 72–78 | **Project 05 base.** Add multi-model + ONNX. |
 | 7 | `GraphRAG-CodeAudit` | Python | Local/global GraphRAG for code; Louvain default, Leiden optional | 2026-10-31 | 6 test files; synthetic-repo evaluation | — | 70–76 | **Project 07 base.** Replace regex/LLM extraction with AST. |
@@ -161,7 +161,7 @@ first fix.
 - 152 tracked files, ~2.25 MB, 4 CI workflows.
 - `npm run test:mcp`: **46 tests pass, 0 fail**, 4.3 s. Six data-driven
   adversarial functions cover **289 cases** across ASI01–ASI10.
-- `rlvr` baseline: **34 tests pass** in 0.49 s. After PR #1 and the stacked
+- `rlvr` baseline: **34 tests pass** in 0.49 s. After #101 and the stacked
   runner PR: **78 pass** (with torch) / **65 pass + 13 skip** (without torch).
   The runner is CPU-tested with a fake policy; no GPU run exists.
 - Packages: `@soumyadebnath1619/mcp` v0.3.0, `@soumyadebnath1619/agentic`
@@ -178,7 +178,7 @@ first fix.
   cross-language fuzz harness against a real MCP client.
 - No external adopters or upstream review history.
 
-**Disposition.** Retain and elevate. PR #1 is the first slice. A follow-up
+**Disposition.** Retain and elevate. #101 is the first slice. A follow-up
 "shell-to-Node" PR should target the installer and demo scripts, not the Zero
 binaries.
 
@@ -202,7 +202,7 @@ binaries.
 - The dataset is generated, not independently labeled; its "500 cases" are a
   deterministic fixture, not a human-verified benchmark.
 
-**Disposition.** Elevate. PR #1 adds the missing shadow verifier and loss; the
+**Disposition.** Elevate. #101 adds the missing shadow verifier and loss; #102 adds the runner; the
 next step is the 500-step run and an honest model card.
 
 ### 7.3 peervault — already synchronized, two narrow contradictions
@@ -338,7 +338,7 @@ band in §3 stands.
 
 | Action | Repositories | Gate |
 |---|---|---|
-| Elevate and pin | HEROS, HEROS-RL, peervault, edgeinfer, Reflexion-SWE, HEROS-Firewall | PR #1–#4 + one GPU run |
+| Elevate and pin | HEROS, HEROS-RL, peervault, edgeinfer, Reflexion-SWE, HEROS-Firewall | #101/#102 + #14/#15 + one GPU run |
 | Elevate after Project 05/07/08 | RouteLLM-Gateway, GraphRAG-CodeAudit, Anthropic-PerfBench | Real benchmark + artifact |
 | Keep as supporting | Mobbin-UI-Compiler, HEROS-Cloud-SaaS | Project 04/10 |
 | Confirm before touching | hostshift, pulsenet, mobile-native-design-system, swarmcompute | Owner confirmation |

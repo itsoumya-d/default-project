@@ -47,7 +47,7 @@ reward diagnostics, and TRL/Unsloth entry points.
 a rewrite:
 
 1. Add the deterministic SQLite shadow verifier and Dr.GRPO/DAPO loss to
-   `HEROS/rlvr` (PR #1).
+   `HEROS/rlvr` (#101).
 2. Reuse `HEROS-RL`'s reward stack and dataset instead of duplicating them.
 3. Run the 500-step QLoRA ablation on the RTX 2060 / Kaggle T4 and publish the
    adapter plus a W&B report.
@@ -205,7 +205,7 @@ manual. Do not rewrite the security architecture or inflate the claims.
 **Status:** Accepted
 **Date:** 2026-11-02
 
-**Context.** PR #1 added `gpu_trainer.py` with its own advantage centering,
+**Context.** #101 added `gpu_trainer.py` with its own advantage centering,
 zero-variance filter, and loss reduction. The package already had
 `advantages.dr_grpo_advantages`, `sampling.has_learning_signal`, and
 `losses.grpo_loss`. Three duplicate definitions would drift.
@@ -261,8 +261,8 @@ gradient-accumulation scaling are all tested on CPU. `HFPolicy` is a lazy
 Transformers/PEFT/bitsandbytes adapter; it is explicitly marked untested and is
 not part of the default CI gate.
 
-The runner is a stacked PR (#4) on PR #1, because it depends on the verifier and
-loss but should not expand PR #1 after review. The dataset bridge accepts the
+The runner is a stacked PR (#102) on #101, because it depends on the verifier and
+loss but should not expand #101 after review. The dataset bridge accepts the
 five forge tiers (`SAFE`, `NOTABLE`, `MEDIUM`, `HIGH`, `CRITICAL`); the first
 dry-run exposed an initial three-tier assumption and the full 500-row mapping is
 now a required check.

@@ -18,7 +18,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 78 pass with torch; 65 pass + 13 skip without | **[V]** |
-| PR #1–#4 | committed locally, patches exported, **not pushed** | **[V]** |
+| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#102](https://github.com/itsoumya-d/HEROS/pull/102), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15); CI green | **[V]** |
 | GPU training runs | none | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
@@ -69,7 +69,7 @@ Commercial work is a separate track and is out of scope for this window.
 
 | Week | Dates | Primary deliverable | Exit gate | Fallback if blocked |
 |---:|---|---|---|---|
-| 1 | Nov 2–8 | PR #1–#4 reviewed and merged or revised; `gh` configured; P01 QLoRA runner implemented | PRs resolved; 500/500 dry-run; 78 CPU tests | Keep patches local; start P02 corpus on CPU |
+| 1 | Nov 2–8 | PRs #101, #102, #14, #15 reviewed and merged or revised; P01 QLoRA runner implemented | PRs resolved; 500/500 dry-run; 78 CPU tests | Keep patches local; start P02 corpus on CPU |
 | 2 | Nov 9–15 | P01 GPU smoke: 4-bit load, rollout generation, verifier wiring | 10-step smoke first, then 100-step on RTX 2060; finite loss, VRAM recorded | Kaggle smoke; reduce to 0.5B |
 | 3 | Nov 16–22 | P01 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO); MATH-500; HF adapter; W&B report | G3 + G4 for P01 | Ship 100-step negative result + protocol |
 | 4 | Nov 23–29 | P02 corpus 289 → 500 cases; Ed25519 Merkle design | Corpus runs in CI | Ship corpus only |
@@ -99,7 +99,7 @@ reproducible four-arm ablation.
 
 | Step | Owner | Deliverable | Done when |
 |---|---|---|---|
-| Resolve PR #1 | owner + agent | merge or review comments | branch merged or revised |
+| Resolve #101 | owner + agent | merge or review comments | branch merged or revised |
 | `qlora_runner.py` | agent | 4-bit Qwen2.5-Coder-1.5B load, rollout loop, reward call | loads on CPU; unit tests mock the model |
 | Shadow-worker pool | agent | process/thread pool around SQLite verifier | throughput test at 1/2/4 workers |
 | 100-step smoke | owner | run log | loss finite; peak VRAM recorded |
@@ -246,7 +246,7 @@ owner. The agent presents, for each PR:
 4. The patch file path.
 5. Known limitations and rollback.
 
-Approval is per action: merging PR #1 does not authorize an HF upload, and
+Approval is per action: merging #101 does not authorize an HF upload, and
 approving an HF upload does not authorize an npm publish.
 
 | Action | Needs approval | Artifact prepared |

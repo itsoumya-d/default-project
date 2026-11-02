@@ -156,7 +156,7 @@ salary.
 
 | Month | Action | Success metric |
 |---|---|---|
-| 1 | Merge PR #1–#4; publish the P01 adapter; update resume with [V] claims | 1 model artifact; 4 PRs |
+| 1 | Merge #101, #102, #14, #15; publish the P01 adapter; update resume with [V] claims | 1 model artifact; 4 PRs |
 | 2 | P06 parity + P02 500-case bench; one blog post | 1 kernel result; 1 public bench |
 | 3 | P08 SAE; apply to 10 agent-infra roles | 10 applications; 3 referrals |
 | 4 | P03 Lite-50; one upstream PR to TRL or MCP SDK | 1 merged/under-review PR |

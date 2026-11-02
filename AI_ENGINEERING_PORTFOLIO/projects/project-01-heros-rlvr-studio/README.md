@@ -1,10 +1,11 @@
 # Project 01 — HEROS-RLVR-Studio
 
-**Status:** verifier/loss and QLoRA runner implemented and tested on CPU; PR #1
-and a stacked runner PR are staged locally; **no GPU run yet**.
-**Repository of record:** `itsoumya-d/HEROS`. PR #1 is
-`feat/rlvr-dr-grpo-gpu-trainer` at `f49a6c1`; the P5 runner is stacked on it at
-`feat/rlvr-qlora-runner`.
+**Status:** verifier/loss and QLoRA runner implemented and tested on CPU; both
+PRs are open with green CI; **no GPU run yet**.
+**Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
+[#101](https://github.com/itsoumya-d/HEROS/pull/101) at `f49a6c1`; the P5 runner
+is stacked on it as [#102](https://github.com/itsoumya-d/HEROS/pull/102) at
+`b1d3010`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
 (verifier, runner, tests, and the documents in `docs/`).
 
@@ -41,8 +42,8 @@ This project builds that bridge and then measures whether it trains.
 | QLoRA rollout runner | `src/heros_rlvr/qlora_runner.py` | Implemented, 27 tests |
 | Runner CLI | `scripts/train_qlora.py` | Implemented; dry-run over 500 rows |
 | Runner test suite | `tests/test_qlora_runner.py` | Schema bridge, recorder, fake-policy orchestration |
-| CPU-torch CI job | `.github/workflows/rlvr.yml` (PR #1) | Added |
-| `gpu` / `train` dependency extras | `rlvr/pyproject.toml` (PR #1 / stacked PR) | Added |
+| CPU-torch CI job | `.github/workflows/rlvr.yml` (#101) | Added |
+| `gpu` / `train` dependency extras | `rlvr/pyproject.toml` (#101 / #102) | Added |
 | 500-step ablation | — | **Not run** |
 | HF adapter | — | **Not uploaded** |
 
@@ -172,8 +173,8 @@ print(receipt.total_reward, receipt.error_code)  # 2.0 OK
 project-01-heros-rlvr-studio/
 ├── README.md                 # this file
 ├── BENCHMARKS.md             # measurement protocol; results pending
-├── PR_DESCRIPTION.md         # review packet for PR #1
-├── PR_DESCRIPTION_P5.md      # review packet for stacked runner PR #4
+├── PR_DESCRIPTION.md         # review packet for #101
+├── PR_DESCRIPTION_P5.md      # review packet for stacked runner #102
 ├── docs/
 │   ├── REWARD_SPEC.md        # reward contract and edge cases
 │   └── ARCHITECTURE.md       # data flow, threat model, GPU budget
@@ -202,8 +203,8 @@ tests from the HEROS checkout, not from this directory.
 | P1 | Reward specification | **Done** |
 | P2 | Architecture and threat model | **Done** |
 | P3 | Dependency extras | **Done** (`gpu` and `train` extras) |
-| P4 | Verifier + loss engine | **Done** (PR #1) |
-| P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Done on CPU** (stacked PR); GPU adapter untested |
+| P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
+| P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Done on CPU** ([#102](https://github.com/itsoumya-d/HEROS/pull/102)); GPU adapter untested |
 | P6 | 75+ tests | **78 now** |
 | P7 | 500-step four-arm ablation | Not started |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |

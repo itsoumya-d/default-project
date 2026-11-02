@@ -33,7 +33,7 @@ graph TD
 | Math | Policy gradient theorem; importance sampling `r_t(θ)`; group advantage `A_i = r_i − mean(r)`; Dr.GRPO constant horizon `L_max`; k3 KL `exp(ρ)−ρ−1`; Bradley-Terry; Merkle inclusion proof `O(log N)`. |
 | Systems | 4-bit NF4 QLoRA; gradient checkpointing; `paged_adamw_8bit` on 6 GB; Node 22 MCP stdio/HTTP; Zero static binaries; SQLite in-memory shadow DB; `flock`/WAL. |
 | Reading | DeepSeekMath (2402.03300); Dr.GRPO (2503.20783); DAPO (2503.14476); GRPO U-statistic (2603.01162); HF TRL/PEFT docs; MCP 2025-11-25 spec. |
-| Build | `gpu_trainer.py` + shadow verifier (done, PR #1); `qlora_runner.py`; 75+ tests; 500-step run. |
+| Build | `gpu_trainer.py` + shadow verifier (done, #101); `qlora_runner.py`; 75+ tests; 500-step run. |
 | Exit test | Explain why GRPO removes the critic without collapsing; derive the Dr.GRPO denominator; pass 75 tests; produce a run log with peak VRAM and a loss curve. |
 
 **Anti-pattern to avoid:** tuning a reward model before verifying the deterministic

@@ -3,7 +3,7 @@
 **Status: no GPU benchmark has been run.** This file defines what must be
 measured before a number may appear in the project README, a model card, or a
 talk. It is mirrored from `HEROS/rlvr/BENCHMARKS.md` on the stacked runner branch
-(base PR #1 `f49a6c1`).
+(base #101 `f49a6c1`).
 
 The only measured results in the repository today are CPU unit-test runs and a
 500-row dry-run. They validate the reward contract, the loss math, the schema
