@@ -674,3 +674,27 @@ P01 is locally portfolio-ready but unpublished. The old RL adapter remains
 invalid. HF upload is blocked on credentials; the controlled RL-from-SFT and
 four-arm ablation are still missing. A fixed evaluation metric separates
 manifest risk accuracy from the combined calibration score.
+
+---
+
+## 2026-11-02 - Session 14: SFT held-out result and metric correction
+
+The SFT adapter evaluated on rows 451-500 with 512 generated tokens:
+
+| Model | Mean reward | OK rate | Risk accuracy | Row-loss rate |
+|---|---:|---:|---:|---:|
+| Base | 0.02 | 0.20 | 0.1957 | 0.0 |
+| SFT adapter | **1.90** | **1.00** | **0.90** | 0.10 |
+
+45/50 tasks score 2.0; the five 1.0 tasks are `type_narrowing`, excluded from
+SFT because SQLite cannot distinguish their types. Manifest data-loss and
+approval accuracy are both 0.90.
+
+The evaluation summary previously used `risk_calibration_reward == 0.5` as
+"risk accuracy"; that field stores the combined calibration score. PR #109
+(`1f047ad`) adds explicit risk/loss/decision match flags, `calibration_mean`, and
+`calibration_full_rate`. The SFT model card uses the corrected metrics.
+
+P01 is locally portfolio-ready but unpublished. HF upload is blocked on
+credentials. The old RL adapter is invalid; a controlled RL-from-SFT and
+four-arm ablation remain optional follow-ups, not safety claims.

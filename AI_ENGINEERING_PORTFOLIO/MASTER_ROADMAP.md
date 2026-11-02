@@ -18,7 +18,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 93 pass with torch; 80 pass + 13 skip without | **[V]** |
-| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
+| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
 | GPU runs | RL 500 steps found reward hacking; SFT warm start scores 1.90 held-out vs base 0.02; 45/50 at 2.0 | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |

@@ -17,7 +17,9 @@ held-out evaluation CLI is
 requirement check is
 [#107](https://github.com/itsoumya-d/HEROS/pull/107), merged at `f0e22d6`; the
 SFT target generator is
-[#108](https://github.com/itsoumya-d/HEROS/pull/108), merged at `c32614f`.
+[#108](https://github.com/itsoumya-d/HEROS/pull/108), merged at `c32614f`; the
+evaluation metric fix is
+[#109](https://github.com/itsoumya-d/HEROS/pull/109), merged at `1f047ad`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
 (verifier, runner, tests, and the documents in `docs/`).
 
@@ -215,7 +217,7 @@ project-01-heros-rlvr-studio/
 
 The files are copied into `HEROS/rlvr/` on the merged branches. This directory
 is the portfolio-side source of truth for the design documents; the code of
-record is `main` at `c32614f`. The mirror intentionally omits the pre-existing
+record is `main` at `1f047ad`. The mirror intentionally omits the pre-existing
 `advantages.py`, `sampling.py`, `losses.py`, and package metadata, so run the
 tests from the HEROS checkout, not from this directory.
 
