@@ -16,9 +16,9 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 |---|---|---|
 | Live audit | 30 GitHub repos, 11 HF Spaces, 2 datasets, 0 models | **[V]** |
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
-| Project 01 code slice | shadow verifier + Dr.GRPO/DAPO loss, 15 new tests | **[V]** |
-| HEROS `rlvr` suite | 51 pass with torch; 44 pass + 7 skip without | **[V]** |
-| PR #1–#3 | committed locally, patches exported, **not pushed** | **[V]** |
+| Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
+| HEROS `rlvr` suite | 78 pass with torch; 65 pass + 13 skip without | **[V]** |
+| PR #1–#4 | committed locally, patches exported, **not pushed** | **[V]** |
 | GPU training runs | none | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
@@ -69,8 +69,8 @@ Commercial work is a separate track and is out of scope for this window.
 
 | Week | Dates | Primary deliverable | Exit gate | Fallback if blocked |
 |---:|---|---|---|---|
-| 1 | Nov 2–8 | PR #1–#3 reviewed and merged or revised; `gh` configured; P01 QLoRA runner skeleton | PRs resolved; runner loads a 0.5B model on CPU | Keep patches local; start P02 corpus on CPU |
-| 2 | Nov 9–15 | P01 runner: 4-bit load, rollout generation, verifier wiring, 75+ tests | `pytest`/`unittest` green; 100-step smoke on RTX 2060 | Kaggle smoke; reduce to 0.5B |
+| 1 | Nov 2–8 | PR #1–#4 reviewed and merged or revised; `gh` configured; P01 QLoRA runner implemented | PRs resolved; 500/500 dry-run; 78 CPU tests | Keep patches local; start P02 corpus on CPU |
+| 2 | Nov 9–15 | P01 GPU smoke: 4-bit load, rollout generation, verifier wiring | 10-step smoke first, then 100-step on RTX 2060; finite loss, VRAM recorded | Kaggle smoke; reduce to 0.5B |
 | 3 | Nov 16–22 | P01 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO); MATH-500; HF adapter; W&B report | G3 + G4 for P01 | Ship 100-step negative result + protocol |
 | 4 | Nov 23–29 | P02 corpus 289 → 500 cases; Ed25519 Merkle design | Corpus runs in CI | Ship corpus only |
 | 5 | Nov 30–Dec 6 | P02 signed inclusion proofs; 64-worker WAL torture; threat model | 100% idempotency; proof verifies | Ship unsigned Merkle + threat model |

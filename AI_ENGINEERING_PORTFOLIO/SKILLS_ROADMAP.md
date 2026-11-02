@@ -111,9 +111,9 @@ verification artifact; state that it is not independently audited.
 
 | Skill | Evidence (target) | Status |
 |---|---|---|
-| PyTorch autograd | Custom backward + gradient check in P01 | Partial (loss implemented) |
-| QLoRA / NF4 | 500-step run log + adapter | Not started |
-| GRPO / Dr.GRPO / DAPO | 75 tests + ablation | 51 tests |
+| PyTorch autograd | Custom backward + gradient check in P01 | Partial (loss + fake-policy runner) |
+| QLoRA / NF4 | 500-step run log + adapter | Runner implemented; no GPU run |
+| GRPO / Dr.GRPO / DAPO | 75 tests + ablation | 78 tests; no ablation |
 | Triton | Fused Top-K SAE + roofline | Not started |
 | WGSL | Paged decode parity + zero readback | Design note |
 | MCP / agent security | 500-case bench + Ed25519 proofs | 289 cases |

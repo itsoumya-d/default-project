@@ -240,3 +240,35 @@ P09, and P10 to maintenance and documentation. Insert a buffer week at week 8.
 ones. A project that misses its gate ships a smaller honest artifact or stops;
 it does not get a fabricated number to keep the schedule.
 
+---
+
+## ADR-012 — QLoRA runner is protocol-first; the HF adapter stays thin
+
+**Status:** Accepted
+**Date:** 2026-11-02
+
+**Context.** Project 01 P5 needs a runner that can sample a policy, score the
+group with the deterministic verifier, apply the Dr.GRPO/DAPO loss, and write an
+auditable run. The agent environment has CPU torch but no transformers, PEFT,
+bitsandbytes, or GPU. A runner that could only be exercised by downloading a
+1.5B model would be unverified code with an attractive name.
+
+**Decision.** Split the runner into a tested protocol layer and a thin model
+adapter. `QLoRARunner` depends only on `generate`, `token_logprobs`, and `save`.
+The tests use a fake differentiable policy and the real SQLite verifier. The
+schema bridge, prompt, tier validation, recorder, zero-variance skip, and
+gradient-accumulation scaling are all tested on CPU. `HFPolicy` is a lazy
+Transformers/PEFT/bitsandbytes adapter; it is explicitly marked untested and is
+not part of the default CI gate.
+
+The runner is a stacked PR (#4) on PR #1, because it depends on the verifier and
+loss but should not expand PR #1 after review. The dataset bridge accepts the
+five forge tiers (`SAFE`, `NOTABLE`, `MEDIUM`, `HIGH`, `CRITICAL`); the first
+dry-run exposed an initial three-tier assumption and the full 500-row mapping is
+now a required check.
+
+**Consequences.** The orchestration can be reviewed and trusted before a GPU
+exists. A real run still needs owner hardware, the `train` extra, and a 10-step
+smoke before the 500-step ablation. No adapter, loss curve, or throughput number
+may be claimed until then. If the HF adapter fails on GPU, the tested protocol
+layer remains valid and the fix is localized.

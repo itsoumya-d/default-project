@@ -28,7 +28,7 @@ command reproduces it.
 3. **The strongest verified engineering asset is HEROS.** `npm run test:mcp`
    passes **46 test functions** containing **289 adversarial cases**
    (60 + 78 + 31 + 60 + 30 + 30). The `rlvr` package passes **34 baseline tests**
-   and **51 tests** after the new slice.
+   and **78 tests** after the verifier + runner slice.
 4. **Three brief claims are stale.** `peervault` already documents its PQC and
    OPFS implementation; `edgeinfer` does not say "Replaces OpenAI API"; and the
    HEROS shell ratio is **36.5% of code bytes** (7.6% of all repo bytes), not
@@ -161,8 +161,9 @@ first fix.
 - 152 tracked files, ~2.25 MB, 4 CI workflows.
 - `npm run test:mcp`: **46 tests pass, 0 fail**, 4.3 s. Six data-driven
   adversarial functions cover **289 cases** across ASI01–ASI10.
-- `rlvr` baseline: **34 tests pass** in 0.49 s. After PR #1: **51 pass**
-  (with torch) / **44 pass + 7 skip** (without torch).
+- `rlvr` baseline: **34 tests pass** in 0.49 s. After PR #1 and the stacked
+  runner PR: **78 pass** (with torch) / **65 pass + 13 skip** (without torch).
+  The runner is CPU-tested with a fake policy; no GPU run exists.
 - Packages: `@soumyadebnath1619/mcp` v0.3.0, `@soumyadebnath1619/agentic`
   v0.2.0, `forge` v0.1.4, `ledger` v0.1.11.
 - Language mix: `.sh` = 170.5 KB of 467.5 KB of code bytes (**36.5%**), not

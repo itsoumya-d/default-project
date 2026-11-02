@@ -29,7 +29,8 @@ frontier post-training research role, regardless of the audit score.
 ### Post-training
 
 **Show:** `HEROS-RL`'s 500-case dataset and toy group-size ablation; `HEROS/rlvr`
-51 tests; the new shadow verifier; a run log with reward/KL/length.
+78 tests; the shadow verifier and QLoRA runner; a run log with reward/KL/length.
+The run log is still the missing piece.
 
 **Fix:** the 1.5B run. Without it, the story is "I implemented the loss"; with it,
 the story is "I trained, measured, and debugged a policy."

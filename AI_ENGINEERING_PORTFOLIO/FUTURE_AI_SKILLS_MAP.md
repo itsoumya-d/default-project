@@ -61,7 +61,7 @@ layer. The project scorecard is designed around that rule.
 
 | Weeks | Focus | Output |
 |---|---|---|
-| 1–3 | RL post-training + deterministic gates | Project 01 slice, 51 tests, first GPU run |
+| 1–3 | RL post-training + deterministic gates | Project 01 runner, 78 tests, first GPU run |
 | 4–6 | GPU kernels + paged attention + SAEs | Project 06 design → parity; Project 08 eager SAE |
 | 7–10 | Verbal RL, mutation testing, graph theory, routing | Project 03, 05, 07 benchmarks |
 | 11–14 | PQC, multimodal ASTs, multi-tenant SaaS | Project 09, 04, 10 |
