@@ -597,3 +597,27 @@ Stored held-out completions re-scored under #107:
 | Old adapter | 1.465 | 0.265 | 10 | 40 |
 
 This confirms the old 1.465 was format/execution reward, not migration skill.
+
+---
+
+## 2026-11-02 - Session 11: SFT target generator merged
+
+PR #108 (`c32614f`) adds deterministic SFT targets derived from the old/target
+schema diff:
+
+- add/drop column;
+- add NOT NULL with a default;
+- single-column rename;
+- table rebuild for type, NOT NULL, and primary-key changes.
+
+`target_completion` wraps the SQL and expected manifest in the verifier's tags.
+A schema-diff pass over all 500 rows produces target-matching SQL for 450 rows.
+The 50 `type_narrowing` rows are excluded because SQLite cannot distinguish
+`bigint` from `int`; they collapse to the same affinity.
+
+Suite: **93 tests** (80 pass + 13 skip without torch).
+
+A 500-step supervised warm start is running on the first 450 rows with the SFT
+targets. Rows 451-500 remain held out. If the loss stays finite and the adapter
+improves held-out requirement satisfaction, the next step is a short RL run from
+the SFT checkpoint; if not, the target generator or model size is the blocker.

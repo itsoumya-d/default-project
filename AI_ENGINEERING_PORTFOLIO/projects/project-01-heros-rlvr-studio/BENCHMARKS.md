@@ -16,8 +16,8 @@ benchmark improvement.
 
 | Measurement | Environment | Result | Kind |
 |---|---|---|---|
-| `rlvr` unit suite | Python 3.11.13, PyTorch 2.15.0+cpu, Windows | 87 tests, 0 failures | correctness |
-| `rlvr` unit suite, no torch | Python 3.11.13, Windows | 87 tests, 74 pass, 13 skip | correctness |
+| `rlvr` unit suite | Python 3.11.13, PyTorch 2.15.0+cpu, Windows | 93 tests, 0 failures | correctness |
+| `rlvr` unit suite, no torch | Python 3.11.13, Windows | 93 tests, 80 pass, 13 skip | correctness |
 | Dataset dry-run | Python 3.11.13, Windows | 500/500 rows mapped | correctness |
 | 0.5B GPU smoke | RTX 2060, fp16 | 10 steps, **0** optimizer steps, all `MISSING_BLOCKS` | correctness |
 | 1.5B GPU smoke | RTX 2060, NF4 4-bit | 10 steps, **7** optimizer steps, mean reward 0.339, 4.15 GB | correctness |

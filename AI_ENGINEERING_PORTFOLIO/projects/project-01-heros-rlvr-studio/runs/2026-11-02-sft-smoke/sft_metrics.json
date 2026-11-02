@@ -1,0 +1,10 @@
+{
+  "adapter": "C:\\Users\\Soumya Debnath\\Documents\\Default Project\\AI_ENGINEERING_PORTFOLIO\\projects\\project-01-heros-rlvr-studio\\runs\\2026-11-02-sft-smoke\\adapter",
+  "elapsed_sec": 21.35,
+  "examples": 405,
+  "loss_first": 1.5299136638641357,
+  "loss_last": 0.019621048122644424,
+  "loss_mean": 0.2696045648306608,
+  "steps": 20,
+  "vram_mb": 3142.9
+}

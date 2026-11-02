@@ -122,7 +122,7 @@ public deploy without approval.
 
 | Window | GitHub | HF | Writing | Measurement |
 |---|---|---|---|---|
-| **0–30 days** | #101/#103/#104/#105/#106/#14/#15 merged; pin six; add CI badges | Publish P01 adapter + model card | One post: "What a deterministic shadow verifier catches that a reward model misses" | 87 tests; first W&B run |
+| **0–30 days** | #101/#103/#104/#105/#106/#14/#15 merged; pin six; add CI badges | Publish P01 adapter + model card | One post: "What a deterministic shadow verifier catches that a reward model misses" | 93 tests; first W&B run |
 | **31–60 days** | P06 design → parity; P02 public 500-case bench | Upload `owasp-agentic-bench-500`; update Spaces | One post: "Zero-readback KV in WebGPU: the parity harness" | 0 KV readback; 500 cases |
 | **61–90 days** | P08 SAE weights; P05 ONNX router | Upload SAE weights + routing benchmark | One post: "Top-K SAE on a 6 GB Turing card" | R²>0.92; p99 <6 ms |
 
