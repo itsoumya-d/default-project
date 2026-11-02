@@ -338,7 +338,7 @@ band in §3 stands.
 
 | Action | Repositories | Gate |
 |---|---|---|
-| Elevate and pin | HEROS, HEROS-RL, peervault, edgeinfer, Reflexion-SWE, HEROS-Firewall | PR #1–#3 + one GPU run |
+| Elevate and pin | HEROS, HEROS-RL, peervault, edgeinfer, Reflexion-SWE, HEROS-Firewall | PR #1–#4 + one GPU run |
 | Elevate after Project 05/07/08 | RouteLLM-Gateway, GraphRAG-CodeAudit, Anthropic-PerfBench | Real benchmark + artifact |
 | Keep as supporting | Mobbin-UI-Compiler, HEROS-Cloud-SaaS | Project 04/10 |
 | Confirm before touching | hostshift, pulsenet, mobile-native-design-system, swarmcompute | Owner confirmation |
