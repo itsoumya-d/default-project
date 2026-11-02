@@ -28,7 +28,7 @@ claims that are already stale. The numbers below are the ones to use.
 | Hugging Face public models | **0** | HF profile |
 | HF collection | 1 (`HEROS AI Systems Portfolio`) | HF profile |
 | HEROS MCP tests | **46 test functions pass; 289 adversarial cases** | `npm run test:mcp` |
-| HEROS `rlvr` tests | **85 total: 85 pass with torch; 72 pass + 13 skip without** | `unittest`, `main` at `83a1b96` |
+| HEROS `rlvr` tests | **87 total: 87 pass with torch; 74 pass + 13 skip without** | `unittest`, `main` at `f0e22d6` |
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
 | GPU smoke run | **10 steps, 7 optimizer steps, mean reward 0.339, 4.15 GB peak** | RTX 2060, `runs/2026-11-02-gpu-smoke-1.5b/` |
 | 500-step run | **500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB peak** | `runs/2026-11-02-a3-500-qwen1.5b/` |
@@ -109,6 +109,7 @@ AI_ENGINEERING_PORTFOLIO/
 | [#104](https://github.com/itsoumya-d/HEROS/pull/104) | `itsoumya-d/HEROS` | `52fd18b` | `d38a603` | merged; 18/18 green |
 | [#105](https://github.com/itsoumya-d/HEROS/pull/105) | `itsoumya-d/HEROS` | `af79d28` | `a8451f6` | merged; 18/18 green |
 | [#106](https://github.com/itsoumya-d/HEROS/pull/106) | `itsoumya-d/HEROS` | `e608a36` | `83a1b96` | merged; 18/18 green |
+| [#107](https://github.com/itsoumya-d/HEROS/pull/107) | `itsoumya-d/HEROS` | `57fb564` | `f0e22d6` | merged; 18/18 green |
 | [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `7025352` | merged; 3/3 green |
 | [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `088c217` | merged; 2/2 green |
 
@@ -122,8 +123,8 @@ exemplar after a GPU smoke exposed Markdown-vs-tag format failures. #14 fixed
 the two real README contradictions. #15 added a design-only WGSL paged-attention
 note; it does not claim a kernel or a speedup.
 
-The post-merge `main` commit is `83a1b96` (the 500-step run uses `d38a603`); the
-full `rlvr` suite was re-run at 85 pass with torch and 72 pass + 13 skip without. A 10-step 1.5B GPU smoke then
+The post-merge `main` commit is `f0e22d6` (the 500-step run used `d38a603`); the
+full `rlvr` suite was re-run at 87 pass with torch and 74 pass + 13 skip without. A 10-step 1.5B GPU smoke then
 completed 7 optimizer steps at 4.15 GB peak. The 500-step single-arm run then
 finished 500 steps with 209 optimizer steps, mean reward 1.0203, and 4.16 GB
 peak. The 50-task held-out evaluation found base 0.71 vs adapter 1.465, but risk

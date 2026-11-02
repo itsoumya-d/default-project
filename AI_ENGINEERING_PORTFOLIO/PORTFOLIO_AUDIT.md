@@ -28,7 +28,7 @@ command reproduces it.
 3. **The strongest verified engineering asset is HEROS.** `npm run test:mcp`
    passes **46 test functions** containing **289 adversarial cases**
    (60 + 78 + 31 + 60 + 30 + 30). The `rlvr` package passes **34 baseline tests**
-   and **85 tests** after the verifier + runner slice.
+   and **87 tests** after the verifier + runner slice.
 4. **Three brief claims are stale.** `peervault` already documents its PQC and
    OPFS implementation; `edgeinfer` does not say "Replaces OpenAI API"; and the
    HEROS shell ratio is **36.5% of code bytes** (7.6% of all repo bytes), not
@@ -60,7 +60,7 @@ from each README and were not all re-run in this session.
 
 | # | Repository | Stack | What it actually is | Last commit | Test evidence | Brief score | Live band | Disposition |
 |---:|---|---|---|---|---|---:|---:|---|
-| 1 | `HEROS` | JS/Node 22, Python, Zero, Shell | MCP 2025-11-25 runtime, forge/ledger, agentic SDK, rlvr | 2026-10-31 | 16 test files; 46 MCP test functions pass; 289 adversarial cases; 34→85 rlvr tests | 82 | 82–86 | **Elevate.** #101/#103 merged the verifier and runner; #104 fixed tag-format compliance. |
+| 1 | `HEROS` | JS/Node 22, Python, Zero, Shell | MCP 2025-11-25 runtime, forge/ledger, agentic SDK, rlvr | 2026-10-31 | 16 test files; 46 MCP test functions pass; 289 adversarial cases; 34→87 rlvr tests | 82 | 82–86 | **Elevate.** #101/#103 merged the verifier and runner; #104 fixed tag-format compliance. |
 | 2 | `HEROS-RL` | Python | Critic-free GRPO for zero-downtime Postgres migrations; 500-case dataset | 2026-11-01 | 6 test files; **40 pass, 5 skip**; CPU-torch CI | not in brief | 78–84 | **Elevate as Project 01 base.** Run the 1.5B job. |
 | 3 | `peervault` | TypeScript, Rust→WASM, Go relay | Zero-server WebRTC E2EE transfer; ML-KEM-768 + P-256 hybrid; OPFS sink | 2026-10-31 | 11 test files; README claims 89/89 SDK tests, 100/100 KATs | 78 | 78–84 | **Elevate.** #14 fixes two doc contradictions. |
 | 4 | `edgeinfer` | TypeScript, WebGPU, ONNX | Browser inference, Matryoshka two-stage retrieval, γ=5 speculative decoding | 2026-10-31 | 10 test files; README claims 106 tests | 75 | 74–80 | **Elevate.** #15 adds the WGSL design note. |
@@ -162,7 +162,7 @@ first fix.
 - `npm run test:mcp`: **46 tests pass, 0 fail**, 4.3 s. Six data-driven
   adversarial functions cover **289 cases** across ASI01–ASI10.
 - `rlvr` baseline: **34 tests pass** in 0.49 s. After #101 and the stacked
-  runner PR: **85 pass** (with torch) / **72 pass + 13 skip** (without torch).
+  runner PR: **87 pass** (with torch) / **74 pass + 13 skip** (without torch).
   The runner is CPU-tested with a fake policy; no GPU run exists.
 - Packages: `@soumyadebnath1619/mcp` v0.3.0, `@soumyadebnath1619/agentic`
   v0.2.0, `forge` v0.1.4, `ledger` v0.1.11.

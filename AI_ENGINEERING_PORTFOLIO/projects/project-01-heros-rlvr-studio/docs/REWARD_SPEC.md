@@ -61,7 +61,7 @@ supported; the first closing tag wins.
 | Component | Weight | Condition |
 |---|---:|---|
 | `format_reward` | `+0.25` | all three blocks present and manifest is a JSON object |
-| `shadow_exec_reward` | `+0.75` | the SQL script executes without a SQLite error |
+| `shadow_exec_reward` | `+0.75` / `-0.75` | SQL executes **and** the post-migration schema matches `target_schema` when supplied; valid but unrelated/no-op SQL gets `-0.75` and `REQUIREMENT_MISS` |
 | `risk_calibration_reward` | `+0.50` | `pred_risk == task.expected_risk_tier` |
 | `loss_calibration_reward` | `+0.25` | `pred_loss == (task.expected_data_loss OR observed_row_loss)` |
 | `decision_calibration_reward` | `+0.25` | `pred_decision == task.decision_required` |
@@ -77,6 +77,7 @@ supported; the first closing tag wins.
 | Any block missing | `-1.00` | `MISSING_BLOCKS` |
 | Manifest is not valid JSON, or not an object | `-0.50` | `INVALID_JSON` |
 | SQL raises any `sqlite3.Error` or `sqlite3.Warning` | `-0.50` | `SQL_EXEC_ERROR` |
+| SQL executes but the target schema does not match | `-0.50 … 0.50` | `REQUIREMENT_MISS` |
 | Success | `0.00 … 2.00` | `OK` |
 
 The failure floors are deliberately separated from the additive reward. A
@@ -96,6 +97,12 @@ before = {table: COUNT(*) for every non-sqlite table}
 executescript(proposed_sql)
 after  = {table: COUNT(*) for every non-sqlite table}
 row_loss = any(after.get(table, 0) < before[table])
+if target_schema is supplied:
+    schema_matched = compare(
+        tables, column names, SQLite affinity, NOT NULL, primary keys
+    )
+else:
+    schema_matched = True
 close()
 ```
 
@@ -221,7 +228,8 @@ class VerificationReceipt:
     risk_calibration_reward: float
     miracle_step_penalty: float
     shadow_row_loss_detected: bool
-    error_code: str  # OK | MISSING_BLOCKS | INVALID_JSON | SQL_EXEC_ERROR
+    error_code: str  # OK | MISSING_BLOCKS | INVALID_JSON | SQL_EXEC_ERROR | REQUIREMENT_MISS
+    target_schema_matched: bool | None = None
 ```
 
 The receipt is immutable and JSON-serializable with `dataclasses.asdict`. It is
@@ -243,6 +251,9 @@ returns it but does not persist it.
    whenever the row-count check fires, regardless of what the manifest claims.
 7. **No model judge.** The reward cannot be changed by prompt injection in the
    completion; it can only be changed by SQL behavior and manifest fields.
+8. **No free execution reward for a no-op.** When a target schema is supplied, a
+   completion that executes but leaves the schema unchanged cannot earn the
+   `+0.75` execution component.
 
 ---
 
@@ -261,7 +272,7 @@ The reward version belongs in every training run's `run.json`.
 
 | Issue | Effect | Planned mitigation |
 |---|---|---|
-| No-op SQL scores `2.00` on a safe task | model can learn to do nothing | add an AST/requirement check that the requested change occurred |
+| No-op SQL could score `2.00` on a safe task | model learns format + no-op | **fixed** for tasks with `target_schema`: schema mismatch gets `-0.75` and `REQUIREMENT_MISS` |
 | Row counts only | delete + reinsert of different rows is invisible | hash row contents or compare a sample |
 | Table rename | old table disappears ⇒ false-positive loss | detect `ALTER TABLE ... RENAME` and map old → new |
 | SQLite version drift | parser/authorizer behavior can change | pin SQLite in the container; record version in the receipt |

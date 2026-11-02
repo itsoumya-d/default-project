@@ -92,8 +92,13 @@ loophole, not evidence of migration competence.
 
 The mean reward rose from 0.71 to 1.465 because the adapter learned the tag
 format and executable additive SQL. It did not learn requirement satisfaction
-or risk calibration. A task-satisfaction checker is required before this reward
-can be trusted as a training objective.
+or risk calibration.
+
+**This adapter predates the requirement check.** It was trained with the old
+reward. Under the current verifier, its no-op completions receive
+`REQUIREMENT_MISS` and `-0.75` execution reward instead of `+0.75`. Do not use
+this adapter as a migration model or as the starting point for a new run; retrain
+with the corrected reward.
 
 ## Intended use
 

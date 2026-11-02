@@ -82,9 +82,12 @@ Stages:
 6. Snapshot table counts.
 7. Apply the migration.
 8. Snapshot again; compute row loss.
-9. Score format, execution, and three calibration checks.
-10. Apply the miracle penalty.
-11. Return an immutable receipt.
+9. If `target_schema` is supplied, compare the final SQLite schema (tables,
+   columns, affinity, `NOT NULL`, primary keys) to it. A mismatch earns
+   `REQUIREMENT_MISS` and loses the execution reward.
+10. Score format, execution, and three calibration checks.
+11. Apply the miracle penalty.
+12. Return an immutable receipt.
 
 The verifier has no `async`, no I/O, and no global mutable state. It is safe to
 run in a thread or a process, provided each call gets its own connection (it

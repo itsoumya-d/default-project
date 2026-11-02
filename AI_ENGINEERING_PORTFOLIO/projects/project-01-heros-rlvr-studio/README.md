@@ -3,8 +3,9 @@
 **Status:** verifier/loss and QLoRA runner merged; the **500-step run and
 held-out evaluation completed**. The adapter raised mean reward from 0.71 to
 1.465 but **lowered risk accuracy from 0.16 to 0.02** and produced safe no-op
-migrations. This is a documented reward-hacking failure, not a success claim.
-No adapter or model card is published.
+migrations. The target-schema requirement check is now merged as #107; the old
+adapter is invalid under the new reward and must be retrained. No adapter or
+model card is published.
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
@@ -13,7 +14,9 @@ runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
 GPU-smoke documentation is
 [#105](https://github.com/itsoumya-d/HEROS/pull/105), merged at `a8451f6`; the
 held-out evaluation CLI is
-[#106](https://github.com/itsoumya-d/HEROS/pull/106), merged at `83a1b96`.
+[#106](https://github.com/itsoumya-d/HEROS/pull/106), merged at `83a1b96`; the
+requirement check is
+[#107](https://github.com/itsoumya-d/HEROS/pull/107), merged at `f0e22d6`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
 (verifier, runner, tests, and the documents in `docs/`).
 
@@ -93,8 +96,8 @@ python -m unittest discover -s rlvr/tests -v
 
 | Environment | Result | Marker |
 |---|---|---|
-| PyTorch 2.15.0+cpu, Python 3.11.13, Windows | **85 tests pass, 0 fail** | **[V]** |
-| No PyTorch, Python 3.11.13, Windows | **85 tests, 72 pass, 13 skip** | **[V]** |
+| PyTorch 2.15.0+cpu, Python 3.11.13, Windows | **87 tests pass, 0 fail** | **[V]** |
+| No PyTorch, Python 3.11.13, Windows | **87 tests, 74 pass, 13 skip** | **[V]** |
 | 500-row dataset dry-run, no torch | **500/500 rows mapped, 10 hazard classes** | **[V]** |
 | 10-step 1.5B GPU smoke | **7 completed, 3 skipped, mean reward 0.339, 4.15 GB peak** | **[V]** |
 | 500-step single-arm run | **500 steps, 209 optimizer steps, reward 1.0203, 4.16 GB** | **[V]** |
@@ -209,7 +212,7 @@ project-01-heros-rlvr-studio/
 
 The files are copied into `HEROS/rlvr/` on the merged branches. This directory
 is the portfolio-side source of truth for the design documents; the code of
-record is `main` at `83a1b96`. The mirror intentionally omits the pre-existing
+record is `main` at `f0e22d6`. The mirror intentionally omits the pre-existing
 `advantages.py`, `sampling.py`, `losses.py`, and package metadata, so run the
 tests from the HEROS checkout, not from this directory.
 
@@ -224,8 +227,8 @@ tests from the HEROS checkout, not from this directory.
 | P3 | Dependency extras | **Done** (`gpu` and `train` extras) |
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU-smoked |
-| P6 | 75+ tests | **85 now** |
-| P7 | 500-step four-arm ablation | **500-step single arm + held-out eval done; reward hacking found; A0/A1/A2 pending** |
+| P6 | 75+ tests | **87 now** |
+| P7 | 500-step four-arm ablation | **500-step single arm + held-out eval done; reward hacking found; requirement check merged; rerun required; A0/A1/A2 pending** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
 | P10 | HF adapter + model card | Blocked on P7 and HF credentials |
@@ -239,22 +242,23 @@ records a step-throughput baseline.
 
 | Gate | Requirement | Evidence | Status |
 |---|---|---|---|
-| Tests | 75+ green | 85 tests with torch; 72 pass + 13 skip without | **[V]** |
+| Tests | 75+ green | 87 tests with torch; 74 pass + 13 skip without | **[V]** |
 | GPU path | 4-bit 1.5B fits 6 GB | 4.15 GB peak in the 10-step smoke | **[V]** |
 | Training signal | Informative reward groups | 7/10 optimizer steps in the smoke | **[V]** |
 | 500-step run | 500 steps, finite loss | 500 steps, 209 optimizer steps, mean reward 1.0203 | **[V]** |
 | Held-out eval | Unseen migration rows | base 0.71 vs adapter 1.465; risk 0.16 vs 0.02 | **[V]** |
 | Adapter | Saved LoRA adapter | `final/` saved locally; not uploaded | **[V]** |
 | Model card | Honest metrics + limits | `MODEL_CARD.md` records the no-op failure | **[V]** |
-| Requirement satisfaction | Requested change actually performed | **failed**: 36/50 adapter completions added a generic `note` column | **[X]** |
+| Requirement satisfaction | Requested change actually performed | check merged in #107; old adapter fails 36/50; retrain required | **[P]** |
 | HF upload | Public artifact | blocked: no HF token | **[X]** |
 | Four-arm ablation | A0/A1/A2/A3 | only A3 single arm exists | **[X]** |
 | Parallel workers | >1.8× at 4 workers | not started | **[X]** |
 
 P01 is **not portfolio-ready**. The 500-step run, held-out eval, adapter
 verification, and model card exist, but the adapter fails requirement
-satisfaction and risk calibration. The next gate is a requirement checker and a
-new evaluation; do not present the adapter as a migration model.
+satisfaction and risk calibration. The requirement check is now merged; the next
+gate is a new training run and held-out evaluation. Do not present the old
+adapter as a migration model.
 
 ---
 
