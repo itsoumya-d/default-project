@@ -1,13 +1,10 @@
 # Project 01 — HEROS-RLVR-Studio
 
-**Status:** verifier/loss and QLoRA runner merged; the **500-step run and
-held-out evaluation completed**. The adapter raised mean reward from 0.71 to
-1.465 but **lowered risk accuracy from 0.16 to 0.02** and produced safe no-op
-migrations. The target-schema requirement check is now merged as #107; the old
-adapter is invalid under the new reward. A 10-step corrected-reward smoke had 7
-optimizer steps but 9/20 `REQUIREMENT_MISS`, so the base model needs an SFT or
-target-diff warm start before another long RL run. No adapter or model card is
-published.
+**Status:** verifier/loss, runner, requirement check, and SFT warm start are
+merged. The old RL adapter failed requirement satisfaction and is invalid. The
+SFT warm start scores **1.90 held-out reward** vs base **0.02**, with 45/50 tasks
+at the maximum 2.0 and manifest risk accuracy 0.90. The adapter and model card
+are local only; HF publication and the RL ablation are pending.
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
@@ -107,6 +104,7 @@ python -m unittest discover -s rlvr/tests -v
 | 500-step single-arm run | **500 steps, 209 optimizer steps, reward 1.0203, 4.16 GB** | **[V]** |
 | Held-out eval, old reward | base 0.71 vs checkpoint-450 1.465; risk 0.16 vs 0.02 | **[V]** |
 | Held-out re-score, #107 reward | base 0.02 vs adapter 0.265; adapter 40/50 `REQUIREMENT_MISS` | **[V]** |
+| SFT warm start, #107 reward | base 0.02 vs SFT adapter **1.90**; 45/50 at 2.0; risk 0.90 | **[V]** |
 
 The thirteen skips are tensor tests: seven pre-existing loss/advantage cases and
 six runner-orchestration cases. They skip by design rather than failing the
@@ -233,15 +231,15 @@ tests from the HEROS checkout, not from this directory.
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU-smoked |
 | P6 | 75+ tests | **93 now** |
-| P7 | 500-step four-arm ablation | **500-step arm + held-out negative; #107 check merged; corrected-reward smoke mostly fails; SFT warm start next** |
+| P7 | 500-step four-arm ablation | **RL arm negative; SFT warm start 1.90 held-out; RL-from-SFT and A0/A1/A2 pending** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
-| P10 | HF adapter + model card | Blocked on P7 and HF credentials |
+| P10 | HF adapter + model card | SFT model card local; HF upload blocked on credentials |
 
-P7 now has a GPU path: RTX 2060, 4-bit 1.5B, 4.15 GB peak. The four-arm
-ablation still needs the 500-step single-arm run plus the A0/A1/A2 arms. P10 is
-blocked on P7 and the absent HF token. P8 can start after the 500-step run
-records a step-throughput baseline.
+P7 now has a GPU path and an SFT result: RTX 2060, 4-bit 1.5B, 3.14 GB SFT peak.
+The four-arm ablation is still missing; the SFT arm is not a controlled RL
+comparison. P10 has a local model card but is blocked on the absent HF token. P8
+can start from the measured 500-step RL throughput.
 
 ### Acceptance evidence
 
@@ -251,35 +249,35 @@ records a step-throughput baseline.
 | GPU path | 4-bit 1.5B fits 6 GB | 4.15 GB peak in the 10-step smoke | **[V]** |
 | Training signal | Informative reward groups | 7/10 optimizer steps in the smoke | **[V]** |
 | 500-step run | 500 steps, finite loss | 500 steps, 209 optimizer steps, mean reward 1.0203 | **[V]** |
-| Held-out eval | Unseen migration rows | base 0.71 vs adapter 1.465; risk 0.16 vs 0.02 | **[V]** |
-| Adapter | Saved LoRA adapter | `final/` saved locally; not uploaded | **[V]** |
-| Model card | Honest metrics + limits | `MODEL_CARD.md` records the no-op failure | **[V]** |
-| Requirement satisfaction | Requested change actually performed | #107 check works; old adapter fails 40/50; corrected-reward smoke has 9/20 `REQUIREMENT_MISS` | **[V]** |
-| Warm start | Model can satisfy target schemas | **not built**; SFT/target-diff is the next task | **[X]** |
+| Held-out eval, old RL reward | Unseen migration rows | base 0.71 vs old adapter 1.465; risk 0.16 vs 0.02 | **[V]** |
+| Held-out eval, corrected reward | Unseen migration rows | base 0.02 vs old adapter 0.265; old adapter 40/50 `REQUIREMENT_MISS` | **[V]** |
+| SFT warm start | 500 supervised steps | loss 1.53 -> 3.1e-5; adapter saved locally | **[V]** |
+| SFT held-out eval | base vs SFT on rows 451-500 | **SFT 1.90 vs base 0.02; 45/50 at 2.0; risk 0.90** | **[V]** |
+| Model card | Honest metrics + limits | SFT `MODEL_CARD.md` generated | **[V]** |
+| Requirement satisfaction | Requested change actually performed | SFT 45/50 at 2.0; 5 `type_narrowing` at 1.0 | **[V]** |
 | HF upload | Public artifact | blocked: no HF token | **[X]** |
-| Four-arm ablation | A0/A1/A2/A3 | only A3 single arm exists | **[X]** |
+| RL from SFT | RL rerun on the warm start | not started | **[X]** |
+| Four-arm ablation | A0/A1/A2/A3 | no controlled comparison | **[X]** |
 | Parallel workers | >1.8× at 4 workers | not started | **[X]** |
 
-P01 is **not portfolio-ready**. The 500-step run, held-out eval, adapter
-verification, and model card exist, but the adapter fails requirement
-satisfaction and risk calibration. The requirement check works; the corrected
-smoke shows the base model cannot satisfy most target schemas. The next gate is
-an SFT/target-diff warm start, then a new RL run and held-out evaluation. Do not
-present the old adapter as a migration model.
+P01 is **locally portfolio-ready but not published**. The SFT adapter is a strong
+held-out result under the corrected reward. It is not a controlled RL result, has
+no HF artifact, and has not been tested against PostgreSQL. Do not present the
+old 500-step RL adapter as a migration model.
 
 ---
 
 ## 8. Limitations and non-claims
 
-- **The held-out result is negative.** The adapter raised mean reward from
-  0.71 to 1.465, but risk accuracy fell from 0.16 to 0.02. It produced 50/50
-  syntactically valid migrations, 36/50 of which added a generic `note` column
-  instead of the requested change. This is reward hacking through the known
-  no-op loophole, not migration competence.
-- **`HFPolicy` is validated mechanically, not scientifically.** It loaded
-  4-bit Qwen2.5-Coder-1.5B, generated, computed log-probs, stepped the optimizer
-  209 times, and saved an adapter on the RTX 2060. The adapter is not suitable
-  for use until the reward checks requirement satisfaction.
+- **The old RL result was negative.** The 500-step RL adapter raised mean reward
+  from 0.71 to 1.465 but risk accuracy fell from 0.16 to 0.02; 36/50 completions
+  were no-op `ADD COLUMN` migrations. Under the corrected reward it scores 0.265
+  with 40/50 requirement misses. It is invalid and must not be published.
+- **The SFT result is positive but narrow.** The SFT adapter scores **1.90** on
+  50 held-out rows (base 0.02), with 45/50 at 2.0 and manifest risk accuracy
+  0.90. The 5 failures are all `type_narrowing`, which SQLite cannot verify.
+  This is supervised warm start, not RL; there is no controlled A0/A1/A2/A3
+  comparison.
 - **The shadow gate executes SQLite, not PostgreSQL.** The runner prompts for
   SQLite-compatible SQL so training and verification agree. PostgreSQL syntax
   parity is a separate evaluation gate; the production migration target remains
@@ -287,9 +285,12 @@ present the old adapter as a migration model.
 - The shadow verifier checks **row counts**, not row contents. A migration that
   deletes and reinserts the same number of different rows is not flagged. A
   table rename is flagged as loss even when data is preserved.
-- A no-op migration can score `2.0` on a safe task. The verifier rewards safety
-  and calibration, not requirement satisfaction. A requirement-satisfaction check
-  is future work.
+- **Requirement checking is schema-level.** A no-op is now rejected when a
+  target schema is supplied, but row contents are still not hashed; a
+  delete-and-reinsert with the same count is invisible.
+- **`type_narrowing` is unrepresentable in SQLite.** `bigint` and `int` collapse
+  to the same affinity; the 50 such rows are excluded from SFT and score 1.0,
+  not 2.0, in the held-out set.
 - The SQLite authorizer is a narrow escape guard, not a sandbox. There is no
   statement timeout or memory cap; untrusted SQL still needs process isolation
   for production use.

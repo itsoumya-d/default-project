@@ -1,0 +1,33 @@
+{
+  "calibration_mean": 0.27,
+  "decision_accuracy": 0.5,
+  "elapsed_sec": 253.62,
+  "error_codes": {
+    "MISSING_BLOCKS": 5,
+    "OK": 10,
+    "REQUIREMENT_MISS": 23,
+    "SQL_EXEC_ERROR": 12
+  },
+  "hazards": {
+    "add_default_column": 5,
+    "add_nullable_column": 5,
+    "add_primary_key": 5,
+    "create_table": 5,
+    "drop_column": 5,
+    "drop_table": 5,
+    "rename_column": 5,
+    "set_not_null": 5,
+    "type_narrowing": 5,
+    "widen_type": 5
+  },
+  "label": "base",
+  "loss_accuracy": 0.6087,
+  "manifests": 46,
+  "mean_reward": 0.02,
+  "mean_reward_percent": 2.0,
+  "ok_rate": 0.2,
+  "risk_accuracy": 0.1957,
+  "row_loss_rate": 0.0,
+  "tasks": 50,
+  "vram_mb": 1163.8
+}

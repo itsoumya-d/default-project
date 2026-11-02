@@ -1,0 +1,10 @@
+{
+  "adapter": "C:\\Users\\Soumya Debnath\\Documents\\Default Project\\AI_ENGINEERING_PORTFOLIO\\projects\\project-01-heros-rlvr-studio\\runs\\2026-11-02-sft-warmstart\\final",
+  "elapsed_sec": 496.24,
+  "examples": 405,
+  "loss_first": 1.5299136638641357,
+  "loss_last": 3.130286859232001e-05,
+  "loss_mean": 0.012083703913216596,
+  "steps": 500,
+  "vram_mb": 3142.9
+}

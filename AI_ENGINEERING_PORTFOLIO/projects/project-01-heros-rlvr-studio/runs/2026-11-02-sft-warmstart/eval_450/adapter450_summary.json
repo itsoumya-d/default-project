@@ -1,0 +1,27 @@
+{
+  "elapsed_sec": 0.0,
+  "error_codes": {
+    "MISSING_BLOCKS": 20,
+    "OK": 30
+  },
+  "hazards": {
+    "add_default_column": 5,
+    "add_nullable_column": 5,
+    "add_primary_key": 5,
+    "create_table": 5,
+    "drop_column": 5,
+    "drop_table": 5,
+    "rename_column": 5,
+    "set_not_null": 5,
+    "type_narrowing": 5,
+    "widen_type": 5
+  },
+  "label": "adapter450",
+  "mean_reward": 0.8,
+  "mean_reward_percent": 80.0,
+  "ok_rate": 0.6,
+  "risk_accuracy": 0.0,
+  "row_loss_rate": 0.1,
+  "tasks": 50,
+  "vram_mb": 1241.0
+}

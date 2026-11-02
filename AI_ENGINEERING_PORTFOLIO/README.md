@@ -2,8 +2,8 @@
 
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
-Status: **Stage 9 — requirement check works; old adapter invalid; SFT/target-diff
-warm start is next**
+Status: **Stage 10 — SFT warm start succeeds locally (1.90 held-out); old RL
+adapter invalid; publication and controlled ablation remain**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -34,6 +34,7 @@ claims that are already stale. The numbers below are the ones to use.
 | 500-step run | **500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB peak** | `runs/2026-11-02-a3-500-qwen1.5b/` |
 | Held-out eval | **base 0.71 vs adapter 1.465; risk 0.16 vs 0.02; 36/50 no-op migrations** | `eval_450/` |
 | Corrected reward | old adapter re-scores at 0.265, 40/50 `REQUIREMENT_MISS`; smoke has 9/20 misses | `runs/.../MODEL_CARD.md` |
+| SFT warm start | **500 steps; held-out 1.90 vs base 0.02; 45/50 at 2.0; risk 0.90** | `runs/2026-11-02-sft-warmstart/` |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -135,9 +136,10 @@ peak. The 50-task held-out evaluation found base 0.71 vs adapter 1.465, but risk
 accuracy fell from 0.16 to 0.02; 36/50 adapter completions were safe no-op
 `ADD COLUMN` migrations. This is a reward-hacking negative, not a success. The
 #107 requirement check re-scores the old adapter at 0.265 (40/50 requirement
-misses), and a 10-step corrected-reward smoke still had 9/20 misses. The next
-work is SFT/target-diff prompting, not another long RL run. Merged remote
-branches were deleted.
+misses). A deterministic SFT warm start (#108) then scored **1.90** on the same
+50 held-out rows vs base **0.02**, with 45/50 at 2.0 and manifest risk accuracy
+0.90. The SFT adapter is local only; the old RL adapter remains invalid. Merged
+remote branches were deleted.
 
 Review packets live in `projects/project-01-heros-rlvr-studio/PR_DESCRIPTION.md`,
 `PR_DESCRIPTION_P5.md`, and the two repository README sections. The PRs were
@@ -171,16 +173,16 @@ $env:PYTHONPATH="rlvr/src"
 
 ## 6. Immediate next actions
 
-1. **Build an SFT/target-diff warm start.** The base 1.5B cannot satisfy most
-   target schemas; RL alone is training on failures. Supervise correct
-   expand-and-contract examples first.
-2. **Do not publish the old adapter.** It is invalid under #107. Keep the model
-   card local and negative.
-3. **Run a new held-out evaluation after the warm start**, then the four-arm
-   ablation. Do not compare arms before requirement satisfaction is learnable.
-4. **Open one upstream PR** (TRL Dr.GRPO toggle is the smallest credible one)
-   after the reward and warm start work.
-5. **Start P06/P02** on CPU while the SFT pipeline is built.
+1. **Authenticate Hugging Face and publish the SFT adapter + model card.** The
+   artifact is strong and local; no token is available to the agent.
+2. **Run one controlled RL-from-SFT arm** with the corrected reward, then compare
+   it with SFT and base. Do not call it a win without the held-out result.
+3. **Add a held-out set outside the 500 generated prompts** before making any
+   generalization claim. The current split is time-based within one dataset.
+4. **Start P02/P06 on CPU.** P01's remaining blockers are publication and a
+   controlled ablation, not code.
+5. **Open one upstream PR** (TRL Dr.GRPO toggle is the smallest credible one)
+   once the reward and SFT artifacts are public.
 
 ---
 

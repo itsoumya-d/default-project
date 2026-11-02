@@ -621,3 +621,56 @@ A 500-step supervised warm start is running on the first 450 rows with the SFT
 targets. Rows 451-500 remain held out. If the loss stays finite and the adapter
 improves held-out requirement satisfaction, the next step is a short RL run from
 the SFT checkpoint; if not, the target generator or model size is the blocker.
+
+---
+
+## 2026-11-02 - Session 12: SFT warm start completed
+
+The SFT warm start ran 500 supervised steps on 405 target examples from the
+first 450 rows (the 50 type_narrowing rows are excluded from supervision):
+
+- Loss: 1.5299 (first) -> 0.0000313 (last); mean 0.01208
+- Wall clock: 496.24 s
+- Peak VRAM: 3,142.9 MB
+- Adapter: `runs/2026-11-02-sft-warmstart/final/`
+
+The adapter is local and unpublished. A held-out evaluation on rows 451-500 is
+running under the #107 requirement-check reward. Training loss near zero is
+memorization evidence only; the held-out result decides whether the warm start
+generalizes.
+
+PR #108 (SFT target generator) merged at `c32614f`; suite is 93 tests.
+
+---
+
+## 2026-11-02 - Session 13: SFT held-out evaluation
+
+The SFT warm start evaluated on rows 451-500 under the #107 requirement reward.
+The first run used 128 new tokens and truncated 20 long rebuild completions;
+the corrected run used 512 tokens.
+
+| Model | Mean reward | OK rate | Manifest risk accuracy | Row-loss rate |
+|---|---:|---:|---:|---:|
+| Base | 0.02 | 0.20 | 0.1957 | 0.0 |
+| SFT adapter | **1.90** | **1.00** | **0.90** | 0.10 |
+
+- 45/50 tasks score 2.0.
+- 5/50 score 1.0; all five are `type_narrowing`, excluded from SFT because
+  SQLite cannot distinguish `bigint` from `int`.
+- Manifest data-loss accuracy 0.90; approval accuracy 0.90.
+- The 0.10 row-loss rate is the five `drop_table` tasks, where row loss is
+  expected by the task label.
+
+### Artifacts
+
+- `runs/2026-11-02-sft-warmstart/final/` (LoRA adapter, local)
+- `runs/2026-11-02-sft-warmstart/MODEL_CARD.md`
+- `runs/2026-11-02-sft-warmstart/eval_450_512/`
+- `runs/2026-11-02-sft-warmstart/sft_metrics.json`
+
+### Status
+
+P01 is locally portfolio-ready but unpublished. The old RL adapter remains
+invalid. HF upload is blocked on credentials; the controlled RL-from-SFT and
+four-arm ablation are still missing. A fixed evaluation metric separates
+manifest risk accuracy from the combined calibration score.

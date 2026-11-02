@@ -1,9 +1,9 @@
 # Benchmarks — Project 01: HEROS-RLVR-Studio
 
-**Status: 500-step single arm and 50-task held-out evaluation complete; the
-result is a reward-hacking negative.** This file defines what must be measured
-before a number may appear in the project README, a model card, or a talk. It is
-mirrored from `HEROS/rlvr/BENCHMARKS.md` on `main` at `83a1b96`.
+**Status: the 500-step RL arm was a reward-hacking negative; the SFT warm start
+is a strong local result (1.90 held-out).** This file defines what must be
+measured before a number may appear in the project README, a model card, or a
+talk. It is mirrored from `HEROS/rlvr/BENCHMARKS.md` on `main` at `c32614f`.
 
 The measured results today are CPU unit tests, a 500-row dry-run, and two GPU
 smokes. They validate the reward contract, loss math, schema bridge, runner
@@ -27,6 +27,9 @@ benchmark improvement.
 | Requirement satisfaction, old reward | 50 held-out rows | **failed**: 36/50 added a generic `note` column | evaluation |
 | Re-score under #107 reward | same stored completions | base 0.02; adapter 0.265; adapter 40/50 `REQUIREMENT_MISS` | evaluation |
 | Corrected-reward smoke | 10 steps, 1.5B NF4 | 7 optimizer steps; 9/20 `REQUIREMENT_MISS`, 5 missing, 4 SQL errors, 2 OK | training |
+| SFT warm start | 500 steps, 405 targets | loss 1.5299 -> 0.0000313; 3.14 GB; 496 s | training |
+| SFT held-out base | rows 451-500, corrected reward | mean 0.02, OK 0.20, risk 0.196, row-loss 0.0 | evaluation |
+| SFT held-out adapter | rows 451-500, 512 tokens | **mean 1.90, OK 1.0, risk 0.90, 45/50 at 2.0** | evaluation |
 | Shadow verifier throughput | — | not measured | performance |
 | Training throughput | — | ~18.5 s/step in the 1.5B smoke; not a benchmark | performance |
 | MATH-500 pass@1 | — | not measured | quality |
@@ -135,10 +138,13 @@ number. For this project only the first three columns matter.
 If the confidence intervals overlap, the claim is "no measurable difference at
 this sample size", not a win.
 
-The 2026-11-02 run satisfies "500 steps, finite loss" but **not** "training
-works": the held-out mean reward rose while risk calibration collapsed and the
-adapter produced no-op migrations. It is a negative result for the current
-reward, not evidence that Dr.GRPO/DAPO helps.
+The 2026-11-02 RL run satisfies "500 steps, finite loss" but **not** "Dr.GRPO
+works": its held-out reward rose while risk calibration collapsed and the adapter
+produced no-op migrations. It is a negative result for the old reward.
+
+The SFT warm start is positive: 1.90 held-out vs base 0.02, 45/50 at 2.0. It is
+supervised, not RL, and is not evidence that Dr.GRPO/DAPO beats another
+objective. The A0/A1/A2/A3 comparison is still missing.
 
 ---
 
