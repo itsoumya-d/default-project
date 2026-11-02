@@ -96,9 +96,18 @@ or risk calibration.
 
 **This adapter predates the requirement check.** It was trained with the old
 reward. Under the current verifier, its no-op completions receive
-`REQUIREMENT_MISS` and `-0.75` execution reward instead of `+0.75`. Do not use
-this adapter as a migration model or as the starting point for a new run; retrain
-with the corrected reward.
+`REQUIREMENT_MISS` and `-0.75` execution reward instead of `+0.75`.
+
+Re-scoring the stored held-out completions under the corrected reward (#107):
+
+| Model | Old mean reward | Corrected mean reward | `OK` | `REQUIREMENT_MISS` |
+|---|---:|---:|---:|---:|
+| Base | 0.71 | 0.02 | 10 | 23 |
+| A3 checkpoint-450 | 1.465 | **0.265** | 10 | 40 |
+
+The 1.465 result is invalid under the current reward. Do not use this adapter as
+a migration model or as the starting point for a new run; retrain with the
+corrected reward.
 
 ## Intended use
 

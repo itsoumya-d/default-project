@@ -101,7 +101,8 @@ python -m unittest discover -s rlvr/tests -v
 | 500-row dataset dry-run, no torch | **500/500 rows mapped, 10 hazard classes** | **[V]** |
 | 10-step 1.5B GPU smoke | **7 completed, 3 skipped, mean reward 0.339, 4.15 GB peak** | **[V]** |
 | 500-step single-arm run | **500 steps, 209 optimizer steps, reward 1.0203, 4.16 GB** | **[V]** |
-| Held-out eval | base 0.71 vs checkpoint-450 1.465; risk 0.16 vs 0.02 | **[V]** |
+| Held-out eval, old reward | base 0.71 vs checkpoint-450 1.465; risk 0.16 vs 0.02 | **[V]** |
+| Held-out re-score, #107 reward | base 0.02 vs adapter 0.265; adapter 40/50 `REQUIREMENT_MISS` | **[V]** |
 
 The thirteen skips are tensor tests: seven pre-existing loss/advantage cases and
 six runner-orchestration cases. They skip by design rather than failing the

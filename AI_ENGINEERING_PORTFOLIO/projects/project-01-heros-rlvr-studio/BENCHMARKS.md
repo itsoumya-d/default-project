@@ -24,7 +24,8 @@ benchmark improvement.
 | 500-step single-arm | RTX 2060, NF4 4-bit | 500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB, 6.54 h | training |
 | Held-out base | rows 451-500, greedy | mean reward 0.71, OK 0.66, risk 0.16, row-loss 0.0 | evaluation |
 | Held-out A3 checkpoint-450 | rows 451-500, greedy | mean reward 1.465, OK 1.0, risk 0.02, row-loss 0.0 | evaluation |
-| Requirement satisfaction | 50 held-out rows | **failed**: 36/50 added a generic `note` column | evaluation |
+| Requirement satisfaction, old reward | 50 held-out rows | **failed**: 36/50 added a generic `note` column | evaluation |
+| Re-score under #107 reward | same stored completions | base 0.02; adapter 0.265; adapter 40/50 `REQUIREMENT_MISS` | evaluation |
 | Shadow verifier throughput | — | not measured | performance |
 | Training throughput | — | ~18.5 s/step in the 1.5B smoke; not a benchmark | performance |
 | MATH-500 pass@1 | — | not measured | quality |

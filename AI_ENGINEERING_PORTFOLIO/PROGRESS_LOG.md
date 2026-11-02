@@ -552,7 +552,10 @@ primary keys after the migration. A valid but unrelated migration gets
 - Suite: **87 tests**; 74 pass + 13 skip without torch.
 
 The old 500-step adapter is invalid under the corrected reward and must not be
-published. A 10-step retraining smoke is running to check whether the base model
-can produce any target-satisfying groups; if every group collapses to
-`REQUIREMENT_MISS`, the next step is SFT/target-diff prompting, not a 500-step
-run.
+published. Re-scoring the stored held-out completions under #107 gives base
+0.02 and adapter 0.265; the adapter has 10 `OK` and 40 `REQUIREMENT_MISS`. The
+old 1.465 was format/execution reward, not migration correctness.
+
+A 10-step retraining smoke is running to check whether the base model can produce
+any target-satisfying groups; if every group collapses to `REQUIREMENT_MISS`,
+the next step is SFT/target-diff prompting, not a 500-step run.
