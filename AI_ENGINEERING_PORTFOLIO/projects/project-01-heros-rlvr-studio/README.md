@@ -4,8 +4,10 @@
 held-out evaluation completed**. The adapter raised mean reward from 0.71 to
 1.465 but **lowered risk accuracy from 0.16 to 0.02** and produced safe no-op
 migrations. The target-schema requirement check is now merged as #107; the old
-adapter is invalid under the new reward and must be retrained. No adapter or
-model card is published.
+adapter is invalid under the new reward. A 10-step corrected-reward smoke had 7
+optimizer steps but 9/20 `REQUIREMENT_MISS`, so the base model needs an SFT or
+target-diff warm start before another long RL run. No adapter or model card is
+published.
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
@@ -229,7 +231,7 @@ tests from the HEROS checkout, not from this directory.
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU-smoked |
 | P6 | 75+ tests | **87 now** |
-| P7 | 500-step four-arm ablation | **500-step single arm + held-out eval done; reward hacking found; requirement check merged; rerun required; A0/A1/A2 pending** |
+| P7 | 500-step four-arm ablation | **500-step arm + held-out negative; #107 check merged; corrected-reward smoke mostly fails; SFT warm start next** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
 | P10 | HF adapter + model card | Blocked on P7 and HF credentials |
@@ -250,16 +252,18 @@ records a step-throughput baseline.
 | Held-out eval | Unseen migration rows | base 0.71 vs adapter 1.465; risk 0.16 vs 0.02 | **[V]** |
 | Adapter | Saved LoRA adapter | `final/` saved locally; not uploaded | **[V]** |
 | Model card | Honest metrics + limits | `MODEL_CARD.md` records the no-op failure | **[V]** |
-| Requirement satisfaction | Requested change actually performed | check merged in #107; old adapter fails 36/50; retrain required | **[P]** |
+| Requirement satisfaction | Requested change actually performed | #107 check works; old adapter fails 40/50; corrected-reward smoke has 9/20 `REQUIREMENT_MISS` | **[V]** |
+| Warm start | Model can satisfy target schemas | **not built**; SFT/target-diff is the next task | **[X]** |
 | HF upload | Public artifact | blocked: no HF token | **[X]** |
 | Four-arm ablation | A0/A1/A2/A3 | only A3 single arm exists | **[X]** |
 | Parallel workers | >1.8× at 4 workers | not started | **[X]** |
 
 P01 is **not portfolio-ready**. The 500-step run, held-out eval, adapter
 verification, and model card exist, but the adapter fails requirement
-satisfaction and risk calibration. The requirement check is now merged; the next
-gate is a new training run and held-out evaluation. Do not present the old
-adapter as a migration model.
+satisfaction and risk calibration. The requirement check works; the corrected
+smoke shows the base model cannot satisfy most target schemas. The next gate is
+an SFT/target-diff warm start, then a new RL run and held-out evaluation. Do not
+present the old adapter as a migration model.
 
 ---
 

@@ -87,7 +87,7 @@ reasoning eval. Do not call the generated set human-verified.
 | P4 | `gpu_trainer.py` with verifier + loss | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` loading Qwen2.5-Coder-1.5B | **Done on CPU** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU adapter untested |
 | P6 | 75+ tests | **87 now** |
-| P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | **500-step single arm + held-out done; negative reward hacking; requirement checker next** |
+| P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | **500-step arm negative; #107 check merged; SFT warm start next** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Colab/Kaggle notebook | Not started |
 | P10 | PR + HF adapter | PR #103 merged; local model card only; HF not uploaded |

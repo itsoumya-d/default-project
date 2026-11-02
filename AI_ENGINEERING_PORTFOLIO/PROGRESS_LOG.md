@@ -559,3 +559,41 @@ old 1.465 was format/execution reward, not migration correctness.
 A 10-step retraining smoke is running to check whether the base model can produce
 any target-satisfying groups; if every group collapses to `REQUIREMENT_MISS`,
 the next step is SFT/target-diff prompting, not a 500-step run.
+
+---
+
+## 2026-11-02 - Session 10: corrected-reward smoke
+
+The 10-step smoke with #107's target-schema check ran on Qwen2.5-Coder-1.5B
+(NF4, group size 2, 128 completion tokens):
+
+| Metric | Value |
+|---|---:|
+| Steps | 10 |
+| Optimizer steps | 7 |
+| Zero-variance skips | 3 |
+| Mean per-step reward | -0.2375 |
+| Error codes | 9 REQUIREMENT_MISS, 5 MISSING_BLOCKS, 4 SQL_EXEC_ERROR, 2 OK |
+| Wall clock | 174.11 s |
+| Peak VRAM | 4,154.6 MB |
+
+The check works: no-op SQL no longer earns execution reward. The remaining
+problem is capability. The base model cannot satisfy most target schemas, so a
+long RL run would mostly train on failures and zero-variance groups.
+
+### Decision
+
+Do not run another 500-step RL attempt on this prompt. Build an SFT/target-diff
+warm start first, then evaluate a new checkpoint. The old 500-step adapter is
+invalid under #107 and must not be published.
+
+### Re-score of the old adapter
+
+Stored held-out completions re-scored under #107:
+
+| Model | Old reward | Corrected reward | OK | REQUIREMENT_MISS |
+|---|---:|---:|---:|---:|
+| Base | 0.71 | 0.02 | 10 | 23 |
+| Old adapter | 1.465 | 0.265 | 10 | 40 |
+
+This confirms the old 1.465 was format/execution reward, not migration skill.

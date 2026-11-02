@@ -26,6 +26,7 @@ benchmark improvement.
 | Held-out A3 checkpoint-450 | rows 451-500, greedy | mean reward 1.465, OK 1.0, risk 0.02, row-loss 0.0 | evaluation |
 | Requirement satisfaction, old reward | 50 held-out rows | **failed**: 36/50 added a generic `note` column | evaluation |
 | Re-score under #107 reward | same stored completions | base 0.02; adapter 0.265; adapter 40/50 `REQUIREMENT_MISS` | evaluation |
+| Corrected-reward smoke | 10 steps, 1.5B NF4 | 7 optimizer steps; 9/20 `REQUIREMENT_MISS`, 5 missing, 4 SQL errors, 2 OK | training |
 | Shadow verifier throughput | — | not measured | performance |
 | Training throughput | — | ~18.5 s/step in the 1.5B smoke; not a benchmark | performance |
 | MATH-500 pass@1 | — | not measured | quality |
