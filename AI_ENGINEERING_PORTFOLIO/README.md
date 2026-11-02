@@ -2,8 +2,8 @@
 
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
-Status: **Stage 4 — Project 01 verifier + runner and docs complete; four PRs
-open with green CI**
+Status: **Stage 4 — Project 01 verifier + runner and docs complete; one PR
+merged, three open with green CI**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -28,7 +28,7 @@ claims that are already stale. The numbers below are the ones to use.
 | Hugging Face public models | **0** | HF profile |
 | HF collection | 1 (`HEROS AI Systems Portfolio`) | HF profile |
 | HEROS MCP tests | **46 test functions pass; 289 adversarial cases** | `npm run test:mcp` |
-| HEROS `rlvr` tests | **78 total: 78 pass with torch; 65 pass + 13 skip without** | `unittest`, PR #102 |
+| HEROS `rlvr` tests | **78 total: 78 pass with torch; 65 pass + 13 skip without** | `unittest`, PR #103 |
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
 | GPU training runs producing weights | **0** | no model artifacts on HF |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
@@ -97,21 +97,22 @@ AI_ENGINEERING_PORTFOLIO/
 
 ---
 
-## 4. Open pull requests (CI green; awaiting review/merge)
+## 4. Pull request status
 
-| Live PR | Repository | Branch | Head commit | CI |
+| Live PR | Repository | Branch | Head commit | Status |
 |---|---|---|---|---|
-| [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `feat/rlvr-dr-grpo-gpu-trainer` | `f49a6c1` | **18/18 green** |
-| [#102](https://github.com/itsoumya-d/HEROS/pull/102) | `itsoumya-d/HEROS` | `feat/rlvr-qlora-runner` | `b1d3010` | **18/18 green** |
-| [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `docs/peervault-sync-limitations` | `4ad241e` | **3/3 green** |
-| [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `docs/edgeinfer-reconcile-readme` | `2dd3bc0` | **2/2 green** |
+| [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `feat/rlvr-dr-grpo-gpu-trainer` | `f49a6c1` | **merged**; 18/18 green |
+| [#103](https://github.com/itsoumya-d/HEROS/pull/103) | `itsoumya-d/HEROS` | `feat/rlvr-qlora-runner` | `0ac89ff` | **open**; 18/18 green |
+| [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `docs/peervault-sync-limitations` | `4ad241e` | **open**; 3/3 green |
+| [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `docs/edgeinfer-reconcile-readme` | `2dd3bc0` | **open**; 2/2 green |
 
-#101 adds `gpu_trainer.py` (shadow verifier + Dr.GRPO/DAPO loss), 17 tests, a
-CPU-torch CI job, a benchmark protocol, and documentation. The PyTorch path
-delegates to the existing CPU references where possible; two parity tests pin the
-tensor advantage and loss implementations. #102 stacks the QLoRA runner on #101:
-strict Forge-schema → SQLite bridge, 27 tests, a fake-policy rollout loop, a
-run recorder, a dry-run CLI, and a thin untested `HFPolicy` adapter. It has no GPU
+#101 added `gpu_trainer.py` (shadow verifier + Dr.GRPO/DAPO loss), 17 tests, a
+CPU-torch CI job, a benchmark protocol, and documentation. It is now merged into
+`main` at `8a7951d`. The PyTorch path delegates to the existing CPU references
+where possible; two parity tests pin the tensor advantage and loss
+implementations. #103 contains the QLoRA runner rebased onto `main`: strict
+Forge-schema → SQLite bridge, 27 tests, a fake-policy rollout loop, a run
+recorder, a dry-run CLI, and a thin untested `HFPolicy` adapter. It has no GPU
 run. #14 fixes the two real README contradictions. #15 adds a design-only WGSL
 paged-attention note; it does not claim a kernel or a speedup.
 
@@ -146,8 +147,9 @@ $env:PYTHONPATH="rlvr/src"
 
 ## 6. Immediate next actions
 
-1. **Review and merge #101 first, then #102.** #102 is stacked on #101; if #101
-   changes, rebase #102 before merging. #14 and #15 are independent.
+1. **Review and merge #103.** #101 is already merged; #103 is rebased on the
+   resulting `main` and contains only the runner commit. #14 and #15 are
+   independent.
 2. **Run the 500-step GPU ablation** for Project 01 on Kaggle 2×T4 or the local
    RTX 2060, checkpointing to HF every 50 steps. Start with a 10-step smoke.
 3. **Publish one real model artifact.** Until a checkpoint exists, the HF

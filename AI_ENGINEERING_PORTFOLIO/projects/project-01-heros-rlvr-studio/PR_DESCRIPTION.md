@@ -1,19 +1,19 @@
 # PR #101 — feat(rlvr): deterministic SQLite shadow verifier + Dr.GRPO/DAPO loss engine
 
-**Status:** **open** — CI green (18/18 checks). Awaiting review/merge.
+**Status:** **merged** into `main` at `8a7951d` (squash merge); CI was 18/18 green.
 **Live PR:** https://github.com/itsoumya-d/HEROS/pull/101
 **Repository:** `itsoumya-d/HEROS`
 **Base:** `main` at `5b8536b`
-**Branch:** `feat/rlvr-dr-grpo-gpu-trainer`
+**Branch:** `feat/rlvr-dr-grpo-gpu-trainer` (deleted after merge)
 **Commit:** `f49a6c1`
 **Patch:** `AI_ENGINEERING_PORTFOLIO/open_source/patches/0001-feat-rlvr-add-deterministic-SQLite-shadow-verifier-a.patch`
 **Diff size:** 7 files, +869 / −4
 
-**Stacked follow-up:** the P5 QLoRA runner is open as
-[#102](https://github.com/itsoumya-d/HEROS/pull/102)
-(`feat/rlvr-qlora-runner`, `b1d3010`). See
+**Follow-up:** the P5 QLoRA runner is open as
+[#103](https://github.com/itsoumya-d/HEROS/pull/103)
+(`feat/rlvr-qlora-runner`, `0ac89ff`). See
 [`PR_DESCRIPTION_P5.md`](PR_DESCRIPTION_P5.md). This packet's 51-test log is the
-#101 commit; the stacked branch has 78 tests.
+#101 commit; the runner branch has 78 tests.
 
 ---
 
@@ -212,13 +212,14 @@ Questions worth asking:
 - [x] Push approved by owner
 - [x] PR opened: #101
 - [x] CI green on GitHub (18/18 checks)
+- [x] Merged into `main` at `8a7951d`
 
 ---
 
 ## 9. Follow-ups (not in this PR)
 
 1. ~~`qlora_runner.py`: model load, rollout loop, optimizer, checkpointing.~~
-   Open as stacked #102 (`b1d3010`); still needs a real GPU run.
+   Open as #103 against `main` (`0ac89ff`); still needs a real GPU run.
 2. Requirement-satisfaction check to close the no-op loophole.
 3. Process-isolated shadow worker with CPU/memory limits.
 4. Held-out shadow set and a forge-parity evaluation.
@@ -228,6 +229,6 @@ Questions worth asking:
 
 ## 10. Next step
 
-The PR is open and CI is green. Review and merge
-[#101](https://github.com/itsoumya-d/HEROS/pull/101) first; the runner #102
-is stacked on it. Merging #101 does not approve an npm publish or an HF upload.
+#101 is merged. Review the rebased runner PR
+[#103](https://github.com/itsoumya-d/HEROS/pull/103), then run the GPU smoke.
+Merging #101 does not approve an npm publish or an HF upload.

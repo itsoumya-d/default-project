@@ -257,7 +257,7 @@ The schema bridge, tier validation, prompt, and recorder tests run without torch
 
 ---
 
-## 2026-11-02 - Session 04: pushed branches and opened four PRs
+## 2026-11-02 - Session 04: pushed branches and opened PRs
 
 ### Approval and remote writes
 
@@ -268,40 +268,50 @@ No npm publish, HF upload, or deployment occurred.
 
 ### Live pull requests
 
-Internal labels from Sessions 01-03 map as follows: PR #1 -> #101, PR #4 -> #102,
-PR #2 -> #14, PR #3 -> #15.
+Internal labels from Sessions 01-03 map as follows: PR #1 -> #101, PR #4 -> #102
+(then #103 after the rebase), PR #2 -> #14, PR #3 -> #15.
 
-| Live PR | Repository | Head commit | Base | CI |
+| Live PR | Repository | Head commit | Base | Status |
 |---|---|---|---|---|
-| [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `f49a6c1` | `main` | 18/18 green |
-| [#102](https://github.com/itsoumya-d/HEROS/pull/102) | `itsoumya-d/HEROS` | `b1d3010` | `feat/rlvr-dr-grpo-gpu-trainer` | 18/18 green |
-| [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `main` | 3/3 green |
-| [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `main` | 2/2 green |
+| [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `f49a6c1` | `main` | merged at `8a7951d`; 18/18 green |
+| [#102](https://github.com/itsoumya-d/HEROS/pull/102) | `itsoumya-d/HEROS` | `b1d3010` | old #101 branch | closed; superseded by #103 |
+| [#103](https://github.com/itsoumya-d/HEROS/pull/103) | `itsoumya-d/HEROS` | `0ac89ff` | `main` | open; 18/18 green |
+| [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `main` | open; 3/3 green |
+| [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `main` | open; 2/2 green |
 
-#102 is stacked on #101 and must be merged after it. GitHub shows the stack
-banner on #102. #14 and #15 are independent.
+### Corrections after #101 was merged
+
+The owner merged #101 with a squash merge (`8a7951d`) while this session was
+still running. The runner branch was rebased with
+`git rebase --onto origin/main f49a6c1 feat/rlvr-qlora-runner`, producing
+`0ac89ff`. The old stacked base branch was deleted, which closed #102 instead of
+retargeting it. #103 is the clean replacement against `main`: 1 commit, 9 files,
+78 tests, and 18/18 checks green. #102 has a comment pointing to #103.
 
 ### Verification after push
 
-- GitHub check-runs API: all checks completed with `success` for all four head
-  commits. HEROS reports 18 checks per commit because both push and
-  pull_request events run the matrix; `RLVR unit tests` and
+- GitHub check-runs API: all checks completed with `success` for #101, #102,
+  #103, #14, and #15 head commits. HEROS reports 18 checks per commit because
+  both push and pull_request events run the matrix; `RLVR unit tests` and
   `GPU trainer smoke tests (CPU torch)` are green.
 - PR #101 body contains the reward/loss problem statement and the 51-test log.
-- PR #102 body contains the 78-test log, the 500/500 dry-run, and the explicit
+- PR #103 body contains the 78-test log, the 500/500 dry-run, and the explicit
   "no GPU run" limitation.
 - PR #14 and #15 bodies are documentation-only and contain no benchmark claim.
 
 ### State
 
-- Four branches are on origin and four PRs are open.
-- Local branches remain clean and tracking their remotes.
-- No `gh` binary; future PR edits can use the browser or install `gh`.
+- #101 is merged; #103, #14, and #15 are open.
+- Local `feat/rlvr-qlora-runner` is now 1 commit ahead of `origin/main` at
+  `0ac89ff`; the old branch is preserved locally as
+  `feat/rlvr-qlora-runner-pre-rebase`.
+- No `gh` binary; PR creation/editing used the authenticated Kimi browser
+  session. The extension/daemon version mismatch is still present.
 - The 500-step GPU run, HF adapter, and model card remain undone.
 
 ### Next checkpoint
 
-1. Merge #101, rebase #102 if needed, then merge #102.
+1. Merge #103 after review.
 2. Review/merge #14 and #15.
 3. Owner-run 10-step GPU smoke, then the 100-step and 500-step runs.
 4. Publish an adapter/model card only after `run.json` and `steps.jsonl` exist.

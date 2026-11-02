@@ -1,11 +1,12 @@
 # Project 01 — HEROS-RLVR-Studio
 
-**Status:** verifier/loss and QLoRA runner implemented and tested on CPU; both
-PRs are open with green CI; **no GPU run yet**.
+**Status:** verifier/loss and QLoRA runner implemented and tested on CPU; the
+verifier/loss PR is merged and the runner PR is open with green CI; **no GPU run
+yet**.
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
-[#101](https://github.com/itsoumya-d/HEROS/pull/101) at `f49a6c1`; the P5 runner
-is stacked on it as [#102](https://github.com/itsoumya-d/HEROS/pull/102) at
-`b1d3010`.
+[#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
+runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103) at `0ac89ff`,
+rebased onto `main`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
 (verifier, runner, tests, and the documents in `docs/`).
 
@@ -43,7 +44,7 @@ This project builds that bridge and then measures whether it trains.
 | Runner CLI | `scripts/train_qlora.py` | Implemented; dry-run over 500 rows |
 | Runner test suite | `tests/test_qlora_runner.py` | Schema bridge, recorder, fake-policy orchestration |
 | CPU-torch CI job | `.github/workflows/rlvr.yml` (#101) | Added |
-| `gpu` / `train` dependency extras | `rlvr/pyproject.toml` (#101 / #102) | Added |
+| `gpu` / `train` dependency extras | `rlvr/pyproject.toml` (#101 / #103) | Added |
 | 500-step ablation | — | **Not run** |
 | HF adapter | — | **Not uploaded** |
 
@@ -174,7 +175,7 @@ project-01-heros-rlvr-studio/
 ├── README.md                 # this file
 ├── BENCHMARKS.md             # measurement protocol; results pending
 ├── PR_DESCRIPTION.md         # review packet for #101
-├── PR_DESCRIPTION_P5.md      # review packet for stacked runner #102
+├── PR_DESCRIPTION_P5.md      # review packet for stacked runner #103
 ├── docs/
 │   ├── REWARD_SPEC.md        # reward contract and edge cases
 │   └── ARCHITECTURE.md       # data flow, threat model, GPU budget
@@ -204,7 +205,7 @@ tests from the HEROS checkout, not from this directory.
 | P2 | Architecture and threat model | **Done** |
 | P3 | Dependency extras | **Done** (`gpu` and `train` extras) |
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
-| P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Done on CPU** ([#102](https://github.com/itsoumya-d/HEROS/pull/102)); GPU adapter untested |
+| P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Done on CPU** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU adapter untested |
 | P6 | 75+ tests | **78 now** |
 | P7 | 500-step four-arm ablation | Not started |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |

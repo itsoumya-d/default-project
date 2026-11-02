@@ -261,8 +261,8 @@ gradient-accumulation scaling are all tested on CPU. `HFPolicy` is a lazy
 Transformers/PEFT/bitsandbytes adapter; it is explicitly marked untested and is
 not part of the default CI gate.
 
-The runner is a stacked PR (#102) on #101, because it depends on the verifier and
-loss but should not expand #101 after review. The dataset bridge accepts the
+The runner was opened as #102 against the #101 branch, then rebased and reopened
+as #103 against `main` after #101 was squash-merged. The dataset bridge accepts the
 five forge tiers (`SAFE`, `NOTABLE`, `MEDIUM`, `HIGH`, `CRITICAL`); the first
 dry-run exposed an initial three-tier assumption and the full 500-row mapping is
 now a required check.

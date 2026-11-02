@@ -18,7 +18,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 78 pass with torch; 65 pass + 13 skip without | **[V]** |
-| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#102](https://github.com/itsoumya-d/HEROS/pull/102), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15); CI green | **[V]** |
+| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101) merged, [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) open; CI green | **[V]** |
 | GPU training runs | none | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
@@ -69,7 +69,7 @@ Commercial work is a separate track and is out of scope for this window.
 
 | Week | Dates | Primary deliverable | Exit gate | Fallback if blocked |
 |---:|---|---|---|---|
-| 1 | Nov 2–8 | PRs #101, #102, #14, #15 reviewed and merged or revised; P01 QLoRA runner implemented | PRs resolved; 500/500 dry-run; 78 CPU tests | Keep patches local; start P02 corpus on CPU |
+| 1 | Nov 2–8 | PRs #101, #103, #14, #15 reviewed and merged or revised; P01 QLoRA runner implemented | PRs resolved; 500/500 dry-run; 78 CPU tests | Keep patches local; start P02 corpus on CPU |
 | 2 | Nov 9–15 | P01 GPU smoke: 4-bit load, rollout generation, verifier wiring | 10-step smoke first, then 100-step on RTX 2060; finite loss, VRAM recorded | Kaggle smoke; reduce to 0.5B |
 | 3 | Nov 16–22 | P01 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO); MATH-500; HF adapter; W&B report | G3 + G4 for P01 | Ship 100-step negative result + protocol |
 | 4 | Nov 23–29 | P02 corpus 289 → 500 cases; Ed25519 Merkle design | Corpus runs in CI | Ship corpus only |

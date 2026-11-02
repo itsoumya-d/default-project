@@ -60,7 +60,7 @@ from each README and were not all re-run in this session.
 
 | # | Repository | Stack | What it actually is | Last commit | Test evidence | Brief score | Live band | Disposition |
 |---:|---|---|---|---|---|---:|---:|---|
-| 1 | `HEROS` | JS/Node 22, Python, Zero, Shell | MCP 2025-11-25 runtime, forge/ledger, agentic SDK, rlvr | 2026-10-31 | 16 test files; 46 MCP test functions pass; 289 adversarial cases; 34→78 rlvr tests | 82 | 82–86 | **Elevate.** #101 adds the GPU-trainer slice; #102 adds the runner. |
+| 1 | `HEROS` | JS/Node 22, Python, Zero, Shell | MCP 2025-11-25 runtime, forge/ledger, agentic SDK, rlvr | 2026-10-31 | 16 test files; 46 MCP test functions pass; 289 adversarial cases; 34→78 rlvr tests | 82 | 82–86 | **Elevate.** #101 adds the GPU-trainer slice; #103 adds the runner. |
 | 2 | `HEROS-RL` | Python | Critic-free GRPO for zero-downtime Postgres migrations; 500-case dataset | 2026-11-01 | 6 test files; **40 pass, 5 skip**; CPU-torch CI | not in brief | 78–84 | **Elevate as Project 01 base.** Run the 1.5B job. |
 | 3 | `peervault` | TypeScript, Rust→WASM, Go relay | Zero-server WebRTC E2EE transfer; ML-KEM-768 + P-256 hybrid; OPFS sink | 2026-10-31 | 11 test files; README claims 89/89 SDK tests, 100/100 KATs | 78 | 78–84 | **Elevate.** #14 fixes two doc contradictions. |
 | 4 | `edgeinfer` | TypeScript, WebGPU, ONNX | Browser inference, Matryoshka two-stage retrieval, γ=5 speculative decoding | 2026-10-31 | 10 test files; README claims 106 tests | 75 | 74–80 | **Elevate.** #15 adds the WGSL design note. |
@@ -202,7 +202,7 @@ binaries.
 - The dataset is generated, not independently labeled; its "500 cases" are a
   deterministic fixture, not a human-verified benchmark.
 
-**Disposition.** Elevate. #101 adds the missing shadow verifier and loss; #102 adds the runner; the
+**Disposition.** Elevate. #101 adds the missing shadow verifier and loss; #103 adds the runner; the
 next step is the 500-step run and an honest model card.
 
 ### 7.3 peervault — already synchronized, two narrow contradictions
@@ -338,7 +338,7 @@ band in §3 stands.
 
 | Action | Repositories | Gate |
 |---|---|---|
-| Elevate and pin | HEROS, HEROS-RL, peervault, edgeinfer, Reflexion-SWE, HEROS-Firewall | #101/#102 + #14/#15 + one GPU run |
+| Elevate and pin | HEROS, HEROS-RL, peervault, edgeinfer, Reflexion-SWE, HEROS-Firewall | #101/#103 + #14/#15 + one GPU run |
 | Elevate after Project 05/07/08 | RouteLLM-Gateway, GraphRAG-CodeAudit, Anthropic-PerfBench | Real benchmark + artifact |
 | Keep as supporting | Mobbin-UI-Compiler, HEROS-Cloud-SaaS | Project 04/10 |
 | Confirm before touching | hostshift, pulsenet, mobile-native-design-system, swarmcompute | Owner confirmation |

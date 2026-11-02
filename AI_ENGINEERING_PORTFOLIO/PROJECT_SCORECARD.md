@@ -85,12 +85,12 @@ reasoning eval. Do not call the generated set human-verified.
 | P2 | Architecture: rollout → shadow worker → receipt | **Done** |
 | P3 | `pyproject` extras: torch, peft, bitsandbytes | **Done**: `gpu` + `train` extras |
 | P4 | `gpu_trainer.py` with verifier + loss | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
-| P5 | `qlora_runner.py` loading Qwen2.5-Coder-1.5B | **Done on CPU** ([#102](https://github.com/itsoumya-d/HEROS/pull/102)); GPU adapter untested |
+| P5 | `qlora_runner.py` loading Qwen2.5-Coder-1.5B | **Done on CPU** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU adapter untested |
 | P6 | 75+ tests | **78 now** |
 | P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | Not started |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Colab/Kaggle notebook | Not started |
-| P10 | PR + HF adapter | PR #102 open; HF not uploaded |
+| P10 | PR + HF adapter | PR #103 open; HF not uploaded |
 
 **Acceptance gate.** 75+ tests green; 500-step run with a committed `run.json`
 (seed, hardware, loss curve, KL, clip fraction, reward variance, length); adapter

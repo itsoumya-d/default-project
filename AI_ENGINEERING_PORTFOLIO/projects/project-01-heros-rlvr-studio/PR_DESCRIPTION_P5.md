@@ -1,12 +1,12 @@
-# PR #102 — feat(rlvr): QLoRA rollout runner + dataset bridge
+# PR #103 — feat(rlvr): QLoRA rollout runner + dataset bridge
 
-**Status:** **open** — CI green (18/18 checks). Awaiting review/merge after #101.
-**Live PR:** https://github.com/itsoumya-d/HEROS/pull/102
-**Stacked on:** #101 (`feat/rlvr-dr-grpo-gpu-trainer`, `f49a6c1`).
+**Status:** **open** — CI green (18/18 checks); #101 is merged.
+**Live PR:** https://github.com/itsoumya-d/HEROS/pull/103
+**Supersedes:** #102 (closed when the old stacked base branch was deleted).
 **Repository:** `itsoumya-d/HEROS`
-**Base for this PR:** `feat/rlvr-dr-grpo-gpu-trainer` at `f49a6c1`
+**Base for this PR:** `main` at `8a7951d`
 **Branch:** `feat/rlvr-qlora-runner`
-**Commit:** `b1d3010`
+**Commit:** `0ac89ff` (rebased runner commit)
 **Patch:** `AI_ENGINEERING_PORTFOLIO/open_source/patches/0004-feat-rlvr-add-QLoRA-rollout-runner-and-dataset-bridg.patch`
 **Diff size:** 9 files, +1573 / −20
 
@@ -197,8 +197,9 @@ No test asserts model quality or throughput. No test requires a GPU.
 
 ## 5. Compatibility and risk
 
-- **Stacked, not independent.** Review and merge #101 first; rebase this branch
-  if #101 changes.
+- **Rebased after #101.** #101 is squash-merged into `main`; this branch is
+  rebased onto `main` and contains only the runner commit. It is no longer
+  stacked on the old base branch.
 - **No existing API removed.** `MigrationTask` gains optional trailing fields;
   existing seven-argument construction still works.
 - **Torch remains optional.** Importing `heros_rlvr` does not import
@@ -206,7 +207,7 @@ No test asserts model quality or throughput. No test requires a GPU.
 - **CI cost:** the existing CPU-torch job now runs 78 tests instead of 17; the
   measured runtime is ~2 s on this machine.
 - **Windows/Linux:** tested on Windows Python 3.11.13; CI is Ubuntu Python 3.12.
-- **Rollback:** revert `b1d3010`; no data or schema migration is involved.
+- **Rollback:** revert `0ac89ff`; no data or schema migration is involved.
 
 ---
 
@@ -238,7 +239,7 @@ Questions worth asking:
 ## 7. Checklist
 
 - [x] Feature branch, no commit to `main`
-- [x] Stacked on #101, not on a moving `main`
+- [x] Based on merged #101; targets `main` after rebase
 - [x] Conventional commit message
 - [x] Full suite run with and without torch
 - [x] All 500 dataset rows mapped by the dry-run
@@ -247,7 +248,7 @@ Questions worth asking:
 - [x] No secrets, tokens, or local paths in the diff
 - [x] GPU adapter and throughput limitations documented
 - [x] Push approved by owner
-- [x] PR opened: #102 (stacked on #101)
+- [x] PR opened: #103 (against `main`)
 - [x] CI green on GitHub (18/18 checks)
 - [ ] **Real GPU smoke run**
 
@@ -256,7 +257,7 @@ Questions worth asking:
 ## 8. Next step
 
 The PR is open and CI is green. Merge
-[#101](https://github.com/itsoumya-d/HEROS/pull/101) first, then review
-[#102](https://github.com/itsoumya-d/HEROS/pull/102). A real GPU smoke run is
+[#101](https://github.com/itsoumya-d/HEROS/pull/101) is merged. Review
+[#103](https://github.com/itsoumya-d/HEROS/pull/103). A real GPU smoke run is
 still required before any training result is claimed. Merging this PR does not
 approve an npm publish or an HF upload.
