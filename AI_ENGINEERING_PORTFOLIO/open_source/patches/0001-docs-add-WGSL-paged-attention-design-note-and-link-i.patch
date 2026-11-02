@@ -1,0 +1,130 @@
+From 2dd3bc0183e2d791bdb60f32bfaff0dc9054993f Mon Sep 17 00:00:00 2001
+From: Soumya Debnath <itsoumya-d@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 07:32:36 +0530
+Subject: [PATCH] docs: add WGSL paged-attention design note and link it from
+ limitations
+
+---
+ README.md                    |  2 +-
+ docs/wgsl-paged-attention.md | 96 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 97 insertions(+), 1 deletion(-)
+ create mode 100644 docs/wgsl-paged-attention.md
+
+diff --git a/README.md b/README.md
+index 3fdfe50..7b1a20e 100644
+--- a/README.md
++++ b/README.md
+@@ -314,7 +314,7 @@ WebGPU measurement. Reproduce with `npm run bench:speculative`.
+ - **`onnxruntime-web` must be >= 1.21.0** for the WebGPU execution provider to be registered by the root entry point; `package.json` declares `^1.21.0`.
+ - **`estimatedVRAM` is an allocation probe, not total VRAM.** `RuntimeManager.probeVRAM()` binary-searches the largest single storage buffer the device will allocate, bounded by `adapter.limits.maxBufferSize`, and destroys each buffer immediately. The result is a maximum-tensor-size budget. WebGPU exposes no total-VRAM API, and browser baselines are commonly 256 MiB regardless of the physical card. The probe is unit-tested with a mocked adapter; a real WebGPU measurement is not available in this CI environment.
+ - **Generation supports cache-aware ONNX exports.** `generate()`, `generateStream()`, `chat()`, and `chatStream()` reuse `present.*` / `past_key_values.*` tensors when the model exposes them. Architectures with a different cache layout need a custom adapter. The loop is unit-tested with a deterministic mock session; no real decoder model is benchmarked in CI.
+-- **Paged GPUBuffer-resident KV is not implemented.** ONNX Runtime Web owns the tensors it returns; the JS SDK cannot pin `past_key_values` in a `GPUBuffer` with zero CPU readback. A true paged-attention path needs a custom WebGPU transformer kernel, which is outside this ONNX-runtime wrapper. The current path is cache reuse at the ONNX tensor boundary, not a custom paged kernel.
++- **Paged GPUBuffer-resident KV is not implemented.** ONNX Runtime Web owns the tensors it returns; the JS SDK cannot pin `past_key_values` in a `GPUBuffer` with zero CPU readback. A true paged-attention path needs a custom WebGPU transformer kernel, which is outside this ONNX-runtime wrapper. The current path is cache reuse at the ONNX tensor boundary, not a custom paged kernel. See [the WGSL paged-attention design note](docs/wgsl-paged-attention.md) for the buffer layout and the parity gates a future kernel must pass.
+ - **No quantization.** `recommendedQuantization` is a string hint; EdgeInfer never quantizes weights. Models must be pre-quantized.
+ - **No GGUF, no audio.** ONNX only. No Whisper/speech pipeline exists.
+ - **Tokenizer covers WordPiece and merge-table BPE.** Byte-level pre-tokenization (GPT-2 regex and `Ġ` handling) and full SentencePiece normalization pipelines are not reproduced; supply `bpeSpaceMarker` and a compatible vocabulary. Unsupported normalizers fail rather than silently change token IDs. BPE merges are applied; the earlier "BPE not implemented" note was stale.
+diff --git a/docs/wgsl-paged-attention.md b/docs/wgsl-paged-attention.md
+new file mode 100644
+index 0000000..278afdc
+--- /dev/null
++++ b/docs/wgsl-paged-attention.md
+@@ -0,0 +1,96 @@
++# WGSL paged-attention design note
++
++Status: **design only**. No shader, benchmark, or speedup claim is shipped in
++this change. The current SDK explicitly documents that GPUBuffer-resident paged
++KV is not implemented.
++
++## Why a separate kernel path is required
++
++`onnxruntime-web` owns the tensors returned by `session.run()`. A JS caller can
++read `present.*` / `past_key_values.*` tensors, but cannot pin them in a
++`GPUBuffer` across decoding steps without a CPU round-trip. Eliminating that
++readback requires owning the attention computation, not wrapping ORT's decoder.
++
++The kernel path therefore targets pre-exported projection weights and a
++Python-side reference implementation, then compares token-for-token logits
++against the ORT path before any performance number is published.
++
++## KV cache layout
++
++The cache is a flat `f16` storage buffer per layer:
++
++```
++KV[block_id][slot][kv_head][head_dim]
++```
++
++- `block_size = 16` tokens
++- `slot = token_index % block_size`
++- `num_blocks = ceil(max_seq_len / block_size)`
++- A block table maps logical block index to physical block id, so sequences can
++  grow without reallocating the whole cache.
++- `past_len` and `block_table` live in a small uniform buffer updated once per
++  decode step.
++
++## Bindings
++
++| Binding | Type | Purpose |
++|---|---|---|
++| 0 | `uniform` | `past_len`, `num_kv_heads`, `head_dim`, `scale`, `block_size` |
++| 1 | `storage` (read) | query vector, `[num_heads, head_dim]` |
++| 2 | `storage` (read) | K cache blocks |
++| 3 | `storage` (read) | V cache blocks |
++| 4 | `storage` (read) | block table |
++| 5 | `storage` (read/write) | output vector and per-head `m`, `l` state |
++
++Workgroup size: `64` invocations, one workgroup per `(head, head_dim tile)`.
++Each invocation accumulates a `head_dim` slice and reduces through workgroup
++shared memory. The first implementation should favour correctness over
++occupancy; tuning is a later, measured step.
++
++## Online softmax
++
++For each KV block, with running max `m` and running denominator `l`:
++
++```
++s = dot(q, k) * scale
++m_new = max(m, max(s))
++alpha = exp(m - m_new)
++p = exp(s - m_new)
++l = l * alpha + sum(p)
++acc = acc * alpha + sum(p * v)
++```
++
++The final output is `acc / l`. This never materializes the `N x N` attention
++matrix and keeps state in registers/shared memory. The Python reference must
++implement the same recurrence in `float32`, and the WGSL path must match it
++within a documented tolerance (`atol=2e-3`, `rtol=2e-2` on logits) before it is
++considered correct.
++
++## Acceptance gates
++
++1. **Parity:** greedy decode for 32 tokens matches the ORT baseline on
++   SmolLM2-135M-Instruct for at least 20 prompts.
++2. **Zero readback:** a WebGPU validation layer trace shows no
++   `mapAsync`/`getMappedRange` on KV buffers during decode.
++3. **Memory:** peak KV allocation is within 5% of
++   `2 * layers * kv_heads * head_dim * max_seq_len * 2 bytes` plus block-table
++   overhead.
++4. **Performance:** report p50/p95 decode latency on at least two devices, with
++   the browser and driver versions. No speedup is claimed before this gate.
++5. **Fallback:** if `requestAdapter()` or the shader compilation fails, the SDK
++   returns to the existing ORT path and surfaces a machine-readable
++   `WEBGPU_UNAVAILABLE` capability flag.
++
++## Non-goals
++
++- Training or fine-tuning.
++- Quantized KV cache (the first version is `f16`).
++- Multi-query/grouped-query attention beyond the layout above; GQA is a
++  follow-up once parity is established.
++
++## Integration
++
++When the gates pass, the shader and host code live under
++`src/webgpu/kernels/`, behind a feature flag. The README will link to the
++benchmark artifact and the exact hardware/software matrix. Until then, this
++note is the only paged-attention artifact in the repository.
+-- 
+2.56.0.windows.1
+

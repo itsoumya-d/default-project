@@ -1,0 +1,990 @@
+From f49a6c141f5b96de8c25bac2f904d293304b2b2f Mon Sep 17 00:00:00 2001
+From: Soumya Debnath <itsoumya-d@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 07:31:26 +0530
+Subject: [PATCH] feat(rlvr): add deterministic SQLite shadow verifier and
+ Dr.GRPO/DAPO loss engine
+
+---
+ .github/workflows/rlvr.yml           |  23 ++
+ rlvr/BENCHMARKS.md                   | 148 +++++++++++
+ rlvr/README.md                       |  67 ++++-
+ rlvr/pyproject.toml                  |   1 +
+ rlvr/src/heros_rlvr/__init__.py      |  14 ++
+ rlvr/src/heros_rlvr/gpu_trainer.py   | 356 +++++++++++++++++++++++++++
+ rlvr/tests/test_gpu_rlvr_pipeline.py | 264 ++++++++++++++++++++
+ 7 files changed, 869 insertions(+), 4 deletions(-)
+ create mode 100644 rlvr/BENCHMARKS.md
+ create mode 100644 rlvr/src/heros_rlvr/gpu_trainer.py
+ create mode 100644 rlvr/tests/test_gpu_rlvr_pipeline.py
+
+diff --git a/.github/workflows/rlvr.yml b/.github/workflows/rlvr.yml
+index 3972b27..d918a2e 100644
+--- a/.github/workflows/rlvr.yml
++++ b/.github/workflows/rlvr.yml
+@@ -27,3 +27,26 @@ jobs:
+         env:
+           PYTHONPATH: rlvr/src
+         run: python -m unittest discover -s rlvr/tests -v
++
++  gpu-trainer-cpu:
++    name: GPU trainer smoke tests (CPU torch)
++    runs-on: ubuntu-22.04
++    timeout-minutes: 20
++    steps:
++      - name: Checkout
++        uses: actions/checkout@v4
++
++      - name: Set up Python
++        uses: actions/setup-python@v5
++        with:
++          python-version: "3.12"
++
++      - name: Install CPU PyTorch
++        run: |
++          python -m pip install --upgrade pip
++          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
++
++      - name: Run shadow verifier and Dr.GRPO loss tests
++        env:
++          PYTHONPATH: rlvr/src
++        run: python -m unittest discover -s rlvr/tests -p "test_gpu_rlvr_pipeline.py" -v
+diff --git a/rlvr/BENCHMARKS.md b/rlvr/BENCHMARKS.md
+new file mode 100644
+index 0000000..3ff2890
+--- /dev/null
++++ b/rlvr/BENCHMARKS.md
+@@ -0,0 +1,148 @@
++# Benchmarks — HEROS-RLVR GPU Trainer
++
++**Status: no GPU benchmark has been run.** This file defines what must be
++measured before a number may appear in the README, a model card, or a talk.
++
++The only measured results in the repository today are CPU unit-test runs. They
++validate the reward contract and the loss math; they say nothing about model
++quality or training throughput.
++
++---
++
++## 1. Current measured results
++
++| Measurement | Environment | Result | Kind |
++|---|---|---|---|
++| `rlvr` unit suite | Python 3.11.13, PyTorch 2.15.0+cpu, Windows | 51 tests, 0 failures | correctness |
++| `rlvr` unit suite, no torch | Python 3.11.13, Windows | 51 tests, 44 pass, 7 skip | correctness |
++| Shadow verifier throughput | — | not measured | performance |
++| Training throughput | — | not measured | performance |
++| MATH-500 pass@1 | — | not measured | quality |
++
++The skip count is the tensor-only tests; the verifier tests always run.
++
++---
++
++## 2. Ablation matrix
++
++Four arms, identical data order, seed, tokenizer, and evaluation harness:
++
++| Arm | Policy objective | Purpose |
++|---|---|---|
++| A0 Base | none | floor |
++| A1 SFT | supervised tokens only | supervised baseline |
++| A2 GRPO | std-normalized advantages, length-normalized loss | vanilla RLVR |
++| A3 Dr.GRPO + DAPO | centered advantages, constant horizon, asymmetric clip, dynamic sampling | proposed method |
++
++Required run metadata, written to `run.json`:
++
++```json
++{
++  "arm": "A3",
++  "seed": 42,
++  "base_model": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
++  "quantization": "nf4",
++  "compute_dtype": "fp16",
++  "lora_r": 16,
++  "lora_alpha": 32,
++  "group_size": 4,
++  "max_completion_len": 512,
++  "learning_rate": 0.00001,
++  "steps": 500,
++  "batch_size": 1,
++  "grad_accum": 8,
++  "hardware": "RTX 2060 6GB",
++  "torch": "2.x.y",
++  "cuda": "12.x",
++  "sqlite": "3.x.y",
++  "peak_vram_gb": 0.0,
++  "wall_clock_min": 0.0,
++  "git_commit": "0000000"
++}
++```
++
++A run without this file is an anecdote, not a result.
++
++---
++
++## 3. Metrics
++
++### Training
++
++- Reward mean and standard deviation per step.
++- Reward by risk tier (`SAFE`, `WARN`, `CRITICAL`) and by error code.
++- KL to the reference model (k3 estimator).
++- Clip fraction, separately for the low and high bounds.
++- Gradient norm before clipping.
++- Completion length distribution (mean, p50, p95).
++- Zero-variance group rejection rate.
++- Tokens/second and seconds/step.
++- `torch.cuda.max_memory_allocated()`.
++
++### Evaluation
++
++- MATH-500 pass@1 with a 95% confidence interval, greedy decoding.
++- Migration shadow pass rate on the held-out set.
++- Row-loss detection precision and recall on the held-out set.
++- No-op rate: migrations that execute but do not satisfy the requirement.
++- Length on correct vs incorrect completions.
++
++The held-out set must not overlap the 500 training prompts. If no held-out set
++exists, the result is a training-set score and must be labeled as such.
++
++---
++
++## 4. Hardware matrix
++
++| Hardware | Role | Limits |
++|---|---|---|
++| RTX 2060 6 GB | primary local run | 1.5B NF4, `G=4`, 512 tokens, fp16 |
++| Kaggle 2×T4 16 GB | 3B run and the full ablation | session timeout; checkpoint every 50 steps |
++| Colab T4 16 GB | reproduction only | not a deadline dependency |
++
++Report the device, driver, CUDA, PyTorch, and browser versions for any WebGPU
++number. For this project only the first three columns matter.
++
++---
++
++## 5. Acceptance thresholds
++
++| Claim | Minimum evidence |
++|---|---|
++| "Training works" | 500 steps, finite loss, reward mean increases on a held-out eval |
++| "Dr.GRPO helps" | A3 beats A2 on the same eval with non-overlapping 95% CIs, 3 seeds |
++| "DAPO helps" | ablation A3 vs A3-without-dynamic-sampling, same compute budget |
++| "Faster" | median and IQR over 100 steps after 10 warmup steps |
++| "Fits 6 GB" | measured peak < 5.4 GB, not the budget table |
++| "Parallel workers help" | serial vs 2/4/8 workers, same prompts, >1.8× at 4 |
++
++If the confidence intervals overlap, the claim is "no measurable difference at
++this sample size", not a win.
++
++---
++
++## 6. Anti-patterns
++
++Do not:
++
++- Report a single run as a result.
++- Compare arms with different token budgets, decoding params, or eval sets.
++- Report training reward as model quality.
++- Report a speedup without a correctness check.
++- Use the 500-case training set as the held-out evaluation.
++- Put a number in a README before `run.json` exists.
++- Call a CPU unit-test runtime a "benchmark".
++
++---
++
++## 7. Reproduction checklist
++
++- [ ] Clean checkout at a recorded commit.
++- [ ] `python -m pip install -e "rlvr[gpu]"` succeeds.
++- [ ] `PYTHONPATH=rlvr/src python -m unittest discover -s rlvr/tests -v` passes.
++- [ ] Dataset checksum matches the card.
++- [ ] Seed and data order recorded.
++- [ ] Baseline arm run on the same hardware.
++- [ ] Eval script pinned and run once by a second person or CI.
++- [ ] `run.json` committed next to the result table.
++- [ ] Limitations section names the hardware and the sample size.
+diff --git a/rlvr/README.md b/rlvr/README.md
+index fbad94d..a98d20f 100644
+--- a/rlvr/README.md
++++ b/rlvr/README.md
+@@ -6,8 +6,11 @@ depending on a particular model framework, so the objective and its failure
+ modes can be tested on CPU. A PyTorch policy adapter can call these functions
+ with per-token log-probabilities.
+ 
+-This is the first layer of the `HEROS-RLVR` project. It does **not** yet train a
+-model, and no benchmark numbers are claimed.
++This is the first layer of the `HEROS-RLVR` project. The core does **not** train
++a model and no benchmark numbers are claimed. An opt-in PyTorch trainer layer
++(`gpu_trainer.py`) now implements the deterministic SQLite shadow verifier and
++the Dr.GRPO/DAPO token loss used by the QLoRA runner; it is tested on CPU and
++requires the `gpu` extra.
+ 
+ ---
+ 
+@@ -40,7 +43,12 @@ Three reductions are available:
+ | --- | --- | --- |
+ | `length` | mean over tokens per sequence, then mean over sequences | vanilla GRPO |
+ | `token` | sum over all tokens / total token count | DAPO |
+-| `none` | sum over all tokens / group size | Dr.GRPO |
++| `none` | sum over all tokens / group size | Dr.GRPO reference; equal per-token weight, loss scale grows with tokens |
++
++The PyTorch trainer uses the paper's **constant horizon** form,
++`sum / (G * L_max)`, so the loss scale does not drift with completion length.
++A parity test pins it to `grpo_loss(..., length_normalization="none") * L_max`
++on a full mask.
+ 
+ DAPO also uses a decoupled clip range (`eps_low=0.2`, `eps_high=0.28`) and
+ filters zero-variance groups before the update.
+@@ -65,6 +73,56 @@ intermediate step. It is a heuristic, not proof of unfaithful reasoning: the
+ invalid indices are reported for inspection. `verifier_error_rates` tracks
+ false positives and false negatives against ground truth.
+ 
++### GPU trainer slice (opt-in)
++
++`gpu_trainer.py` adds two pieces used by the QLoRA/Dr.GRPO runner:
++
++- `DeterministicForgeShadowVerifier` parses a completion's
++  `<think>`, `<sql_migration>`, and `<forge_manifest>` blocks, executes the
++  migration in an **in-memory SQLite** shadow database, and detects row loss by
++  comparing table counts before and after. The connection denies `ATTACH`,
++  `DETACH`, `PRAGMA writable_schema`, and `load_extension`, so model-authored
++  SQL cannot escape the in-memory gate.
++- `DapoDynamicSampler` delegates to the existing `sampling.has_learning_signal`
++  and `advantages.dr_grpo_advantages` functions, so the CPU reference and the
++  tensor path share one definition.
++- `compute_dr_grpo_token_loss` implements Dr.GRPO's constant-horizon reduction
++  (`sum / (G * L_max)`) with DAPO's asymmetric clipping
++  (`eps_low=0.2`, `eps_high=0.28`) and the k3 KL estimator. A parity test pins
++  it to the pure-Python `grpo_loss` reference.
++
++Install the optional dependency and run the full suite:
++
++```bash
++python -m pip install -e "rlvr[gpu]"
++PYTHONPATH=rlvr/src python -m unittest discover -s rlvr/tests -v
++```
++
++Without PyTorch, the loss tests are skipped and the dependency-free verifier
++tests still run. The trainer is not yet wired to a model checkpoint; see
++`BENCHMARKS.md` for the GPU-run gate.
++
++#### Reward contract
++
++| Term | Weight | Condition |
++| --- | ---: | --- |
++| Format | `+0.25` | all three blocks present; manifest is a JSON object |
++| Shadow execution | `+0.75` | migration executes without a SQLite error |
++| Risk tier | `+0.50` | predicted tier equals the task's expected tier |
++| Data loss | `+0.25` | predicted flag equals `expected OR observed` row loss |
++| Approval | `+0.25` | predicted `decision_required` equals the task |
++| Miracle step | `-0.40` | destructive claim/SQL with fewer than 20 characters of reasoning |
++
++Maximum `2.00`. Missing blocks return `-1.00`; invalid JSON or a SQL error
++returns `-0.50`. Row loss is observed from table counts before and after the
++migration, so a manifest cannot hide it. The verifier is deterministic and
++stdlib-only; the reward is not a learned judge.
++
++Known limits: row counts do not detect delete-and-reinsert with the same count,
++a table rename is a false-positive loss, and a no-op migration can score `2.00`
++on a safe task because requirement satisfaction is not checked yet. These are
++documented rather than hidden; a requirement check is future work.
++
+ ---
+ 
+ ## Testing
+@@ -73,7 +131,8 @@ false positives and false negatives against ground truth.
+ PYTHONPATH=rlvr/src python -m unittest discover -s rlvr/tests -v
+ ```
+ 
+-The suite is plain `unittest`; there are no runtime dependencies.
++The suite is plain `unittest`. The core has no runtime dependencies; the
++optional GPU-trainer tests require PyTorch and report `skipped` without it.
+ 
+ ---
+ 
+diff --git a/rlvr/pyproject.toml b/rlvr/pyproject.toml
+index 4d611bc..783f391 100644
+--- a/rlvr/pyproject.toml
++++ b/rlvr/pyproject.toml
+@@ -13,6 +13,7 @@ authors = [{ name = "Soumya Debnath" }]
+ dependencies = []
+ 
+ [project.optional-dependencies]
++gpu = ["torch>=2.4"]
+ dev = ["pytest>=8"]
+ 
+ [tool.setuptools.packages.find]
+diff --git a/rlvr/src/heros_rlvr/__init__.py b/rlvr/src/heros_rlvr/__init__.py
+index 99ccbbe..2d14baa 100644
+--- a/rlvr/src/heros_rlvr/__init__.py
++++ b/rlvr/src/heros_rlvr/__init__.py
+@@ -8,6 +8,14 @@ from .audit import (
+     detect_miracle_step,
+     verifier_error_rates,
+ )
++from .gpu_trainer import (
++    TORCH_AVAILABLE,
++    DapoDynamicSampler,
++    DeterministicForgeShadowVerifier,
++    MigrationTask,
++    VerificationReceipt,
++    compute_dr_grpo_token_loss,
++)
+ from .losses import (
+     LossConfig,
+     LossResult,
+@@ -30,14 +38,20 @@ __all__ = [
+     "AuditRecord",
+     "CommandVerifier",
+     "Completion",
++    "DapoDynamicSampler",
++    "DeterministicForgeShadowVerifier",
+     "LossConfig",
+     "LossResult",
++    "MigrationTask",
+     "MiracleStepResult",
+     "Rollout",
+     "Step",
++    "TORCH_AVAILABLE",
++    "VerificationReceipt",
+     "VerificationResult",
+     "build_rollout",
+     "compose_reward",
++    "compute_dr_grpo_token_loss",
+     "dapo_config",
+     "detect_miracle_step",
+     "dr_grpo_advantages",
+diff --git a/rlvr/src/heros_rlvr/gpu_trainer.py b/rlvr/src/heros_rlvr/gpu_trainer.py
+new file mode 100644
+index 0000000..0c7d5a9
+--- /dev/null
++++ b/rlvr/src/heros_rlvr/gpu_trainer.py
+@@ -0,0 +1,356 @@
++"""HEROS-RLVR-Studio: deterministic SQLite shadow verifier and Dr.GRPO/DAPO engine.
++
++This module bridges HEROS' deterministic schema-risk gate (``forge``) with
++PyTorch post-training. It has two responsibilities:
++
++1. Score a model completion against a real (in-memory) SQLite shadow database,
++   not against a text heuristic. A migration that drops rows is detected by
++   snapshotting table counts before and after execution.
++2. Provide the Dr.GRPO / DAPO loss primitives used by the QLoRA runner, without
++   requiring a GPU or PyTorch at import time. PyTorch is an opt-in dependency
++   (``pip install 'heros-rlvr[gpu]'``); the verifier itself is pure stdlib.
++
++The security posture is intentionally narrow: model-authored SQL is untrusted.
++The shadow connection denies ``ATTACH``/``DETACH``, ``PRAGMA writable_schema``,
++and ``load_extension`` before any statement executes.
++
++The pure-Python reference implementations live in ``advantages.py``,
++``sampling.py`` and ``losses.py``. This module is the differentiable adapter used
++by the trainer: advantages and dynamic sampling delegate to those modules, and
++the tensor loss is pinned against ``grpo_loss`` by a parity test.
++"""
++
++from __future__ import annotations
++
++import json
++import re
++import sqlite3
++from dataclasses import dataclass
++from typing import Dict, Sequence, Tuple
++
++from .advantages import dr_grpo_advantages
++from .sampling import has_learning_signal
++
++try:  # PyTorch is optional so the core verifier stays dependency-free.
++    import torch
++
++    TORCH_AVAILABLE = True
++except ImportError:  # pragma: no cover - exercised only in torch-free CI
++    torch = None  # type: ignore[assignment]
++    TORCH_AVAILABLE = False
++
++
++def _require_torch():
++    if not TORCH_AVAILABLE:
++        raise RuntimeError(
++            "PyTorch is required for Dr.GRPO/DAPO loss computation. "
++            "Install it with: pip install 'heros-rlvr[gpu]'"
++        )
++    return torch
++
++
++@dataclass(frozen=True)
++class MigrationTask:
++    """A deterministic database schema migration verification prompt."""
++
++    task_id: str
++    from_ddl: str
++    seed_sql: str
++    requirement: str
++    expected_risk_tier: str  # "SAFE" | "WARN" | "CRITICAL"
++    expected_data_loss: bool
++    decision_required: bool
++
++
++@dataclass(frozen=True)
++class VerificationReceipt:
++    """Audit receipt emitted by the deterministic HEROS shadow verifier."""
++
++    task_id: str
++    total_reward: float
++    format_reward: float
++    shadow_exec_reward: float
++    risk_calibration_reward: float
++    miracle_step_penalty: float
++    shadow_row_loss_detected: bool
++    error_code: str  # "OK" | "MISSING_BLOCKS" | "INVALID_JSON" | "SQL_EXEC_ERROR"
++
++
++class DeterministicForgeShadowVerifier:
++    """Execute proposed migrations in an ephemeral SQLite shadow gate.
++
++    Reward composition (maximum ``2.0``)::
++
++        format            0.25
++        shadow execution  0.75
++        calibration       1.00  (0.50 risk tier + 0.25 data loss + 0.25 approval)
++        miracle penalty  -0.40  (destructive claim without a reasoning trace)
++    """
++
++    THINK_PATTERN = re.compile(r"<think>(.*?)</think>", re.DOTALL)
++    SQL_PATTERN = re.compile(r"<sql_migration>(.*?)</sql_migration>", re.DOTALL)
++    JSON_PATTERN = re.compile(r"<forge_manifest>(.*?)</forge_manifest>", re.DOTALL)
++    DESTRUCTIVE_KEYWORDS = ("drop table", "drop column", "truncate", "delete from")
++
++    def verify_rollout(self, task: MigrationTask, completion: str) -> VerificationReceipt:
++        think_match = self.THINK_PATTERN.search(completion)
++        sql_match = self.SQL_PATTERN.search(completion)
++        json_match = self.JSON_PATTERN.search(completion)
++
++        if not (think_match and sql_match and json_match):
++            return VerificationReceipt(
++                task_id=task.task_id,
++                total_reward=-1.0,
++                format_reward=-1.0,
++                shadow_exec_reward=0.0,
++                risk_calibration_reward=0.0,
++                miracle_step_penalty=0.0,
++                shadow_row_loss_detected=False,
++                error_code="MISSING_BLOCKS",
++            )
++
++        think_text = think_match.group(1).strip().lower()
++        proposed_sql = sql_match.group(1).strip()
++        manifest_raw = json_match.group(1).strip()
++
++        try:
++            manifest = json.loads(manifest_raw)
++        except json.JSONDecodeError:
++            manifest = None
++
++        if not isinstance(manifest, dict):
++            return VerificationReceipt(
++                task_id=task.task_id,
++                total_reward=-0.5,
++                format_reward=-0.5,
++                shadow_exec_reward=0.0,
++                risk_calibration_reward=0.0,
++                miracle_step_penalty=0.0,
++                shadow_row_loss_detected=False,
++                error_code="INVALID_JSON",
++            )
++
++        format_reward = 0.25
++        exec_ok, row_loss_detected = self._run_sqlite_shadow_gate(
++            task.from_ddl, task.seed_sql, proposed_sql
++        )
++
++        if not exec_ok:
++            return VerificationReceipt(
++                task_id=task.task_id,
++                total_reward=-0.5,
++                format_reward=format_reward,
++                shadow_exec_reward=-0.75,
++                risk_calibration_reward=0.0,
++                miracle_step_penalty=0.0,
++                shadow_row_loss_detected=False,
++                error_code="SQL_EXEC_ERROR",
++            )
++
++        shadow_exec_reward = 0.75
++
++        pred_risk = str(manifest.get("risk_tier", "")).upper()
++        pred_loss = bool(manifest.get("has_data_loss", False))
++        pred_decision = bool(manifest.get("decision_required", False))
++
++        calibration_score = 0.0
++        if pred_risk == task.expected_risk_tier:
++            calibration_score += 0.5
++        if pred_loss == (task.expected_data_loss or row_loss_detected):
++            calibration_score += 0.25
++        if pred_decision == task.decision_required:
++            calibration_score += 0.25
++
++        # "Miracle step": the model asserts data loss or emits destructive SQL
++        # without explaining the operation in its reasoning trace.
++        miracle_penalty = 0.0
++        sql_lower = proposed_sql.lower()
++        has_destructive_sql = any(k in sql_lower for k in self.DESTRUCTIVE_KEYWORDS)
++        if (pred_loss or has_destructive_sql) and len(think_text) < 20:
++            miracle_penalty = 0.4
++
++        total = format_reward + shadow_exec_reward + calibration_score - miracle_penalty
++        return VerificationReceipt(
++            task_id=task.task_id,
++            total_reward=round(total, 4),
++            format_reward=format_reward,
++            shadow_exec_reward=shadow_exec_reward,
++            risk_calibration_reward=calibration_score,
++            miracle_step_penalty=miracle_penalty,
++            shadow_row_loss_detected=row_loss_detected,
++            error_code="OK",
++        )
++
++    @staticmethod
++    def _deny_unsafe_sql(action, arg1, arg2, db_name, trigger):  # noqa: ANN001
++        """SQLite authorizer: deny filesystem escape and extension loading."""
++        if action in (sqlite3.SQLITE_ATTACH, sqlite3.SQLITE_DETACH):
++            return sqlite3.SQLITE_DENY
++        if action == sqlite3.SQLITE_PRAGMA and str(arg1 or "").lower() == "writable_schema":
++            return sqlite3.SQLITE_DENY
++        if action == sqlite3.SQLITE_FUNCTION and str(arg1 or "").lower() == "load_extension":
++            return sqlite3.SQLITE_DENY
++        return sqlite3.SQLITE_OK
++
++    @classmethod
++    def _run_sqlite_shadow_gate(
++        cls, from_ddl: str, seed_sql: str, migration_sql: str
++    ) -> Tuple[bool, bool]:
++        """Apply a migration to an ephemeral DB and detect row loss.
++
++        Returns ``(executed, row_loss_detected)``. Any SQLite error, including a
++        denied authorizer action, returns ``(False, False)``.
++        """
++        conn = sqlite3.connect(":memory:")
++        try:
++            conn.set_authorizer(cls._deny_unsafe_sql)
++            conn.executescript(from_ddl)
++            if seed_sql.strip():
++                conn.executescript(seed_sql)
++
++            before_counts = cls._snapshot_table_counts(conn)
++            conn.executescript(migration_sql)
++            after_counts = cls._snapshot_table_counts(conn)
++
++            row_loss = any(
++                after_counts.get(table, 0) < count_before
++                for table, count_before in before_counts.items()
++            )
++            return True, row_loss
++        except (sqlite3.Error, sqlite3.Warning):
++            return False, False
++        finally:
++            conn.close()
++
++    @staticmethod
++    def _snapshot_table_counts(conn: sqlite3.Connection) -> Dict[str, int]:
++        cursor = conn.execute(
++            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
++        )
++        counts: Dict[str, int] = {}
++        for (table,) in cursor.fetchall():
++            quoted = str(table).replace('"', '""')
++            row = conn.execute(f'SELECT COUNT(*) FROM "{quoted}";').fetchone()
++            counts[str(table)] = int(row[0])
++        return counts
++
++
++class DapoDynamicSampler:
++    """DAPO dynamic sampling and Dr.GRPO advantage primitives."""
++
++    @staticmethod
++    def is_informative_group(rewards: Sequence[float], min_std: float = 1e-5) -> bool:
++        """Return False when every rollout in a prompt group has the same reward.
++
++        Delegates to :func:`heros_rlvr.sampling.has_learning_signal` so the DAPO
++        filter has one definition. The ``min_std`` guard rejects groups whose
++        spread is numerically indistinguishable from zero.
++        """
++        return has_learning_signal(list(rewards), min_std=min_std)
++
++    @staticmethod
++    def compute_dr_grpo_advantages(rewards):
++        """Dr.GRPO advantage: centre rewards on the group mean, no std division.
++
++        The values come from :func:`heros_rlvr.advantages.dr_grpo_advantages`.
++        Rewards are verifier outputs, so they are treated as constants; the
++        conversion detaches them from any autograd graph by design.
++        """
++        torch = _require_torch()
++        if rewards.ndim != 1:
++            raise ValueError(f"rewards must be 1-D (group_size,), got {tuple(rewards.shape)}")
++        if rewards.numel() < 2:
++            raise ValueError("Dr.GRPO requires a group of at least two rollouts")
++        values = dr_grpo_advantages([float(value) for value in rewards.detach().cpu().tolist()])
++        return torch.tensor(values, dtype=rewards.dtype, device=rewards.device)
++
++
++def compute_dr_grpo_token_loss(
++    policy_logprobs,
++    old_logprobs,
++    ref_logprobs,
++    completion_mask,
++    rewards,
++    clip_eps_low: float = 0.2,
++    clip_eps_high: float = 0.28,
++    kl_beta: float = 0.01,
++    max_completion_len: int = 512,
++) -> Tuple[object, Dict[str, float]]:
++    """Compute the Dr.GRPO + DAPO asymmetric-clipped token-level loss.
++
++    Args:
++        policy_logprobs: ``(group_size, max_completion_len)`` current log-probs.
++        old_logprobs: same shape, detached rollout log-probs.
++        ref_logprobs: same shape, frozen reference log-probs.
++        completion_mask: same shape, 1.0 for real completion tokens.
++        rewards: ``(group_size,)`` deterministic verifier rewards.
++        clip_eps_low: DAPO lower clipping epsilon (default 0.2).
++        clip_eps_high: DAPO upper clipping epsilon (default 0.28).
++        kl_beta: KL penalty coefficient.
++        max_completion_len: constant Dr.GRPO horizon ``L_max``.
++
++    Returns:
++        ``(loss, metrics)`` where loss is a scalar tensor and metrics contains
++        Python floats for logging.
++
++    The Dr.GRPO reduction is deliberately ``sum(tokens) / (G * L_max)``. It does
++    not divide each sequence by its own length and does not divide advantages by
++    the group standard deviation, removing the length and difficulty biases
++    documented in Liu et al. (arXiv:2503.20783).
++    """
++    torch = _require_torch()
++
++    if policy_logprobs.ndim != 2:
++        raise ValueError("policy_logprobs must be 2-D (group_size, seq_len)")
++    if old_logprobs.shape != policy_logprobs.shape:
++        raise ValueError("old_logprobs must match policy_logprobs shape")
++    if ref_logprobs.shape != policy_logprobs.shape:
++        raise ValueError("ref_logprobs must match policy_logprobs shape")
++    if completion_mask.shape != policy_logprobs.shape:
++        raise ValueError("completion_mask must match policy_logprobs shape")
++    if max_completion_len <= 0:
++        raise ValueError("max_completion_len must be positive")
++
++    group_size = policy_logprobs.shape[0]
++    if rewards.numel() != group_size:
++        raise ValueError(
++            f"rewards must contain one value per rollout: got {rewards.numel()} "
++            f"for group_size={group_size}"
++        )
++
++    advantages = DapoDynamicSampler.compute_dr_grpo_advantages(rewards)
++    advantages = advantages.to(dtype=policy_logprobs.dtype).unsqueeze(1)  # (G, 1)
++
++    log_ratio = policy_logprobs - old_logprobs.detach()
++    ratio = torch.exp(log_ratio)
++
++    surr1 = ratio * advantages
++    clipped_ratio = torch.clamp(ratio, 1.0 - clip_eps_low, 1.0 + clip_eps_high)
++    surr2 = clipped_ratio * advantages
++    policy_objective = torch.minimum(surr1, surr2)
++
++    # k3 KL estimator: exp(ref - policy) - (ref - policy) - 1, always >= 0.
++    ref_diff = ref_logprobs.detach() - policy_logprobs
++    per_token_kl = torch.exp(ref_diff) - ref_diff - 1.0
++
++    mask = completion_mask.to(dtype=policy_logprobs.dtype)
++    per_token_loss = -(policy_objective - kl_beta * per_token_kl) * mask
++
++    loss = per_token_loss.sum() / (group_size * float(max_completion_len))
++
++    with torch.no_grad():
++        valid_tokens = mask.sum().clamp(min=1.0)
++        mean_kl = (per_token_kl * mask).sum() / valid_tokens
++        clip_frac = (
++            ((ratio < (1.0 - clip_eps_low)) | (ratio > (1.0 + clip_eps_high))).float() * mask
++        ).sum() / valid_tokens
++
++    metrics = {
++        "loss": float(loss.item()),
++        "mean_reward": float(rewards.mean().item()),
++        "reward_std": float(rewards.std(unbiased=False).item()) if group_size > 1 else 0.0,
++        "mean_kl": float(mean_kl.item()),
++        "clip_fraction": float(clip_frac.item()),
++        "valid_tokens": float(valid_tokens.item()),
++    }
++    return loss, metrics
+diff --git a/rlvr/tests/test_gpu_rlvr_pipeline.py b/rlvr/tests/test_gpu_rlvr_pipeline.py
+new file mode 100644
+index 0000000..99818e1
+--- /dev/null
++++ b/rlvr/tests/test_gpu_rlvr_pipeline.py
+@@ -0,0 +1,264 @@
++"""Verification suite for the HEROS-RLVR shadow verifier and GPU loss engine.
++
++Run with::
++
++    PYTHONPATH=rlvr/src python -m unittest discover -s rlvr/tests -v
++
++The shadow-verifier tests are dependency-free. The Dr.GRPO/DAPO tests are
++skipped when PyTorch is absent so the default RLVR CI job stays lightweight.
++"""
++
++from __future__ import annotations
++
++import unittest
++
++from heros_rlvr import dr_grpo_advantages, dr_grpo_config, grpo_loss
++from heros_rlvr.gpu_trainer import (
++    TORCH_AVAILABLE,
++    DapoDynamicSampler,
++    DeterministicForgeShadowVerifier,
++    MigrationTask,
++    compute_dr_grpo_token_loss,
++)
++
++if TORCH_AVAILABLE:  # pragma: no branch
++    import torch
++
++
++class ShadowVerifierTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.verifier = DeterministicForgeShadowVerifier()
++        self.safe_task = MigrationTask(
++            task_id="mig-001",
++            from_ddl="CREATE TABLE users (id INTEGER PRIMARY KEY, email TEXT NOT NULL);",
++            seed_sql="INSERT INTO users (id, email) VALUES (1, 'a@b.com'), (2, 'c@d.com');",
++            requirement="Add an optional bio column to users without losing existing rows.",
++            expected_risk_tier="SAFE",
++            expected_data_loss=False,
++            decision_required=False,
++        )
++        self.destructive_task = MigrationTask(
++            task_id="mig-002",
++            from_ddl="CREATE TABLE invoices (id INTEGER PRIMARY KEY, amount REAL NOT NULL);",
++            seed_sql="INSERT INTO invoices (id, amount) VALUES (10, 500.0), (20, 1200.0);",
++            requirement="Reset the invoices table schema by dropping and recreating it.",
++            expected_risk_tier="CRITICAL",
++            expected_data_loss=True,
++            decision_required=True,
++        )
++
++    def test_safe_migration_receives_maximum_reward(self) -> None:
++        completion = (
++            "<think>Adding a nullable column bio to users preserves all 2 seeded rows "
++            "and requires no table rebuild.</think>"
++            "<sql_migration>ALTER TABLE users ADD COLUMN bio TEXT;</sql_migration>"
++            '<forge_manifest>{"risk_tier": "SAFE", "has_data_loss": false, '
++            '"decision_required": false}</forge_manifest>'
++        )
++        receipt = self.verifier.verify_rollout(self.safe_task, completion)
++        self.assertEqual(receipt.error_code, "OK")
++        self.assertFalse(receipt.shadow_row_loss_detected)
++        self.assertAlmostEqual(receipt.total_reward, 2.0, places=4)
++
++    def test_destructive_migration_detects_shadow_row_loss_and_miracle_penalty(self) -> None:
++        completion = (
++            "<think>Drop it.</think>"
++            "<sql_migration>DROP TABLE invoices; "
++            "CREATE TABLE invoices (id INTEGER PRIMARY KEY);</sql_migration>"
++            '<forge_manifest>{"risk_tier": "CRITICAL", "has_data_loss": true, '
++            '"decision_required": true}</forge_manifest>'
++        )
++        receipt = self.verifier.verify_rollout(self.destructive_task, completion)
++        self.assertEqual(receipt.error_code, "OK")
++        self.assertTrue(receipt.shadow_row_loss_detected)
++        self.assertAlmostEqual(receipt.miracle_step_penalty, 0.4, places=4)
++        self.assertAlmostEqual(receipt.total_reward, 1.6, places=4)
++
++    def test_missing_blocks_fails_closed(self) -> None:
++        receipt = self.verifier.verify_rollout(self.safe_task, "<think>only a trace</think>")
++        self.assertEqual(receipt.error_code, "MISSING_BLOCKS")
++        self.assertAlmostEqual(receipt.total_reward, -1.0, places=4)
++
++    def test_invalid_json_manifest_is_rejected_before_execution(self) -> None:
++        completion = (
++            "<think>Add a nullable column without touching existing rows.</think>"
++            "<sql_migration>ALTER TABLE users ADD COLUMN bio TEXT;</sql_migration>"
++            "<forge_manifest>{not-json}</forge_manifest>"
++        )
++        receipt = self.verifier.verify_rollout(self.safe_task, completion)
++        self.assertEqual(receipt.error_code, "INVALID_JSON")
++        self.assertAlmostEqual(receipt.total_reward, -0.5, places=4)
++
++    def test_non_object_manifest_is_rejected(self) -> None:
++        completion = (
++            "<think>Add a nullable column without touching existing rows.</think>"
++            "<sql_migration>ALTER TABLE users ADD COLUMN bio TEXT;</sql_migration>"
++            "<forge_manifest>[1, 2, 3]</forge_manifest>"
++        )
++        receipt = self.verifier.verify_rollout(self.safe_task, completion)
++        self.assertEqual(receipt.error_code, "INVALID_JSON")
++
++    def test_broken_sql_is_rejected(self) -> None:
++        completion = (
++            "<think>Attempt an invalid statement to test the shadow gate.</think>"
++            "<sql_migration>ALTER TABLE users ADD COLUMN;</sql_migration>"
++            '<forge_manifest>{"risk_tier": "SAFE", "has_data_loss": false, '
++            '"decision_required": false}</forge_manifest>'
++        )
++        receipt = self.verifier.verify_rollout(self.safe_task, completion)
++        self.assertEqual(receipt.error_code, "SQL_EXEC_ERROR")
++        self.assertAlmostEqual(receipt.total_reward, -0.5, places=4)
++
++    def test_attach_database_is_denied_by_authorizer(self) -> None:
++        completion = (
++            "<think>Try to escape the in-memory shadow database via ATTACH.</think>"
++            "<sql_migration>ATTACH DATABASE 'escape.db' AS escape;</sql_migration>"
++            '<forge_manifest>{"risk_tier": "SAFE", "has_data_loss": false, '
++            '"decision_required": false}</forge_manifest>'
++        )
++        receipt = self.verifier.verify_rollout(self.safe_task, completion)
++        self.assertEqual(receipt.error_code, "SQL_EXEC_ERROR")
++
++    def test_row_loss_detected_even_when_manifest_understates_it(self) -> None:
++        completion = (
++            "<think>Deleting all invoices is destructive and loses two rows.</think>"
++            "<sql_migration>DELETE FROM invoices;</sql_migration>"
++            '<forge_manifest>{"risk_tier": "CRITICAL", "has_data_loss": true, '
++            '"decision_required": true}</forge_manifest>'
++        )
++        receipt = self.verifier.verify_rollout(self.destructive_task, completion)
++        self.assertEqual(receipt.error_code, "OK")
++        self.assertTrue(receipt.shadow_row_loss_detected)
++        self.assertAlmostEqual(receipt.total_reward, 2.0, places=4)
++
++
++class DapoDynamicSamplerTests(unittest.TestCase):
++    def test_zero_variance_group_is_not_informative(self) -> None:
++        self.assertFalse(DapoDynamicSampler.is_informative_group([2.0, 2.0, 2.0, 2.0]))
++        self.assertFalse(DapoDynamicSampler.is_informative_group([0.0, 0.0]))
++        self.assertFalse(DapoDynamicSampler.is_informative_group([1.0]))
++
++    def test_mixed_group_is_informative(self) -> None:
++        self.assertTrue(DapoDynamicSampler.is_informative_group([2.0, 1.25, -0.5, 2.0]))
++
++    @unittest.skipUnless(TORCH_AVAILABLE, "PyTorch is not installed")
++    def test_dr_grpo_advantages_are_zero_mean(self) -> None:
++        rewards = torch.tensor([2.0, -1.0, 0.5, 0.5])
++        advantages = DapoDynamicSampler.compute_dr_grpo_advantages(rewards)
++        self.assertAlmostEqual(float(advantages.mean().item()), 0.0, places=6)
++        self.assertAlmostEqual(float(advantages[0].item()), 1.5, places=6)
++
++    @unittest.skipUnless(TORCH_AVAILABLE, "PyTorch is not installed")
++    def test_torch_advantages_match_python_reference(self) -> None:
++        rewards = [2.0, -1.0, 0.5, 0.5]
++        expected = dr_grpo_advantages(rewards)
++        actual = DapoDynamicSampler.compute_dr_grpo_advantages(torch.tensor(rewards))
++        for got, want in zip(actual.tolist(), expected):
++            self.assertAlmostEqual(got, want, places=6)
++
++
++@unittest.skipUnless(TORCH_AVAILABLE, "PyTorch is not installed")
++class DrGrpoLossTests(unittest.TestCase):
++    def test_dr_grpo_eliminates_length_bias_on_negative_advantages(self) -> None:
++        torch.manual_seed(42)
++        group_size, t_max = 2, 128
++        policy_lp = torch.full((group_size, t_max), -1.2, requires_grad=True, dtype=torch.float64)
++        old_lp = torch.full((group_size, t_max), -1.2, dtype=torch.float64)
++        ref_lp = torch.full((group_size, t_max), -1.25, dtype=torch.float64)
++
++        mask = torch.zeros((group_size, t_max), dtype=torch.float64)
++        mask[0, :10] = 1.0
++        mask[1, :100] = 1.0
++        rewards = torch.tensor([2.0, -1.0])
++
++        # Isolate the policy-gradient term: the KL gradient is advantage-
++        # independent and would otherwise mask the length-normalization check.
++        loss, metrics = compute_dr_grpo_token_loss(
++            policy_logprobs=policy_lp,
++            old_logprobs=old_lp,
++            ref_logprobs=ref_lp,
++            completion_mask=mask,
++            rewards=rewards,
++            kl_beta=0.0,
++            max_completion_len=t_max,
++        )
++        loss.backward()
++
++        self.assertIsNotNone(policy_lp.grad)
++        grad_token_short = abs(float(policy_lp.grad[0, 0].item()))
++        grad_token_long = abs(float(policy_lp.grad[1, 0].item()))
++        self.assertAlmostEqual(grad_token_short, grad_token_long, places=6)
++        self.assertGreater(metrics["reward_std"], 0.0)
++        self.assertEqual(metrics["valid_tokens"], 110.0)
++
++    def test_constant_horizon_makes_loss_scale_inversely_with_lmax(self) -> None:
++        group_size, t_max = 2, 64
++        policy_lp = torch.full((group_size, t_max), -1.2)
++        old_lp = torch.full((group_size, t_max), -1.2)
++        ref_lp = torch.full((group_size, t_max), -1.25)
++        mask = torch.ones((group_size, t_max))
++        rewards = torch.tensor([2.0, -1.0])
++
++        loss_128, _ = compute_dr_grpo_token_loss(
++            policy_lp, old_lp, ref_lp, mask, rewards, max_completion_len=128
++        )
++        loss_256, _ = compute_dr_grpo_token_loss(
++            policy_lp, old_lp, ref_lp, mask, rewards, max_completion_len=256
++        )
++        self.assertAlmostEqual(float(loss_128.item()) / float(loss_256.item()), 2.0, places=4)
++
++    def test_tensor_loss_matches_python_reference_at_full_mask(self) -> None:
++        rewards = [2.0, -1.0]
++        seq_len = 8
++        policy_lp = torch.full((2, seq_len), -1.2)
++        old_lp = torch.full((2, seq_len), -1.2)
++        ref_lp = torch.full((2, seq_len), -1.25)
++        mask = torch.ones((2, seq_len))
++
++        torch_loss, _ = compute_dr_grpo_token_loss(
++            policy_lp,
++            old_lp,
++            ref_lp,
++            mask,
++            torch.tensor(rewards),
++            kl_beta=0.0,
++            max_completion_len=seq_len,
++        )
++        python_result = grpo_loss(
++            policy_lp.tolist(),
++            old_lp.tolist(),
++            dr_grpo_advantages(rewards),
++            reference_logps=ref_lp.tolist(),
++            config=dr_grpo_config(kl_coef=0.0),
++        )
++        # The pure-Python "none" reduction divides by G; the tensor loss uses
++        # the Dr.GRPO constant horizon G * L_max.
++        self.assertAlmostEqual(
++            float(torch_loss.item()) * seq_len, python_result.loss, places=5
++        )
++
++    def test_shape_mismatch_raises(self) -> None:
++        policy_lp = torch.zeros((2, 8))
++        old_lp = torch.zeros((2, 8))
++        ref_lp = torch.zeros((2, 8))
++        mask = torch.ones((2, 8))
++        with self.assertRaises(ValueError):
++            compute_dr_grpo_token_loss(
++                policy_lp, old_lp, ref_lp, mask, torch.tensor([1.0, 0.0, 1.0])
++            )
++
++    def test_invalid_horizon_raises(self) -> None:
++        policy_lp = torch.zeros((2, 8))
++        with self.assertRaises(ValueError):
++            compute_dr_grpo_token_loss(
++                policy_lp,
++                policy_lp,
++                policy_lp,
++                torch.ones((2, 8)),
++                torch.tensor([1.0, 0.0]),
++                max_completion_len=0,
++            )
++
++
++if __name__ == "__main__":
++    unittest.main()
+-- 
+2.56.0.windows.1
+

@@ -1,0 +1,192 @@
+# Progress Log
+
+Append-only. Newest entry at the bottom. Each entry records what changed, the
+exact commands used, results, and the next checkpoint. Do not edit history; add a
+correction entry instead.
+
+---
+
+## 2026-11-02 — Session 01: live audit, workspace bootstrap, first PR slices
+
+### Environment
+
+| Item | Value |
+|---|---|
+| OS | Windows (win32) |
+| Workspace | `C:\Users\Soumya Debnath\Documents\Default Project` |
+| Python | 3.11.13 |
+| Node | v22.18.0 |
+| npm | 11.5.2 |
+| PyTorch | 2.15.0+cpu in `%TEMP%\opencode\heros-venv` |
+| GPU in this session | None exposed to the agent |
+| `gh` CLI | Not installed |
+| Kimi browser daemon | v2.0.26, port 10086; v2.0.28 available (not upgraded) |
+
+The workspace `.venv` failed with `WinError 5` on `pip` metadata. The working
+venv is outside the repository at `%TEMP%\opencode\heros-venv`.
+
+### Live inspection
+
+- GitHub `itsoumya-d?tab=repositories`: **30 public repositories** (not 11).
+  New/changed names found: `HEROS-RL`, `Reflexion-SWE`, `RouteLLM-Gateway`,
+  `GraphRAG-CodeAudit`, `Mobbin-UI-Compiler`, `HEROS-Firewall`,
+  `HEROS-Cloud-SaaS`, `Anthropic-PerfBench`, `FREED`, `colpali-edge`,
+  `certiflow-ai`, `PlotLLM`, `ridge_shade`, `developer-utilities`.
+- Hugging Face `itssoumyad`: **11 Spaces, 2 datasets, 0 models, 1 collection**.
+  The collection description says "Ten applied AI systems", not 13.
+- The brief's `ContentForge-AI`, `EcoSphere`, and `x` repos are not present on
+  the live profile.
+
+### Cloned repositories
+
+Shallow clones under `repos/` (gitignored): `HEROS`, `HEROS-RL`, `peervault`,
+`edgeinfer`, `Reflexion-SWE`, `RouteLLM-Gateway`, `GraphRAG-CodeAudit`,
+`Anthropic-PerfBench`, `Mobbin-UI-Compiler`, `HEROS-Firewall`,
+`HEROS-Cloud-SaaS`.
+
+### Baseline test runs
+
+| Command | Result |
+|---|---|
+| `PYTHONPATH=rlvr/src python -m unittest discover -s rlvr/tests -v` (system Python, no torch) | **45 pass, 5 skip** |
+| same, with PyTorch 2.15 CPU venv | **49 pass** |
+| `python -m unittest discover -s tests -v` in `HEROS-RL` | **40 pass, 5 skip** |
+| `npm run test:mcp` in `HEROS` | **46 test functions pass, 0 fail; 289 adversarial cases** |
+| `npm run test:mcp` runtime | ~4.3 s |
+
+### Corrections to the supplied brief
+
+| Brief claim | Live result | Marker |
+|---|---|---|
+| 11 GitHub repos | 30 public repos | **X** |
+| 13 HF artifacts | 11 Spaces + 2 datasets + 0 models | **X** |
+| HEROS shell 72.8% | 36.5% of code bytes (170.5 KB / 467.5 KB); 7.6% of all repo bytes | **X** |
+| peervault README says PQC unimplemented | README already documents ML-KEM-768, AAD, OPFS; residual contradictions are FAQ + resume row | **X** |
+| edgeinfer says "Replaces OpenAI API" | No such tagline; README explicitly documents paged KV as not implemented | **X** |
+| 289 adversarial MCP tests | Confirmed: 60+78+31+60+30+30 = 289 cases across 46 passing test functions | **V** |
+| HEROS rlvr 34 tests | Confirmed: 34 baseline; 49 after the new slice | **V** |
+
+### PR #1 — HEROS `feat/rlvr-dr-grpo-gpu-trainer` (commit `b59f47e`)
+
+Added:
+
+- `rlvr/src/heros_rlvr/gpu_trainer.py`
+  - `DeterministicForgeShadowVerifier` with an in-memory SQLite gate, row-loss
+    detection, and an authorizer denying `ATTACH`, `DETACH`,
+    `PRAGMA writable_schema`, and `load_extension`.
+  - `DapoDynamicSampler` and `compute_dr_grpo_token_loss` with constant-horizon
+    Dr.GRPO reduction and DAPO asymmetric clipping.
+  - Optional torch import; the verifier remains stdlib-only.
+- `rlvr/tests/test_gpu_rlvr_pipeline.py` — 15 tests.
+- `rlvr/src/heros_rlvr/__init__.py` — exports.
+- `rlvr/pyproject.toml` — `gpu` extra.
+- `rlvr/README.md` — trainer section.
+- `.github/workflows/rlvr.yml` — CPU-torch smoke job.
+
+Test log: `49 tests ... OK`. Without torch: `49 tests ... OK (skipped=5)`.
+
+### PR #2 — peervault `docs/peervault-sync-limitations` (commit `4ad241e`)
+
+Changed `README.md` only:
+
+- Comparison row: `Resumable transfers` from `No` to `Manual (chunk bitmap)`.
+- Added a paragraph explaining `receivedBitmap()` / `requestMissingChunks()` /
+  `resendChunks()` and the absence of an automatic journal.
+- FAQ tab-closed answer now explains manual resume.
+- FAQ file-size answer now documents `createOpfsSink()` /
+  `createFileSystemSink()` and removes "there is no streaming-to-disk path".
+
+No code, crypto, or package version changed.
+
+### PR #3 — edgeinfer `docs/edgeinfer-reconcile-readme` (commit `2dd3bc0`)
+
+- Added `docs/wgsl-paged-attention.md`: KV block layout, bindings, online softmax
+  recurrence, parity/zero-readback/memory/performance gates, non-goals.
+- Linked it from the existing "Paged GPUBuffer-resident KV is not implemented"
+  limitation.
+- No shader, no benchmark, no speedup claim.
+
+### Artifacts written
+
+`AI_ENGINEERING_PORTFOLIO/` now contains the twelve strategy documents, ten
+project directories, and three `git format-patch` files under
+`open_source/patches/`. `repos/` is gitignored and is not part of the workspace
+commit.
+
+### Open blockers
+
+1. No `gh` CLI and no remote push attempted. PRs #1–#3 await approval.
+2. No GPU in this session; the 500-step QLoRA run is not started.
+3. No Hugging Face token in the environment; no model/dataset upload attempted.
+4. The Kimi browser extension works, but the daemon reports v2.0.28 available.
+   The upgrade is user-initiated (`kimi-webbridge upgrade`).
+5. Citation `arXiv:2606.06178` (MetaRouter) and `arXiv:2603.01162`
+   (GRPO U-statistic) were initially suspected of being future-dated; both were
+   verified live via the arXiv API on 2026-11-02 and are real.
+
+### Next checkpoint
+
+1. User approval for PR #1–#3.
+2. Install `gh` or configure a credential helper; push in the approved order.
+3. Start Project 01 Phase P5: QLoRA runner on Qwen2.5-Coder-1.5B-Instruct.
+4. Record the first W&B run ID and checkpoint URL in this log.
+
+---
+
+## 2026-11-02 - Session 02: documentation completion and PR #1 de-duplication
+
+### Documents written
+
+- `MASTER_ROADMAP.md`: 14-week plan, gate definitions, capacity budget, risk
+  register, approval gates, kill criteria, and explicit deferrals.
+- `projects/project-01-heros-rlvr-studio/`: `README.md`, `BENCHMARKS.md`,
+  `PR_DESCRIPTION.md`, `docs/REWARD_SPEC.md`, `docs/ARCHITECTURE.md`.
+- `projects/project-02 ... project-10/README.md`: one-page specs with status,
+  next action, gate, dependencies, and risks.
+- `infrastructure/README.md`, `learning/README.md`,
+  `portfolio_website/README.md`, and four `research/*/README.md` indexes.
+
+### PR #1 correction
+
+Review found that `gpu_trainer.py` duplicated three existing CPU primitives:
+`advantages.dr_grpo_advantages`, `sampling.has_learning_signal`, and the
+`losses.grpo_loss` reduction. The torch path now:
+
+- delegates `DapoDynamicSampler.is_informative_group` to `has_learning_signal`;
+- delegates `compute_dr_grpo_advantages` to `dr_grpo_advantages`, then converts
+  the list to a tensor (rewards are constants, so the detach is intentional);
+- keeps a tensor loss only because the pure-Python loss cannot backpropagate,
+  and pins it to `grpo_loss(..., length_normalization="none") * L_max` with a
+  parity test.
+
+Added `rlvr/BENCHMARKS.md` to fix a README link that pointed at a non-existent
+file, plus a reward-contract table and explicit loopholes in `rlvr/README.md`.
+
+### Test log
+
+| Command | Result |
+|---|---|
+| `unittest` with PyTorch 2.15.0+cpu | **51 tests pass, 0 fail** (0.383 s) |
+| `unittest` without torch | **51 tests, 44 pass, 7 skip** (0.471 s) |
+
+The two new tests are the CPU/tensor parity checks.
+
+### Commit update
+
+PR #1 was amended locally: `b59f47e` -> `f49a6c1`. New diff: 7 files,
++869 / -4. The patch in `open_source/patches/` was regenerated (40,079 bytes).
+PR #2 (`4ad241e`) and PR #3 (`2dd3bc0`) are unchanged.
+
+### State
+
+- Three branches remain local. No push, no PR, no npm publish, no HF upload.
+- `gh` is still absent.
+- No GPU is exposed to the agent; the 500-step run is still owner-run.
+- Project 01 acceptance remains blocked on P5 (runner), P7 (GPU run), P10 (HF
+  adapter), not on documentation.
+
+### Next checkpoint
+
+1. Owner review of PR #1 (`f49a6c1`), PR #2 (`4ad241e`), PR #3 (`2dd3bc0`).
+2. On approval: install `gh`, push branches, open PRs, and watch CI.
+3. On PR #1 merge: implement `qlora_runner.py` and run the 100-step smoke.
