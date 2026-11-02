@@ -218,7 +218,7 @@ Questions worth asking:
 ## 9. Follow-ups (not in this PR)
 
 1. ~~`qlora_runner.py`: model load, rollout loop, optimizer, checkpointing.~~
-   Staged as stacked #102 (`b1d3010`); still needs a real GPU run.
+   Open as stacked #102 (`b1d3010`); still needs a real GPU run.
 2. Requirement-satisfaction check to close the no-op loophole.
 3. Process-isolated shadow worker with CPU/memory limits.
 4. Held-out shadow set and a forge-parity evaluation.
