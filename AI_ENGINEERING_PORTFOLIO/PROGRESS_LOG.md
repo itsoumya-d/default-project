@@ -698,3 +698,24 @@ The evaluation summary previously used `risk_calibration_reward == 0.5` as
 P01 is locally portfolio-ready but unpublished. HF upload is blocked on
 credentials. The old RL adapter is invalid; a controlled RL-from-SFT and
 four-arm ablation remain optional follow-ups, not safety claims.
+
+---
+
+## 2026-11-02 - Session 15: reproducible SFT CLI
+
+PR #110 (`90f33a1`) adds `rlvr/scripts/sft_warmstart.py` and
+`build_sft_examples()`. The CLI can regenerate the SFT adapter from the dataset:
+
+```bash
+python rlvr/scripts/sft_warmstart.py \
+  --dataset ../HEROS-RL/data/heros_migration_500.jsonl \
+  --limit 450 --steps 500 --output-dir outputs/sft-warmstart
+```
+
+`--dry-run` reports 405 examples (45 each for 9 hazards; `type_narrowing`
+excluded) without importing torch. The script writes `run.json`,
+`sft_metrics.json`, and `final/`.
+
+Suite: **94 tests** (81 pass + 13 skip without torch). The SFT result remains
+1.90 held-out vs base 0.02 with 45/50 at 2.0. The adapter is local and
+unpublished.
