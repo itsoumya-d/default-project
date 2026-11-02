@@ -229,6 +229,24 @@ ablation still needs the 500-step single-arm run plus the A0/A1/A2 arms. P10 is
 blocked on P7 and the absent HF token. P8 can start after the 500-step run
 records a step-throughput baseline.
 
+### Acceptance evidence
+
+| Gate | Requirement | Evidence | Status |
+|---|---|---|---|
+| Tests | 75+ green | 79 tests with torch; 66 pass + 13 skip without | **[V]** |
+| GPU path | 4-bit 1.5B fits 6 GB | 4.15 GB peak in the 10-step smoke | **[V]** |
+| Training signal | Informative reward groups | 7/10 optimizer steps in the smoke | **[V]** |
+| 500-step run | 500 steps, finite loss | in progress; checkpoints every 50 | **[P]** |
+| Held-out eval | Unseen migration rows | planned `checkpoint-450` eval on rows 451–500 | **[P]** |
+| Adapter | Saved LoRA adapter | final path in the run directory; not uploaded | **[P]** |
+| Model card | Honest metrics + limits | generator prepared; waits for final run | **[P]** |
+| HF upload | Public artifact | blocked: no HF token | **[X]** |
+| Four-arm ablation | A0/A1/A2/A3 | only A3 single arm exists | **[X]** |
+| Parallel workers | >1.8× at 4 workers | not started | **[X]** |
+
+P01 is **not portfolio-ready** until the 500-step run, held-out eval, adapter
+verification, and model card are complete. The 10-step smoke is not a substitute.
+
 ---
 
 ## 8. Limitations and non-claims
