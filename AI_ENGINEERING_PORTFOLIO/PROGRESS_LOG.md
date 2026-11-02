@@ -315,3 +315,44 @@ retargeting it. #103 is the clean replacement against `main`: 1 commit, 9 files,
 2. Review/merge #14 and #15.
 3. Owner-run 10-step GPU smoke, then the 100-step and 500-step runs.
 4. Publish an adapter/model card only after `run.json` and `steps.jsonl` exist.
+
+---
+
+## 2026-11-02 - Session 05: merged the four portfolio PRs
+
+### Merges
+
+The user said "continue" after the PRs were green; the remaining merges were
+performed through the GitHub API using the stored Git credential. No token was
+written to disk or printed.
+
+| PR | Merge commit | Method |
+|---|---|---|
+| [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `8a7951d` | squash, owner-merged |
+| [#103](https://github.com/itsoumya-d/HEROS/pull/103) | `d3588ca` | squash |
+| [#14](https://github.com/itsoumya-d/peervault/pull/14) | `7025352` | squash |
+| [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `088c217` | squash |
+
+#103 is the replacement for #102, which was closed when the old stacked base
+branch was deleted after #101's squash merge. #102 has a comment pointing to
+#103. Merged remote branches were deleted.
+
+### Post-merge verification
+
+Ran from a clean worktree at `HEROS origin/main` (`d3588ca`):
+
+| Command | Result |
+|---|---|
+| `unittest` with PyTorch 2.15.0+cpu | **78 tests pass, 0 fail** (2.110 s) |
+| `unittest` without torch | **78 tests, 65 pass, 13 skip** (0.506 s) |
+
+CI at merge time: #103 18/18 green, #14 3/3 green, #15 2/2 green.
+
+### State
+
+- Project 01 verifier, loss, schema bridge, and QLoRA runner are on `main`.
+- The portfolio has four merged PRs and zero open portfolio PRs.
+- No GPU run, adapter, model card, npm publish, or HF upload exists.
+- `HFPolicy` remains untested; the next useful step is a 10-step GPU smoke.
+- The local workspace branch `docs/ai-engineering-portfolio` records the final
+  hashes and merge state.

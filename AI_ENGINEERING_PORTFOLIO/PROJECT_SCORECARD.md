@@ -90,7 +90,7 @@ reasoning eval. Do not call the generated set human-verified.
 | P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | Not started |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Colab/Kaggle notebook | Not started |
-| P10 | PR + HF adapter | PR #103 open; HF not uploaded |
+| P10 | PR + HF adapter | PR #103 merged; HF not uploaded |
 
 **Acceptance gate.** 75+ tests green; 500-step run with a committed `run.json`
 (seed, hardware, loss curve, KL, clip fraction, reward variance, length); adapter

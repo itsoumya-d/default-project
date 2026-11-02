@@ -2,8 +2,8 @@
 
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
-Status: **Stage 4 — Project 01 verifier + runner and docs complete; one PR
-merged, three open with green CI**
+Status: **Stage 5 — Project 01 verifier + runner and docs complete; all four
+PRs merged with green CI**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -28,7 +28,7 @@ claims that are already stale. The numbers below are the ones to use.
 | Hugging Face public models | **0** | HF profile |
 | HF collection | 1 (`HEROS AI Systems Portfolio`) | HF profile |
 | HEROS MCP tests | **46 test functions pass; 289 adversarial cases** | `npm run test:mcp` |
-| HEROS `rlvr` tests | **78 total: 78 pass with torch; 65 pass + 13 skip without** | `unittest`, PR #103 |
+| HEROS `rlvr` tests | **78 total: 78 pass with torch; 65 pass + 13 skip without** | `unittest`, `main` at `d3588ca` |
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
 | GPU training runs producing weights | **0** | no model artifacts on HF |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
@@ -97,29 +97,33 @@ AI_ENGINEERING_PORTFOLIO/
 
 ---
 
-## 4. Pull request status
+## 4. Merged pull requests
 
-| Live PR | Repository | Branch | Head commit | Status |
+| Live PR | Repository | Head commit | Merge commit | Result |
 |---|---|---|---|---|
-| [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `feat/rlvr-dr-grpo-gpu-trainer` | `f49a6c1` | **merged**; 18/18 green |
-| [#103](https://github.com/itsoumya-d/HEROS/pull/103) | `itsoumya-d/HEROS` | `feat/rlvr-qlora-runner` | `0ac89ff` | **open**; 18/18 green |
-| [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `docs/peervault-sync-limitations` | `4ad241e` | **open**; 3/3 green |
-| [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `docs/edgeinfer-reconcile-readme` | `2dd3bc0` | **open**; 2/2 green |
+| [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `f49a6c1` | `8a7951d` | merged; 18/18 green |
+| [#103](https://github.com/itsoumya-d/HEROS/pull/103) | `itsoumya-d/HEROS` | `0ac89ff` | `d3588ca` | merged; 18/18 green |
+| [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `7025352` | merged; 3/3 green |
+| [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `088c217` | merged; 2/2 green |
 
 #101 added `gpu_trainer.py` (shadow verifier + Dr.GRPO/DAPO loss), 17 tests, a
-CPU-torch CI job, a benchmark protocol, and documentation. It is now merged into
-`main` at `8a7951d`. The PyTorch path delegates to the existing CPU references
-where possible; two parity tests pin the tensor advantage and loss
-implementations. #103 contains the QLoRA runner rebased onto `main`: strict
+CPU-torch CI job, a benchmark protocol, and documentation. The PyTorch path
+delegates to the existing CPU references where possible; two parity tests pin the
+tensor advantage and loss implementations. #103 added the QLoRA runner: strict
 Forge-schema → SQLite bridge, 27 tests, a fake-policy rollout loop, a run
 recorder, a dry-run CLI, and a thin untested `HFPolicy` adapter. It has no GPU
-run. #14 fixes the two real README contradictions. #15 adds a design-only WGSL
+run. #14 fixed the two real README contradictions. #15 added a design-only WGSL
 paged-attention note; it does not claim a kernel or a speedup.
+
+The post-merge `main` commit is `d3588ca`; the full `rlvr` suite was re-run there
+(78 pass with torch, 65 pass + 13 skip without). Merged remote branches were
+deleted.
 
 Review packets live in `projects/project-01-heros-rlvr-studio/PR_DESCRIPTION.md`,
 `PR_DESCRIPTION_P5.md`, and the two repository README sections. The PRs were
-opened after explicit owner approval. No npm publish, HF upload, or deployment
-occurred. The local patches remain in `open_source/patches/` for offline review.
+opened and merged after explicit owner approval. No npm publish, HF upload, or
+deployment occurred. The local patches remain in `open_source/patches/` for
+offline review.
 
 ---
 
@@ -147,15 +151,13 @@ $env:PYTHONPATH="rlvr/src"
 
 ## 6. Immediate next actions
 
-1. **Review and merge #103.** #101 is already merged; #103 is rebased on the
-   resulting `main` and contains only the runner commit. #14 and #15 are
-   independent.
-2. **Run the 500-step GPU ablation** for Project 01 on Kaggle 2×T4 or the local
-   RTX 2060, checkpointing to HF every 50 steps. Start with a 10-step smoke.
-3. **Publish one real model artifact.** Until a checkpoint exists, the HF
+1. **Run the 10-step GPU smoke** for Project 01, then the 100-step and 500-step
+   runs on Kaggle 2×T4 or the local RTX 2060. Checkpoint every 50 steps.
+2. **Publish one real model artifact.** Until a checkpoint exists, the HF
    profile remains a demos-only profile.
-4. **Open one upstream PR** (TRL Dr.GRPO toggle is the smallest credible one)
+3. **Open one upstream PR** (TRL Dr.GRPO toggle is the smallest credible one)
    after the local test log is ready.
+4. **Start P06/P02** in parallel on CPU while the GPU run is queued.
 
 ---
 

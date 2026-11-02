@@ -1,11 +1,11 @@
 # PR #103 — feat(rlvr): QLoRA rollout runner + dataset bridge
 
-**Status:** **open** — CI green (18/18 checks); #101 is merged.
+**Status:** **merged** into `main` at `d3588ca` (squash merge); CI was 18/18 green.
 **Live PR:** https://github.com/itsoumya-d/HEROS/pull/103
 **Supersedes:** #102 (closed when the old stacked base branch was deleted).
 **Repository:** `itsoumya-d/HEROS`
 **Base for this PR:** `main` at `8a7951d`
-**Branch:** `feat/rlvr-qlora-runner`
+**Branch:** `feat/rlvr-qlora-runner` (deleted after merge)
 **Commit:** `0ac89ff` (rebased runner commit)
 **Patch:** `AI_ENGINEERING_PORTFOLIO/open_source/patches/0004-feat-rlvr-add-QLoRA-rollout-runner-and-dataset-bridg.patch`
 **Diff size:** 9 files, +1573 / −20
@@ -250,14 +250,14 @@ Questions worth asking:
 - [x] Push approved by owner
 - [x] PR opened: #103 (against `main`)
 - [x] CI green on GitHub (18/18 checks)
+- [x] Merged into `main` at `d3588ca`
 - [ ] **Real GPU smoke run**
 
 ---
 
 ## 8. Next step
 
-The PR is open and CI is green. Merge
-[#101](https://github.com/itsoumya-d/HEROS/pull/101) is merged. Review
-[#103](https://github.com/itsoumya-d/HEROS/pull/103). A real GPU smoke run is
-still required before any training result is claimed. Merging this PR does not
-approve an npm publish or an HF upload.
+[#101](https://github.com/itsoumya-d/HEROS/pull/101) and
+[#103](https://github.com/itsoumya-d/HEROS/pull/103) are merged into `main`. A
+real GPU smoke run is still required before any training result is claimed.
+Merging these PRs does not approve an npm publish or an HF upload.

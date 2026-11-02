@@ -262,7 +262,7 @@ Transformers/PEFT/bitsandbytes adapter; it is explicitly marked untested and is
 not part of the default CI gate.
 
 The runner was opened as #102 against the #101 branch, then rebased and reopened
-as #103 against `main` after #101 was squash-merged. The dataset bridge accepts the
+as #103 against `main` after #101 was squash-merged; #103 merged at `d3588ca`. The dataset bridge accepts the
 five forge tiers (`SAFE`, `NOTABLE`, `MEDIUM`, `HIGH`, `CRITICAL`); the first
 dry-run exposed an initial three-tier assumption and the full 500-row mapping is
 now a required check.

@@ -9,11 +9,10 @@
 **Patch:** `AI_ENGINEERING_PORTFOLIO/open_source/patches/0001-feat-rlvr-add-deterministic-SQLite-shadow-verifier-a.patch`
 **Diff size:** 7 files, +869 / −4
 
-**Follow-up:** the P5 QLoRA runner is open as
-[#103](https://github.com/itsoumya-d/HEROS/pull/103)
-(`feat/rlvr-qlora-runner`, `0ac89ff`). See
-[`PR_DESCRIPTION_P5.md`](PR_DESCRIPTION_P5.md). This packet's 51-test log is the
-#101 commit; the runner branch has 78 tests.
+**Follow-up:** the P5 QLoRA runner merged as
+[#103](https://github.com/itsoumya-d/HEROS/pull/103) at `d3588ca` (head
+`0ac89ff`). See [`PR_DESCRIPTION_P5.md`](PR_DESCRIPTION_P5.md). This packet's
+51-test log is the #101 commit; the runner merge has 78 tests.
 
 ---
 
@@ -219,7 +218,7 @@ Questions worth asking:
 ## 9. Follow-ups (not in this PR)
 
 1. ~~`qlora_runner.py`: model load, rollout loop, optimizer, checkpointing.~~
-   Open as #103 against `main` (`0ac89ff`); still needs a real GPU run.
+   Merged as #103 at `d3588ca`; still needs a real GPU run.
 2. Requirement-satisfaction check to close the no-op loophole.
 3. Process-isolated shadow worker with CPU/memory limits.
 4. Held-out shadow set and a forge-parity evaluation.
@@ -229,6 +228,5 @@ Questions worth asking:
 
 ## 10. Next step
 
-#101 is merged. Review the rebased runner PR
-[#103](https://github.com/itsoumya-d/HEROS/pull/103), then run the GPU smoke.
-Merging #101 does not approve an npm publish or an HF upload.
+#101 and #103 are merged. Run the GPU smoke next. Merging #101 does not approve
+an npm publish or an HF upload.
