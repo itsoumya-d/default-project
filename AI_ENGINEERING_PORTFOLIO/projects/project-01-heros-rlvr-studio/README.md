@@ -9,7 +9,9 @@ runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
 `d3588ca`; the prompt exemplar is
 [#104](https://github.com/itsoumya-d/HEROS/pull/104), merged at `d38a603`; the
 GPU-smoke documentation is
-[#105](https://github.com/itsoumya-d/HEROS/pull/105), merged at `a8451f6`.
+[#105](https://github.com/itsoumya-d/HEROS/pull/105), merged at `a8451f6`; the
+held-out evaluation CLI is
+[#106](https://github.com/itsoumya-d/HEROS/pull/106), merged at `83a1b96`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
 (verifier, runner, tests, and the documents in `docs/`).
 
@@ -89,8 +91,8 @@ python -m unittest discover -s rlvr/tests -v
 
 | Environment | Result | Marker |
 |---|---|---|
-| PyTorch 2.15.0+cpu, Python 3.11.13, Windows | **79 tests pass, 0 fail** | **[V]** |
-| No PyTorch, Python 3.11.13, Windows | **79 tests, 66 pass, 13 skip** | **[V]** |
+| PyTorch 2.15.0+cpu, Python 3.11.13, Windows | **85 tests pass, 0 fail** | **[V]** |
+| No PyTorch, Python 3.11.13, Windows | **85 tests, 72 pass, 13 skip** | **[V]** |
 | 500-row dataset dry-run, no torch | **500/500 rows mapped, 10 hazard classes** | **[V]** |
 | 10-step 1.5B GPU smoke | **7 completed, 3 skipped, mean reward 0.339, 4.15 GB peak** | **[V]** |
 | 500-step single-arm run | **in progress** | — |
@@ -204,7 +206,7 @@ project-01-heros-rlvr-studio/
 
 The files are copied into `HEROS/rlvr/` on the merged branches. This directory
 is the portfolio-side source of truth for the design documents; the code of
-record is `main` at `a8451f6`. The mirror intentionally omits the pre-existing
+record is `main` at `83a1b96`. The mirror intentionally omits the pre-existing
 `advantages.py`, `sampling.py`, `losses.py`, and package metadata, so run the
 tests from the HEROS checkout, not from this directory.
 
@@ -219,7 +221,7 @@ tests from the HEROS checkout, not from this directory.
 | P3 | Dependency extras | **Done** (`gpu` and `train` extras) |
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU-smoked |
-| P6 | 75+ tests | **79 now** |
+| P6 | 75+ tests | **85 now** |
 | P7 | 500-step four-arm ablation | **10-step smoke done; 500-step single-arm in progress** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
@@ -234,7 +236,7 @@ records a step-throughput baseline.
 
 | Gate | Requirement | Evidence | Status |
 |---|---|---|---|
-| Tests | 75+ green | 79 tests with torch; 66 pass + 13 skip without | **[V]** |
+| Tests | 75+ green | 85 tests with torch; 72 pass + 13 skip without | **[V]** |
 | GPU path | 4-bit 1.5B fits 6 GB | 4.15 GB peak in the 10-step smoke | **[V]** |
 | Training signal | Informative reward groups | 7/10 optimizer steps in the smoke | **[V]** |
 | 500-step run | 500 steps, finite loss | in progress; checkpoints every 50 | **[P]** |

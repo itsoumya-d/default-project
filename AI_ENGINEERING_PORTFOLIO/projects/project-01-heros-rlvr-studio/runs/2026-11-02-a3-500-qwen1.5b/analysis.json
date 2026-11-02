@@ -1,0 +1,22 @@
+{
+  "clip_mean": 0.0,
+  "completed": 70,
+  "errors": {
+    "MISSING_BLOCKS": 32,
+    "OK": 157,
+    "SQL_EXEC_ERROR": 73
+  },
+  "kl_mean": 0.00602642,
+  "loss_mean": 0.036567,
+  "reasons": {
+    "zero_variance_group": 61
+  },
+  "reward_first_50": 0.4975,
+  "reward_last_50": 0.5725,
+  "reward_max": 1.75,
+  "reward_mean": 0.5571,
+  "reward_min": -0.75,
+  "reward_std": 0.7526,
+  "skipped": 61,
+  "steps": 131
+}
