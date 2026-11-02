@@ -190,7 +190,8 @@ project-01-heros-rlvr-studio/
 │   └── 2026-11-02-a3-500-qwen1.5b/   # in progress
 ├── docs/
 │   ├── REWARD_SPEC.md        # reward contract and edge cases
-│   └── ARCHITECTURE.md       # data flow, threat model, GPU budget
+│   ├── ARCHITECTURE.md       # data flow, threat model, GPU budget
+│   └── EVALUATION.md         # pre-registered held-out protocol
 ├── src/heros_rlvr/
 │   ├── gpu_trainer.py        # verifier + sampler + loss
 │   └── qlora_runner.py       # schema bridge, rollout loop, recorder, HF adapter
