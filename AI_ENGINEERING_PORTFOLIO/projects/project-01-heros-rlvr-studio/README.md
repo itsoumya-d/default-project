@@ -7,7 +7,9 @@ model card is published.
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
 `d3588ca`; the prompt exemplar is
-[#104](https://github.com/itsoumya-d/HEROS/pull/104), merged at `d38a603`.
+[#104](https://github.com/itsoumya-d/HEROS/pull/104), merged at `d38a603`; the
+GPU-smoke documentation is
+[#105](https://github.com/itsoumya-d/HEROS/pull/105), merged at `a8451f6`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
 (verifier, runner, tests, and the documents in `docs/`).
 
@@ -201,7 +203,7 @@ project-01-heros-rlvr-studio/
 
 The files are copied into `HEROS/rlvr/` on the merged branches. This directory
 is the portfolio-side source of truth for the design documents; the code of
-record is `main` at `d38a603`. The mirror intentionally omits the pre-existing
+record is `main` at `a8451f6`. The mirror intentionally omits the pre-existing
 `advantages.py`, `sampling.py`, `losses.py`, and package metadata, so run the
 tests from the HEROS checkout, not from this directory.
 

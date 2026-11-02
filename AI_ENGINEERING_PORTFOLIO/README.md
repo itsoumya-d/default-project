@@ -105,6 +105,7 @@ AI_ENGINEERING_PORTFOLIO/
 | [#101](https://github.com/itsoumya-d/HEROS/pull/101) | `itsoumya-d/HEROS` | `f49a6c1` | `8a7951d` | merged; 18/18 green |
 | [#103](https://github.com/itsoumya-d/HEROS/pull/103) | `itsoumya-d/HEROS` | `0ac89ff` | `d3588ca` | merged; 18/18 green |
 | [#104](https://github.com/itsoumya-d/HEROS/pull/104) | `itsoumya-d/HEROS` | `52fd18b` | `d38a603` | merged; 18/18 green |
+| [#105](https://github.com/itsoumya-d/HEROS/pull/105) | `itsoumya-d/HEROS` | `af79d28` | `a8451f6` | merged; 18/18 green |
 | [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `7025352` | merged; 3/3 green |
 | [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `088c217` | merged; 2/2 green |
 
@@ -118,8 +119,8 @@ exemplar after a GPU smoke exposed Markdown-vs-tag format failures. #14 fixed
 the two real README contradictions. #15 added a design-only WGSL paged-attention
 note; it does not claim a kernel or a speedup.
 
-The post-merge `main` commit is `d38a603`; the full `rlvr` suite was re-run there
-(79 pass with torch, 66 pass + 13 skip without). A 10-step 1.5B GPU smoke then
+The post-merge `main` commit is `a8451f6` (the 500-step run uses `d38a603`); the
+full `rlvr` suite was re-run at 79 pass with torch and 66 pass + 13 skip without. A 10-step 1.5B GPU smoke then
 completed 7 optimizer steps at 4.15 GB peak; the 500-step run is in progress.
 Merged remote branches were deleted.
 
