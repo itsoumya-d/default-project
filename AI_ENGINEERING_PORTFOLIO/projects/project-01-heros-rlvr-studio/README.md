@@ -1,11 +1,12 @@
 # Project 01 — HEROS-RLVR-Studio
 
-**Status:** code slice implemented and tested; PR #1 staged locally; **no GPU run
-yet**.
-**Repository of record:** `itsoumya-d/HEROS`, branch
-`feat/rlvr-dr-grpo-gpu-trainer`, commit `b59f47e`.
+**Status:** verifier/loss and QLoRA runner implemented and tested on CPU; PR #1
+and a stacked runner PR are staged locally; **no GPU run yet**.
+**Repository of record:** `itsoumya-d/HEROS`. PR #1 is
+`feat/rlvr-dr-grpo-gpu-trainer` at `f49a6c1`; the P5 runner is stacked on it at
+`feat/rlvr-qlora-runner`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
-(verifier, tests, and the documents in `docs/`).
+(verifier, runner, tests, and the documents in `docs/`).
 
 ---
 
@@ -36,10 +37,12 @@ This project builds that bridge and then measures whether it trains.
 | Deterministic SQLite shadow verifier | `src/heros_rlvr/gpu_trainer.py` | Implemented, 8 tests |
 | DAPO dynamic sampler | same | Implemented, 4 tests; delegates to existing CPU references |
 | Dr.GRPO advantage + DAPO token loss | same | Implemented, 5 tests; parity-pinned to `grpo_loss` |
-| Test suite | `tests/test_gpu_rlvr_pipeline.py` | 17 tests |
+| Test suite, verifier/loss | `tests/test_gpu_rlvr_pipeline.py` | 17 tests |
+| QLoRA rollout runner | `src/heros_rlvr/qlora_runner.py` | Implemented, 27 tests |
+| Runner CLI | `scripts/train_qlora.py` | Implemented; dry-run over 500 rows |
+| Runner test suite | `tests/test_qlora_runner.py` | Schema bridge, recorder, fake-policy orchestration |
 | CPU-torch CI job | `.github/workflows/rlvr.yml` (PR #1) | Added |
-| `gpu` dependency extra | `rlvr/pyproject.toml` (PR #1) | Added |
-| QLoRA runner | — | **Not implemented** (Phase P5) |
+| `gpu` / `train` dependency extras | `rlvr/pyproject.toml` (PR #1 / stacked PR) | Added |
 | 500-step ablation | — | **Not run** |
 | HF adapter | — | **Not uploaded** |
 
@@ -81,12 +84,14 @@ python -m unittest discover -s rlvr/tests -v
 
 | Environment | Result | Marker |
 |---|---|---|
-| PyTorch 2.15.0+cpu, Python 3.11.13, Windows | **51 tests pass, 0 fail** | **[V]** |
-| No PyTorch, Python 3.11.13, Windows | **51 tests, 44 pass, 7 skip** | **[V]** |
+| PyTorch 2.15.0+cpu, Python 3.11.13, Windows | **78 tests pass, 0 fail** | **[V]** |
+| No PyTorch, Python 3.11.13, Windows | **78 tests, 65 pass, 13 skip** | **[V]** |
+| 500-row dataset dry-run, no torch | **500/500 rows mapped, 10 hazard classes** | **[V]** |
 
-The seven skips are the tensor tests: advantages, the CPU/tensor parity checks,
-loss bias, horizon scaling, shape validation, and invalid horizon. They skip by
-design rather than failing the stdlib-only job.
+The thirteen skips are tensor tests: seven pre-existing loss/advantage cases and
+six runner-orchestration cases. They skip by design rather than failing the
+stdlib-only job. The verifier, schema bridge, prompt builder, and recorder tests
+run without torch.
 
 What the tests prove:
 
@@ -102,9 +107,20 @@ What the tests prove:
 - The constant-horizon loss scales inversely with `L_max`.
 - The tensor advantage and loss paths match their pure-Python references, so the
   CPU and GPU implementations cannot drift silently.
+- A Forge schema row converts to SQLite DDL plus deterministic seed rows, and the
+  seed executes in an in-memory database.
+- All five forge tiers (`SAFE`, `NOTABLE`, `MEDIUM`, `HIGH`, `CRITICAL`) are
+  accepted; an unknown tier fails before training.
+- The prompt shows the hazard and schemas but not the expected labels.
+- A zero-variance group skips the optimizer step and is logged as skipped.
+- Gradient accumulation divides the loss, so two half-sized micro-batches match
+  one full batch rather than doubling the update.
+- `run.json`, `steps.jsonl`, and `summary.json` are written, and a restart
+  truncates stale step logs instead of appending to them.
 
 What the tests do **not** prove: model quality, training stability, throughput,
-or benchmark improvement. Those require the GPU run.
+the Transformers/PEFT adapter, or benchmark improvement. Those require the GPU
+run.
 
 ---
 
@@ -113,8 +129,13 @@ or benchmark improvement. Those require the GPU run.
 ```bash
 # From the HEROS repository root
 cd rlvr
-python -m pip install -e ".[gpu]"      # torch is optional for the verifier
+python -m pip install -e ".[gpu]"      # verifier/loss/CPU runner tests
 python -m unittest discover -s tests -v
+
+# The HF adapter and a real run need the train extra
+python -m pip install -e ".[train]"
+python scripts/train_qlora.py \
+  --dataset ../../HEROS-RL/data/heros_migration_500.jsonl --dry-run
 ```
 
 Minimal verifier call:
@@ -152,20 +173,25 @@ project-01-heros-rlvr-studio/
 ├── README.md                 # this file
 ├── BENCHMARKS.md             # measurement protocol; results pending
 ├── PR_DESCRIPTION.md         # review packet for PR #1
+├── PR_DESCRIPTION_P5.md      # review packet for stacked runner PR #4
 ├── docs/
 │   ├── REWARD_SPEC.md        # reward contract and edge cases
 │   └── ARCHITECTURE.md       # data flow, threat model, GPU budget
 ├── src/heros_rlvr/
-│   └── gpu_trainer.py        # verifier + sampler + loss
+│   ├── gpu_trainer.py        # verifier + sampler + loss
+│   └── qlora_runner.py       # schema bridge, rollout loop, recorder, HF adapter
+├── scripts/
+│   └── train_qlora.py        # dry-run and real-run CLI
 └── tests/
-    └── test_gpu_rlvr_pipeline.py
+    ├── test_gpu_rlvr_pipeline.py
+    └── test_qlora_runner.py
 ```
 
-The files are copied into `HEROS/rlvr/` on the PR branch. This directory is the
-portfolio-side source of truth for the design documents; the code of record is the
-PR branch. The mirror intentionally omits the pre-existing `advantages.py`,
-`sampling.py`, and `losses.py` modules, so run the tests from the HEROS checkout,
-not from this directory.
+The files are copied into `HEROS/rlvr/` on the stacked PR branches. This
+directory is the portfolio-side source of truth for the design documents; the
+code of record is the PR branch. The mirror intentionally omits the pre-existing
+`advantages.py`, `sampling.py`, `losses.py`, and package metadata, so run the
+tests from the HEROS checkout, not from this directory.
 
 ---
 
@@ -175,17 +201,18 @@ not from this directory.
 |---|---|---|
 | P1 | Reward specification | **Done** |
 | P2 | Architecture and threat model | **Done** |
-| P3 | Dependency extras | **Partial** (`gpu` extra; runner deps pending) |
+| P3 | Dependency extras | **Done** (`gpu` and `train` extras) |
 | P4 | Verifier + loss engine | **Done** (PR #1) |
-| P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Next** |
-| P6 | 75+ tests | 51 now |
+| P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Done on CPU** (stacked PR); GPU adapter untested |
+| P6 | 75+ tests | **78 now** |
 | P7 | 500-step four-arm ablation | Not started |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
 | P10 | HF adapter + model card | Not started |
 
-P5 is blocked on nothing but implementation time. P7 is blocked on GPU access and
-owner approval. P10 is blocked on P7.
+P7 is blocked on GPU access, the `transformers`/`peft`/`bitsandbytes` install,
+and owner approval. P10 is blocked on P7. P8 (parallel shadow workers) can start
+after the first real run records a step-throughput baseline.
 
 ---
 
@@ -193,6 +220,13 @@ owner approval. P10 is blocked on P7.
 
 - **No model was trained for this project yet.** There is no adapter, no loss
   curve, no pass@1 number, and no throughput number.
+- **The HF adapter is untested.** `QLoRARunner`, the schema bridge, and the
+  recorder are covered with a fake policy; `HFPolicy` needs Transformers, PEFT,
+  bitsandbytes, and a GPU that this session does not have.
+- **The shadow gate executes SQLite, not PostgreSQL.** The runner prompts for
+  SQLite-compatible SQL so training and verification agree. PostgreSQL syntax
+  parity is a separate evaluation gate; the production migration target remains
+  PostgreSQL.
 - The shadow verifier checks **row counts**, not row contents. A migration that
   deletes and reinserts the same number of different rows is not flagged. A
   table rename is flagged as loss even when data is preserved.

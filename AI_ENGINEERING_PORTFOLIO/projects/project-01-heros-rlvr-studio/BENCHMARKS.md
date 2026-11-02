@@ -2,11 +2,13 @@
 
 **Status: no GPU benchmark has been run.** This file defines what must be
 measured before a number may appear in the project README, a model card, or a
-talk. It is mirrored from `HEROS/rlvr/BENCHMARKS.md` at commit `f49a6c1`.
+talk. It is mirrored from `HEROS/rlvr/BENCHMARKS.md` on the stacked runner branch
+(base PR #1 `f49a6c1`).
 
-The only measured results in the repository today are CPU unit-test runs. They
-validate the reward contract and the loss math; they say nothing about model
-quality or training throughput.
+The only measured results in the repository today are CPU unit-test runs and a
+500-row dry-run. They validate the reward contract, the loss math, the schema
+bridge, and the runner orchestration; they say nothing about model quality or
+training throughput.
 
 ---
 
@@ -14,13 +16,16 @@ quality or training throughput.
 
 | Measurement | Environment | Result | Kind |
 |---|---|---|---|
-| `rlvr` unit suite | Python 3.11.13, PyTorch 2.15.0+cpu, Windows | 51 tests, 0 failures | correctness |
-| `rlvr` unit suite, no torch | Python 3.11.13, Windows | 51 tests, 44 pass, 7 skip | correctness |
+| `rlvr` unit suite | Python 3.11.13, PyTorch 2.15.0+cpu, Windows | 78 tests, 0 failures | correctness |
+| `rlvr` unit suite, no torch | Python 3.11.13, Windows | 78 tests, 65 pass, 13 skip | correctness |
+| Dataset dry-run | Python 3.11.13, Windows | 500/500 rows mapped | correctness |
+| QLoRA runner | fake policy, real SQLite verifier | orchestration tested; HF adapter untested | correctness |
 | Shadow verifier throughput | — | not measured | performance |
 | Training throughput | — | not measured | performance |
 | MATH-500 pass@1 | — | not measured | quality |
 
-The skip count is the tensor-only tests; the verifier tests always run.
+The skip count is the tensor-only tests; the verifier, schema-bridge, and
+recorder tests always run.
 
 ---
 
@@ -71,7 +76,8 @@ A run without this file is an anecdote, not a result.
 ### Training
 
 - Reward mean and standard deviation per step.
-- Reward by risk tier (`SAFE`, `WARN`, `CRITICAL`) and by error code.
+- Reward by risk tier (`SAFE`, `NOTABLE`, `MEDIUM`, `HIGH`, `CRITICAL`) and by
+  error code.
 - KL to the reference model (k3 estimator).
 - Clip fraction, separately for the low and high bounds.
 - Gradient norm before clipping.
@@ -139,7 +145,7 @@ Do not:
 ## 7. Reproduction checklist
 
 - [ ] Clean checkout at a recorded commit.
-- [ ] `python -m pip install -e "rlvr[gpu]"` succeeds.
+- [ ] `python -m pip install -e "rlvr[train]"` succeeds.
 - [ ] `PYTHONPATH=rlvr/src python -m unittest discover -s rlvr/tests -v` passes.
 - [ ] Dataset checksum matches the card.
 - [ ] Seed and data order recorded.

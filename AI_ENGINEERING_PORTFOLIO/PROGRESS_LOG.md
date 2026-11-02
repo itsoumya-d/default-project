@@ -190,3 +190,67 @@ PR #2 (`4ad241e`) and PR #3 (`2dd3bc0`) are unchanged.
 1. Owner review of PR #1 (`f49a6c1`), PR #2 (`4ad241e`), PR #3 (`2dd3bc0`).
 2. On approval: install `gh`, push branches, open PRs, and watch CI.
 3. On PR #1 merge: implement `qlora_runner.py` and run the 100-step smoke.
+
+---
+
+## 2026-11-02 - Session 03: Project 01 P5 QLoRA runner
+
+### What changed
+
+- Added `rlvr/src/heros_rlvr/qlora_runner.py`: strict Forge-schema to SQLite
+  bridge, prompt builder, `QLoRARunner`, `RunRecorder`, and the thin `HFPolicy`
+  adapter.
+- Added `rlvr/tests/test_qlora_runner.py` (27 tests) and
+  `rlvr/scripts/train_qlora.py` (dry-run and real-run CLI).
+- Extended `MigrationTask` with optional `source_schema`, `target_schema`, and
+  `hazard` fields for prompt construction.
+- Added the `train` extra to `rlvr/pyproject.toml`; kept `gpu` torch-only.
+- Updated the CPU-torch CI job to run the full `rlvr` suite, not just the
+  verifier file.
+- Updated `rlvr/README.md`, `rlvr/BENCHMARKS.md`, Project 01 docs, scorecard,
+  architecture, reward spec, and the root workspace index.
+
+### Tier correction found by validation
+
+The first 500-row dry-run failed on `expected_tier='HIGH'`. HEROS-RL and forge
+use five tiers: SAFE, NOTABLE, MEDIUM, HIGH, CRITICAL. The bridge initially
+accepted SAFE/WARN/CRITICAL. It now accepts all five and requires the field.
+The full dry-run maps 500/500 rows with all ten hazard classes, 50 each.
+
+### Test log
+
+| Command | Result |
+|---|---|
+| `unittest` with PyTorch 2.15.0+cpu | **78 tests pass, 0 fail** (2.088 s) |
+| `unittest` without torch | **78 tests, 65 pass, 13 skip** (0.535 s) |
+| `train_qlora.py --dry-run` over all 500 rows | **500/500 mapped, exit 0** |
+| patch applied to clean worktree at f49a6c1 | `git apply --check` = 0; then 78 pass with torch, 78/65/13 without |
+
+The 13 skips are 7 pre-existing tensor tests and 6 runner-orchestration tests.
+The schema bridge, tier validation, prompt, and recorder tests run without torch.
+
+### Commit and patch
+
+- PR #4 branch `feat/rlvr-qlora-runner`, commit `b1d3010`, stacked on PR #1
+  `f49a6c1`.
+- Diff: 9 files, +1573 / -20.
+- Patch: `open_source/patches/0004-feat-rlvr-add-QLoRA-rollout-runner-and-dataset-bridg.patch`
+  (68,932 bytes).
+- PR packet: `projects/project-01-heros-rlvr-studio/PR_DESCRIPTION_P5.md`.
+
+### What is still not true
+
+- No GPU run. There is no adapter, loss curve, pass@1, or throughput number.
+- `HFPolicy` has not been executed because transformers, peft, and bitsandbytes
+  are not installed and no GPU is exposed to the agent.
+- The shadow gate executes SQLite, not PostgreSQL; a PostgreSQL parity gate is
+  still planned.
+- Requirement satisfaction is still unchecked; the no-op loophole remains.
+- No remote write occurred: no push, PR, npm publish, or HF upload.
+
+### Next checkpoint
+
+1. Owner review of PR #1 (`f49a6c1`) and stacked PR #4 (`b1d3010`).
+2. On approval: install `gh`, push #1 first, then rebase #4 on the merged branch.
+3. Owner-run GPU smoke: install `rlvr[train]`, run a 10-step smoke, inspect
+   `run.json` and `steps.jsonl`, then decide on the 500-step ablation.

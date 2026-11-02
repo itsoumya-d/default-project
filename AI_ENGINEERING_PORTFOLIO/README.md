@@ -2,7 +2,8 @@
 
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
-Status: **Stage 3 — Project 01 slice and docs complete; three PR branches staged locally**
+Status: **Stage 3 — Project 01 verifier + runner and docs complete; four PR
+branches staged locally**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -27,7 +28,7 @@ claims that are already stale. The numbers below are the ones to use.
 | Hugging Face public models | **0** | HF profile |
 | HF collection | 1 (`HEROS AI Systems Portfolio`) | HF profile |
 | HEROS MCP tests | **46 test functions pass; 289 adversarial cases** | `npm run test:mcp` |
-| HEROS `rlvr` tests | **44 pass, 7 skip without torch; 51 pass with torch** | `unittest` |
+| HEROS `rlvr` tests | **78 total: 78 pass with torch; 65 pass + 13 skip without** | `unittest`, stacked runner branch |
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
 | GPU training runs producing weights | **0** | no model artifacts on HF |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
@@ -77,7 +78,7 @@ AI_ENGINEERING_PORTFOLIO/
 ├── INFRASTRUCTURE_STRATEGY.md    # RTX 2060 / MacBook / Kaggle / free-tier limits
 ├── RESEARCH_LIBRARY.md           # nine papers, math, limitations, targets
 ├── PROJECT_SCORECARD.md          # ten projects, ranking, specs, acceptance gates
-├── DECISIONS.md                  # ADR-001 … ADR-009
+├── DECISIONS.md                  # ADR-001 … ADR-012
 ├── PROGRESS_LOG.md               # append-only session log
 ├── research/
 │   ├── papers/                   # citation cards and reading queue
@@ -85,12 +86,12 @@ AI_ENGINEERING_PORTFOLIO/
 │   ├── benchmarks/
 │   └── market_research/
 ├── projects/
-│   ├── project-01-heros-rlvr-studio/   # implemented slice + PR description
+│   ├── project-01-heros-rlvr-studio/   # verifier + runner + PR packets
 │   └── project-02 … project-10/        # specifications only
 ├── infrastructure/
 ├── learning/
 ├── open_source/
-│   └── patches/                  # three git-format-patch files
+│   └── patches/                  # four git-format-patch files
 └── portfolio_website/
 ```
 
@@ -103,17 +104,20 @@ AI_ENGINEERING_PORTFOLIO/
 | #1 | `itsoumya-d/HEROS` | `feat/rlvr-dr-grpo-gpu-trainer` | `f49a6c1` | `open_source/patches/0001-feat-rlvr-add-deterministic-SQLite-shadow-verifier-a.patch` |
 | #2 | `itsoumya-d/peervault` | `docs/peervault-sync-limitations` | `4ad241e` | `open_source/patches/0001-docs-synchronize-resume-and-OPFS-limitations-with-th.patch` |
 | #3 | `itsoumya-d/edgeinfer` | `docs/edgeinfer-reconcile-readme` | `2dd3bc0` | `open_source/patches/0001-docs-add-WGSL-paged-attention-design-note-and-link-i.patch` |
+| #4 (stacked on #1) | `itsoumya-d/HEROS` | `feat/rlvr-qlora-runner` | `b1d3010` | `open_source/patches/0004-feat-rlvr-add-QLoRA-rollout-runner-and-dataset-bridg.patch` |
 
 PR #1 adds `gpu_trainer.py` (shadow verifier + Dr.GRPO/DAPO loss), 17 tests, a
 CPU-torch CI job, a benchmark protocol, and documentation. The PyTorch path
 delegates to the existing CPU references where possible; two parity tests pin the
-tensor advantage and loss implementations. PR #2 fixes the two real README
-contradictions. PR #3 adds a design-only WGSL paged-attention note; it does not
-claim a kernel or a speedup.
+tensor advantage and loss implementations. PR #4 stacks the QLoRA runner on PR #1:
+strict Forge-schema → SQLite bridge, 27 tests, a fake-policy rollout loop, a
+run recorder, a dry-run CLI, and a thin untested `HFPolicy` adapter. It has no GPU
+run. PR #2 fixes the two real README contradictions. PR #3 adds a design-only
+WGSL paged-attention note; it does not claim a kernel or a speedup.
 
-Review packets live in `projects/project-01-heros-rlvr-studio/PR_DESCRIPTION.md`
-and in the two repository README sections. No remote was written. No `git push`,
-no `gh pr create`, no npm publish, no HF upload happened.
+Review packets live in `projects/project-01-heros-rlvr-studio/PR_DESCRIPTION.md`,
+`PR_DESCRIPTION_P5.md`, and the two repository README sections. No remote was
+written. No `git push`, no `gh pr create`, no npm publish, no HF upload happened.
 
 ---
 
@@ -141,7 +145,8 @@ $env:PYTHONPATH="rlvr/src"
 
 ## 6. Immediate next actions
 
-1. **Approve or reject PR #1–#3.** Nothing moves without approval.
+1. **Approve or reject PR #1–#4.** Nothing moves without approval. Merge #1
+   before #4; #4 is stacked.
 2. **Install `gh`** (or authenticate git) so a PR can be opened without the
    browser; currently `gh` is not on `PATH`.
 3. **Run the 500-step GPU ablation** for Project 01 on Kaggle 2×T4 or the local

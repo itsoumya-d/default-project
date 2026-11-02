@@ -1,9 +1,10 @@
 # Architecture — Project 01
 
-**Scope:** the verifier/loss slice that exists today, the QLoRA runner that comes
-next, and the boundaries between them.
+**Scope:** the verifier/loss slice, the QLoRA runner that now exists on the
+stacked branch, and the boundaries between them.
 **Rule:** anything marked *planned* is not implemented and must not be described
-as working.
+as working. Anything marked *implemented, untested on GPU* has CPU tests but no
+real-model evidence.
 
 ---
 
@@ -44,7 +45,7 @@ Project 01 connects them:
                                    ▼
                     ┌─────────────────────────────┐
                     │ optimizer / checkpoint      │
-                    │ (planned runner)            │
+                    │ (QLoRARunner, this PR)      │
                     └─────────────────────────────┘
 ```
 
@@ -61,9 +62,10 @@ owns all state: model weights, optimizer, RNG, and checkpointing.
 | `DeterministicForgeShadowVerifier` | parse completion, run SQL, emit receipt | implemented | stdlib + SQLite |
 | `DapoDynamicSampler` | zero-variance detection, Dr.GRPO advantages | implemented | torch for advantages |
 | `compute_dr_grpo_token_loss` | clipped policy gradient + KL | implemented | torch |
-| `qlora_runner.py` | model load, rollout, optimizer, checkpoint | **planned** | torch, transformers, peft, trl, bitsandbytes |
+| `QLoRARunner` | rollout, reward filter, loss, optimizer, checkpoint | implemented, fake-policy tests | torch |
+| `HFPolicy` | 4-bit model load, generate, token log-probs, adapter save | implemented, **untested on GPU** | transformers, peft, bitsandbytes |
+| `RunRecorder` | `run.json`, `steps.jsonl`, `checkpoints.jsonl`, summary | implemented, tested | stdlib |
 | `ShadowWorkerPool` | parallel verifier execution | **planned** | multiprocessing |
-| `RunRecorder` | `run.json`, W&B, receipt JSONL | **planned** | wandb (optional) |
 | `HFEvaluator` | MATH-500 pass@1 with CI | **planned** | transformers, datasets |
 
 ### 2.1 Verifier
@@ -112,20 +114,35 @@ unless `L_max` and the verifier are controlled.
 for metric division, so an all-zero mask produces finite metrics rather than NaN.
 The loss itself is zero in that case.
 
-### 2.3 Planned runner
+### 2.3 Runner
 
-The runner is the only component allowed to touch the GPU. Its responsibilities:
+`qlora_runner.py` implements the orchestration. It is split into a tested
+protocol layer and a thin model adapter:
 
-- Load the base model in 4-bit NF4 with fp16 compute (Turing has no bf16).
-- Generate `G` completions per prompt with a fixed seed and temperature.
-- Call the verifier for each completion.
-- Drop zero-variance groups (DAPO dynamic sampling).
-- Compute old log-probs once, then update with the clipped loss.
-- Checkpoint adapter weights every 50 steps.
-- Write `run.json` with seed, hardware, versions, hyperparameters, and metrics.
-- Optionally log to W&B.
+| Piece | Behavior | Tested? |
+|---|---|---|
+| `parse_forge_schema` / `build_sqlite_ddl` / `build_seed_sql` | strict Forge-schema → SQLite fixture; two seed rows per table | yes |
+| `dataset_row_to_task` | validate five forge tiers and map a JSONL row | yes, including all 500 rows |
+| `build_prompt` | hazard + current/target schema; no expected labels | yes |
+| `QLoRARunner.train_step` | `G` rollouts → verifier → zero-variance filter → token log-probs → loss → optimizer | yes, fake policy |
+| `QLoRARunner.run` | steps, checkpoint cadence, final adapter, recorder | yes, fake policy |
+| `RunRecorder` | `run.json`, `steps.jsonl`, `checkpoints.jsonl`, `summary.json`; truncates stale logs on restart | yes |
+| `HFPolicy` | chat template, 4-bit NF4 load, LoRA, generate, token log-probs, save | **no**; requires GPU stack |
 
-It is not implemented. No runner behavior should be inferred from this document.
+The runner is the only component allowed to touch the GPU. It processes one
+prompt group at a time (`B=1`) and accumulates gradients across
+`gradient_accumulation` groups. Loss is divided by the accumulation count so the
+effective gradient scale does not grow with it. A zero-variance group skips the
+optimizer and is recorded as `skipped`; a non-finite loss clears accumulated
+gradients and is recorded the same way.
+
+`HFPolicy` applies the tokenizer's chat template to the plain prompt, uses left
+padding for generation, and computes completion log-probs by concatenating
+prompt ids with completion ids tokenized without added special tokens. It saves
+the PEFT adapter and tokenizer, not a merged base model.
+
+No real-model run is claimed. The adapter has not been executed on a GPU in this
+session, and no loss curve exists.
 
 ---
 
@@ -133,7 +150,7 @@ It is not implemented. No runner behavior should be inferred from this document.
 
 | Artifact | Shape / type | Notes |
 |---|---|---|
-| prompt batch | `(B,)` strings | chat template applied by the runner |
+| prompt batch | `(B,)` strings, `B=1` | `HFPolicy` applies the chat template |
 | completion batch | `(B, G)` strings | `G` rollouts per prompt |
 | token ids | `(B*G, L)` | left-padded for generation |
 | `policy_logprobs` | `(G, L)` per prompt | current policy |

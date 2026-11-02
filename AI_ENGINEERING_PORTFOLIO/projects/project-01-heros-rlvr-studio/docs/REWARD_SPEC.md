@@ -44,7 +44,7 @@ The manifest fields consumed by v1:
 
 | Field | Type | Allowed values |
 |---|---|---|
-| `risk_tier` | string | `SAFE`, `WARN`, `CRITICAL` (case-insensitive) |
+| `risk_tier` | string | `SAFE`, `NOTABLE`, `MEDIUM`, `HIGH`, `CRITICAL` (case-insensitive) |
 | `has_data_loss` | bool | `true` / `false` |
 | `decision_required` | bool | `true` / `false` |
 

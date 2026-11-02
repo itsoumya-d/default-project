@@ -66,8 +66,9 @@ critic-free GRPO engine, a 500-case dataset, and TRL/Unsloth entry points, but n
 deterministic SQLite shadow gate plus forge's risk contract. A migration is
 executed against seeded rows, and row loss is measured, not guessed.
 
-**Stack.** Python 3.11, PyTorch 2.4+, Transformers, PEFT, TRL, bitsandbytes
-(NF4), DuckDB, W&B, HEROS `forge`/`ledger`/MCP.
+**Stack.** Python 3.11, PyTorch 2.4+, Transformers, PEFT, bitsandbytes (NF4),
+DuckDB, W&B, HEROS `forge`/`ledger`/MCP. This slice does not depend on TRL; the
+existing HEROS-RL TRL entry point remains a separate baseline.
 
 **Data.** `heros-migration-500` (existing) plus a curated 5,000-pair set from
 `b-mc2/sql-create-context` and `xlangai/spider`; `HuggingFaceH4/MATH-500` for the
@@ -82,10 +83,10 @@ reasoning eval. Do not call the generated set human-verified.
 |---|---|---|
 | P1 | `REWARD_SPEC.md` with weights and miracle penalty | **Done** in `projects/project-01-heros-rlvr-studio/docs/` |
 | P2 | Architecture: rollout → shadow worker → receipt | **Done** |
-| P3 | `pyproject` extras: torch, peft, trl, bitsandbytes | **Partial**: `gpu` extra added |
+| P3 | `pyproject` extras: torch, peft, bitsandbytes | **Done**: `gpu` + `train` extras |
 | P4 | `gpu_trainer.py` with verifier + loss | **Done** (PR #1) |
-| P5 | `qlora_runner.py` loading Qwen2.5-Coder-1.5B | **Next** |
-| P6 | 75+ tests | **51 now** |
+| P5 | `qlora_runner.py` loading Qwen2.5-Coder-1.5B | **Done on CPU** (stacked PR); GPU adapter untested |
+| P6 | 75+ tests | **78 now** |
 | P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | Not started |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Colab/Kaggle notebook | Not started |
