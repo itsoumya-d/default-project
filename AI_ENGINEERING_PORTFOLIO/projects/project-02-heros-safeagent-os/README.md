@@ -8,8 +8,11 @@ Ed25519 signed proofs and a browser verifier
 latency **0.245 ms** ([PR #113](https://github.com/itsoumya-d/HEROS/pull/113)),
 and host-local 64-process idempotency
 ([PR #115](https://github.com/itsoumya-d/HEROS/pull/115), `dc51441`) are merged.
-The threat model is `packages/agentic/THREAT_MODEL.md`. The standalone public
-corpus package and npm release remain; npm publication needs owner approval.
+The threat model is `packages/agentic/THREAT_MODEL.md`. Merkle root updates are
+now incremental: p99 **0.62 ms** at 5200 signed receipts
+([PR #116](https://github.com/itsoumya-d/HEROS/pull/116), `d93e7d9`). The
+standalone public corpus package and npm release remain; npm publication needs
+owner approval.
 
 ## Problem
 
@@ -22,9 +25,9 @@ package and a maintenance story for the 11 shell scripts (36.5% of code bytes).
 ## Next action
 
 Package the 500 cases as a standalone dataset with expected verdicts and seeds,
-and add a runner that consumes the package. Keep the O(n) Merkle-root cost
-visible: p99 was **33.8 ms** at 5000 receipts with the signed wrapper versus
-**0.245 ms** for the policy path alone.
+and add a runner that consumes the package. Keep the remaining limits visible:
+the file store still rewrites its whole JSON file and `verify()` is O(n), even
+though Merkle root updates are now O(log n).
 
 ## Deliverables
 
@@ -34,6 +37,8 @@ visible: p99 was **33.8 ms** at 5000 receipts with the signed wrapper versus
   still pending).
 - 64-process cross-process replay test (merged in PR #115; host-local file
   locks, not a distributed lock).
+- Incremental Merkle frontier: root update O(log n), p99 **0.62 ms** at 5200
+  signed receipts (merged in PR #116).
 - Threat model and npm README that match the tests (threat model merged in
   PR #115; npm README updated).
 

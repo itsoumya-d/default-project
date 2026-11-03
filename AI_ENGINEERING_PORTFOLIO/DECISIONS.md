@@ -382,3 +382,30 @@ runs after transient Windows `EPERM`/`EACCES` retries were added.
 This is still not a distributed lock: NFS/SMB, multi-host writers, and handlers
 longer than 120 s are out of scope. The threat model records these residual
 risks, including the crash window between receipt append and idempotency record.
+
+---
+
+## ADR-017 - Maintain an incremental Merkle frontier
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** ADR-014 kept the policy benchmark separate from the Merkle wrapper
+because the wrapper recomputed the root over every leaf on each append. That
+was honest but left a real scalability limit: p99 33.8 ms at 5000 receipts.
+
+**Decision.** Keep a Merkle frontier (one perfect-subtree root per level) inside
+`createMerkleReceiptStore`. Appending a leaf carries it upward, and the root is
+the fold of the remaining peaks from low to high. This is the same root as
+`merkleRoot()`, including odd-node promotion, but costs O(log n) instead of
+O(n). Appends are serialized through a promise chain so concurrent calls cannot
+reuse a frontier.
+
+Tests assert parity at all 96 sizes, after reload, and under 32 concurrent
+appends. `npm run bench:merkle` measured p99 **0.62 ms** at 5200 signed receipts
+with an in-memory store.
+
+**Consequences.** Root updates are no longer the bottleneck. The file store
+still rewrites its whole JSON file, `verify()` still recomputes every leaf, and
+inclusion proofs are still O(n) to generate. Those limits stay in the threat
+model; no persistent or distributed incremental tree is claimed.

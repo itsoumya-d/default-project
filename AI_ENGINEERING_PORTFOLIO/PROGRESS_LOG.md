@@ -837,3 +837,32 @@ the package README so its multi-process and O(n) Merkle claims match the code.
 Suites: `npm run test:agentic` = **38 pass**; `npm run test:mcp` = **53 pass**.
 P02's acceptance gate is now met locally. Remaining P02 work: a standalone
 public corpus package and the npm release (owner approval required).
+
+---
+
+## 2026-11-03 - Session 21: incremental Merkle frontier
+
+PR #116 (`d93e7d9`) removes the O(n) Merkle root recomputation:
+
+- `createMerkleReceiptStore` keeps one perfect-subtree root per level;
+- append carries a leaf upward and folds the peaks, matching `merkleRoot`
+  including odd-node promotion;
+- appends serialize through a promise chain, so concurrent calls cannot share a
+  stale frontier;
+- tests cover 96 sequential sizes, reload parity, and 32 concurrent appends.
+
+`npm run test:agentic` = **40 pass**; `npm run test:mcp` = **53 pass**.
+
+`npm run bench:merkle` with Ed25519 signing and an in-memory store:
+
+| Metric | Value |
+|---|---:|
+| Tree size | 5200 |
+| p50 | 0.2015 ms |
+| p95 | 0.3412 ms |
+| p99 | **0.6226 ms** |
+| Max | 5.4516 ms |
+
+The earlier wrapper measured **33.8 ms** p99 at 5000 receipts. The file store
+still rewrites the whole JSON file, `verify()` is still O(n), and proofs are
+O(n) to generate; those limits are documented in the threat model.
