@@ -334,7 +334,7 @@ high-throughput; until then, benchmark claims must name which path they cover.
 
 ## ADR-015 - Scope the idempotency lock to one process
 
-**Status:** Accepted
+**Status:** Superseded by ADR-016
 **Date:** 2026-11-03
 
 **Context.** `AgenticApp.execute` checked the receipt store for an idempotency
@@ -350,3 +350,35 @@ a 64-worker cross-process torture test remain a separate deliverable.
 **Consequences.** The P02 gate's 64-way idempotency item is satisfied at the
 in-process level only. A multi-worker deployment still depends on the receipt
 store's locking and on a future cross-process test.
+
+---
+
+## ADR-016 - Host-local cross-process idempotency locks
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** ADR-015 shipped an in-process promise map and explicitly did not
+claim cross-process idempotency. The P02 gate asks for 64 parallel replays.
+The file store also rewrote its whole JSON state from a per-process queue, so
+two processes could lose each other's receipts.
+
+**Decision.** Add a cooperative lock-file layer to `packages/agentic`:
+
+- `withFileLock` acquires an exclusive lock with `open(path, "wx")`, retries
+  with jitter for up to 30 s, and removes locks older than 120 s.
+- File receipt and approval stores hold a global `<path>.lock` around every
+  read-modify-write.
+- The receipt store exposes `withIdempotencyLock(key, fn)` using a lock file
+  named from the SHA-256 of the key. `AgenticApp` holds it across
+  check-execute-record, so a follower re-checks and replays.
+- The Merkle wrapper delegates the key lock to its backing store.
+
+PR #115 adds a 64-process test: one handler execution, one receipt, one
+idempotency record, 63 `_idempotent: true` responses. It passed 8/8 local stress
+runs after transient Windows `EPERM`/`EACCES` retries were added.
+
+**Consequences.** The gate's 64-way idempotency item is met **on one host**.
+This is still not a distributed lock: NFS/SMB, multi-host writers, and handlers
+longer than 120 s are out of scope. The threat model records these residual
+risks, including the crash window between receipt append and idempotency record.

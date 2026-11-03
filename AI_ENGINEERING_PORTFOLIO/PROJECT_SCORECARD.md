@@ -124,10 +124,11 @@ proof verifies in the browser.
 **Current.** 500 cases implemented (289 existing + 211 in PR #111); 53 MCP
 tests pass. Ed25519 root/proof signing and a browser verifier merged in PR #112
 (`d0e523f`); the browser accepted the signed proof and rejected a tampered
-signature. p99 policy latency is **0.245 ms** over 5000 samples (PR #113), and
-the 64-way in-process idempotency lock is merged (PR #114). `HEROS-Firewall` has
-16 tests and a measured red-team result. Remaining: cross-process 64-worker
-replay and the standalone public corpus package.
+signature. p99 policy latency is **0.245 ms** over 5000 samples (PR #113). The
+host-local 64-process idempotency lock and threat model merged in PR #115
+(`dc51441`): one handler call, one receipt, 63 replays. `HEROS-Firewall` has 16
+tests and a measured red-team result. **Gate met locally.** Remaining: standalone
+public corpus package and npm release (owner approval required).
 
 **Hiring.** Anthropic MCP/safeguards, OpenAI safety systems, Scale AI, AWS
 Bedrock AgentCore.

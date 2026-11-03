@@ -815,3 +815,25 @@ PR #114 (`9ca2264`) adds an in-flight idempotency map to `AgenticApp`:
 
 Scope is in-process only (ADR-015). Cross-process 64-worker replay and the
 standalone public corpus package remain the P02 blockers.
+
+---
+
+## 2026-11-03 - Session 20: P02 cross-process lock + threat model
+
+PR #115 (`dc51441`) closes the P02 64-worker gate item at the host-local level:
+
+- `withFileLock` uses exclusive lock-file creation with bounded retry, jitter,
+  stale-lock recovery, and Windows `EPERM`/`EACCES` handling;
+- file receipt and approval stores take a global lock around read-modify-write;
+- `withIdempotencyLock(key, fn)` serializes one key across processes;
+- `createMerkleReceiptStore` delegates the key lock;
+- 64 spawned Node workers, one key: **1 handler execution, 1 receipt, 1
+  idempotency record, 63 `_idempotent: true` responses**;
+- 8/8 local stress runs passed after the Windows retry fix.
+
+The same PR adds `packages/agentic/THREAT_MODEL.md` (10 threat rows) and updates
+the package README so its multi-process and O(n) Merkle claims match the code.
+
+Suites: `npm run test:agentic` = **38 pass**; `npm run test:mcp` = **53 pass**.
+P02's acceptance gate is now met locally. Remaining P02 work: a standalone
+public corpus package and the npm release (owner approval required).
