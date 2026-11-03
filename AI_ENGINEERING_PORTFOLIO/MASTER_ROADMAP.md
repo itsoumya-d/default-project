@@ -18,7 +18,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 94 pass with torch; 81 pass + 13 skip without | **[V]** |
-| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
+| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
 | GPU runs | RL 500 steps found reward hacking; SFT warm start scores 1.90 held-out vs base 0.02; 45/50 at 2.0 | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
@@ -69,7 +69,7 @@ Commercial work is a separate track and is out of scope for this window.
 
 | Week | Dates | Primary deliverable | Exit gate | Fallback if blocked |
 |---:|---|---|---|---|
-| 1 | Nov 2–8 | PRs #101/#103/#104/#105/#106/#107/#108/#14/#15 merged; P01 QLoRA + SFT targets | PRs merged; 500/500 dry-run; 93 CPU tests | Start P02 corpus on CPU |
+| 1 | Nov 2-8 | PRs #101–#111 merged; P01 QLoRA + SFT + P02 500-case corpus | P01 SFT 1.90 held-out; 94 CPU tests; P02 500 cases | Start P02 signed proofs |
 | 2 | Nov 9–15 | P01 SFT warm start + held-out eval + controlled RL-from-SFT | SFT 1.90 held-out; RL comparison recorded | Publish SFT only; defer RL ablation |
 | 3 | Nov 16–22 | P01 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO); MATH-500; HF adapter; W&B report | G3 + G4 for P01 | Ship 100-step negative result + protocol |
 | 4 | Nov 23–29 | P02 corpus 289 → 500 cases; Ed25519 Merkle design | Corpus runs in CI | Ship corpus only |

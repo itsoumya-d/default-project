@@ -105,9 +105,9 @@ DeepSeek, Google DeepMind, Mistral.
 ### P02 — HEROS-SafeAgent-OS
 
 **Problem.** An agent runtime needs a tamper-evident audit trail and a hard gate
-before destructive actions. HEROS has 289 adversarial cases, Merkle receipts and
-SQLite shadow gates; the gaps are Ed25519-signed sparse Merkle inclusion proofs,
-a public 500-case corpus, and the shell-script maintenance surface.
+before destructive actions. HEROS now has a 500-case adversarial corpus, Merkle
+receipts, and SQLite shadow gates; the gaps are Ed25519-signed sparse Merkle
+inclusion proofs and the shell-script maintenance surface.
 
 **Stack.** Zero, Rust, Node 22+ ESM, TypeScript, SQLite WAL, Ed25519
 (`node:crypto`), GitHub Actions.
@@ -121,9 +121,9 @@ publish npm → threat model → PR → sync `HEROS-Firewall` Space.
 latency <4.5 ms, 100% idempotency consistency under 64 parallel replays, signed
 proof verifies in the browser.
 
-**Current.** 289 cases verified; `HEROS-Firewall` has 16 tests and a measured
-red-team result. This is the closest project to "done"; it needs the public
-corpus and the signature upgrade.
+**Current.** 500 cases implemented (289 existing + 211 in PR #111); 53 MCP tests
+pass. `HEROS-Firewall` has 16 tests and a measured red-team result. The signature
+upgrade, p99 latency, 64-worker replay, and browser proof remain.
 
 **Hiring.** Anthropic MCP/safeguards, OpenAI safety systems, Scale AI, AWS
 Bedrock AgentCore.

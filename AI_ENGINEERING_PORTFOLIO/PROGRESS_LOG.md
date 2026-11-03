@@ -736,3 +736,27 @@ P01 is locally complete (SFT 1.90 held-out, 94 tests). Work moved to P02.
 
 HF publication of the P01 SFT adapter remains blocked on credentials and explicit
 approval. No npm publish.
+
+---
+
+## 2026-11-03 - Session 17: P02 500-case corpus
+
+PR #111 (`7875f3a`) adds 211 deterministic cases to the existing 289, completing
+the 500-case P02 corpus:
+
+| Surface | New cases |
+|---|---:|
+| malformed JSON-RPC | 40 |
+| agentic schema mutation | 30 |
+| auth/scope | 25 |
+| hostile forge payloads | 30 |
+| malformed shadow schemas | 30 |
+| approval replay/rebind | 30 |
+| destructive approval gate | 26 |
+
+`npm run test:mcp`: **53 tests pass, 0 fail**; the new test functions assert
+their own counts. Existing 289 + new 211 = 500.
+
+This closes the case-count part of the P02 gate. Still missing: Ed25519 signed
+inclusion proofs, p99 policy latency, 64-worker idempotency torture, browser
+proof verification, and a standalone public corpus package.
