@@ -18,7 +18,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 94 pass with torch; 81 pass + 13 skip without | **[V]** |
-| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#112](https://github.com/itsoumya-d/HEROS/pull/112), [#113](https://github.com/itsoumya-d/HEROS/pull/113), [#114](https://github.com/itsoumya-d/HEROS/pull/114), [#115](https://github.com/itsoumya-d/HEROS/pull/115), [#116](https://github.com/itsoumya-d/HEROS/pull/116), [#117](https://github.com/itsoumya-d/HEROS/pull/117), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
+| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#112](https://github.com/itsoumya-d/HEROS/pull/112), [#113](https://github.com/itsoumya-d/HEROS/pull/113), [#114](https://github.com/itsoumya-d/HEROS/pull/114), [#115](https://github.com/itsoumya-d/HEROS/pull/115), [#116](https://github.com/itsoumya-d/HEROS/pull/116), [#117](https://github.com/itsoumya-d/HEROS/pull/117), [#118](https://github.com/itsoumya-d/HEROS/pull/118), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
 | GPU runs | RL 500 steps found reward hacking; SFT warm start scores 1.90 held-out vs base 0.02; 45/50 at 2.0 | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
@@ -131,7 +131,7 @@ inclusion proofs.
 | Signatures | Ed25519 sign/verify via `node:crypto` | browser verify path works |
 | Torture | 64-worker flock/WAL replay | host-local 64-process: 1 handler, 1 receipt; multi-host pending |
 | Docs | threat model + npm README | limitations match tests |
-| Release | npm package (approval required) | `npm pack` inspected; provenance noted |
+| Release | npm package (approval required) | `0.3.0` dry-run inspected: 9 files, 22.3 kB, provenance workflow ready |
 
 **Decision point:** if signature work exceeds week 5, ship the corpus and unsigned
 proofs, and keep the npm package at release-candidate status.

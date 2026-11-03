@@ -11,8 +11,11 @@ is **0.245 ms** ([PR #113](https://github.com/itsoumya-d/HEROS/pull/113)).
 Host-local 64-process idempotency and the threat model are merged
 ([PR #115](https://github.com/itsoumya-d/HEROS/pull/115), `dc51441`). Merkle
 append is incremental at p99 **0.62 ms** for 5200 signed receipts
-([PR #116](https://github.com/itsoumya-d/HEROS/pull/116), `d93e7d9`). The npm
-release needs owner approval; the shell-script maintenance story remains.
+([PR #116](https://github.com/itsoumya-d/HEROS/pull/116), `d93e7d9`).
+`@soumyadebnath1619/agentic@0.3.0` is prepared as a release candidate
+([PR #118](https://github.com/itsoumya-d/HEROS/pull/118), `cbee92a`): nine
+tarball files including `THREAT_MODEL.md` and `CHANGELOG.md`. Publication needs
+owner approval; the shell-script maintenance story remains.
 
 ## Problem
 
@@ -25,11 +28,11 @@ scripts (36.5% of code bytes).
 
 ## Next action
 
-Prepare the npm release candidate: inspect `npm pack`, record provenance, and
-publish only after explicit owner approval. Then write the shell-script
-maintenance plan. Keep the remaining limits visible: the file store still
-rewrites its whole JSON file and `verify()` is O(n), even though Merkle root
-updates are O(log n).
+Publish `@soumyadebnath1619/agentic@0.3.0` after explicit owner approval, using
+the existing `agentic-v*` tag workflow and provenance. Then write the
+shell-script maintenance plan. Keep the remaining limits visible: the file store
+still rewrites its whole JSON file and `verify()` is O(n), even though Merkle
+root updates are O(log n).
 
 ## Deliverables
 
@@ -44,6 +47,9 @@ updates are O(log n).
   signed receipts (merged in PR #116).
 - Threat model and npm README that match the tests (threat model merged in
   PR #115; npm README updated).
+- `@soumyadebnath1619/agentic@0.3.0` release candidate: nine files, 22.3 kB
+  tarball, `THREAT_MODEL.md` + `CHANGELOG.md` included (PR #118). Publish is
+  gated on owner approval.
 
 ## Gate
 

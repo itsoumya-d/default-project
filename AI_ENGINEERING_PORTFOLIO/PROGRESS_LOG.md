@@ -892,3 +892,23 @@ verification, p99 policy latency, host-local 64-process idempotency, an
 incremental Merkle root, and a threat model. Remaining: npm release (approval)
 and the shell-script maintenance story.
 
+
+---
+
+## 2026-11-03 - Session 23: agentic 0.3.0 release candidate
+
+PR #118 (`cbee92a`) prepares `@soumyadebnath1619/agentic@0.3.0` without
+publishing:
+
+- version bump from 0.2.0 (already public) to 0.3.0;
+- `THREAT_MODEL.md` and `CHANGELOG.md` added to the npm tarball;
+- `npm run pack:agentic` inspected: 9 files, 22.3 kB packed, 82.9 kB unpacked,
+  shasum `e36f6e8233ef9d0aa340e4a289cca1b1a50ca509`;
+- no tag, no registry write, no approval bypassed;
+- `npm run test:agentic` = 40 pass; CI = 20/20 green.
+
+P02 is now complete locally: 500 executable cases, 500-record dataset, signed
+proofs, browser verification, p99 policy latency, 64-process idempotency,
+incremental Merkle root, threat model, and a release candidate. Remaining:
+owner approval to publish and the shell-script maintenance story.
+

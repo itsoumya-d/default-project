@@ -129,9 +129,11 @@ host-local 64-process idempotency lock and threat model merged in PR #115
 (`dc51441`): one handler call, one receipt, 63 replays. Merkle root updates are
 incremental: p99 **0.62 ms** at 5200 signed receipts (PR #116, `d93e7d9`). The
 500 cases are packaged as a 500-record JSONL dataset with a manifest and CI
-drift check (PR #117, `2658e90`). `HEROS-Firewall` has 16 tests and a measured
-red-team result. **Gate met locally; corpus packaged.** Remaining: npm release
-(owner approval) and the shell-script maintenance story.
+drift check (PR #117, `2658e90`). `@soumyadebnath1619/agentic@0.3.0` is a
+9-file, 22.3 kB release candidate with the threat model and changelog included
+(PR #118, `cbee92a`). `HEROS-Firewall` has 16 tests and a measured red-team
+result. **Gate met locally; corpus packaged; release candidate ready.**
+Remaining: publish approval and the shell-script maintenance story.
 
 **Hiring.** Anthropic MCP/safeguards, OpenAI safety systems, Scale AI, AWS
 Bedrock AgentCore.

@@ -436,3 +436,27 @@ token is fixed. Other JSON-lossy values use `$undefined` and `$number` markers.
 the tests remain authoritative. It captures inputs and expected verdicts, not
 observed responses; approval cases are scenarios that need the documented
 setup. Publishing to Hugging Face or npm still requires separate owner approval.
+
+---
+
+## ADR-019 - Release agentic 0.3.0 with the threat model in the tarball
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** `@soumyadebnath1619/agentic@0.2.0` is already published, but the
+repository has since added Ed25519 signing, cross-process idempotency locks,
+the incremental Merkle root, and a threat model. Publishing the current tree as
+0.2.0 would fail, and the 0.2.0 tarball did not include the new security
+documentation.
+
+**Decision.** Bump to **0.3.0**, add `THREAT_MODEL.md` and `CHANGELOG.md` to the
+package `files` list, and inspect `npm pack --dry-run`. Do not create a tag or
+publish. The existing `agentic-v*` workflow remains the only publish path and
+requires owner approval.
+
+**Consequences.** The release candidate is 9 files, 22.3 kB packed (82.9 kB
+unpacked), with shasum `e36f6e8233ef9d0aa340e4a289cca1b1a50ca509`. The version is
+still unpublished; a tag would trigger provenance publishing. P02 remains
+"complete locally, publish pending" until the owner approves.
+

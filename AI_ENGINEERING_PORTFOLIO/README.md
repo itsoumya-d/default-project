@@ -28,7 +28,7 @@ claims that are already stale. The numbers below are the ones to use.
 | Hugging Face public models | **0** | HF profile |
 | HF collection | 1 (`HEROS AI Systems Portfolio`) | HF profile |
 | HEROS MCP tests | **54 tests pass; 500-case corpus + 500-record dataset** | `npm run test:mcp` |
-| HEROS `rlvr` tests | **94 total: 94 pass with torch; 81 pass + 13 skip without** | `unittest`, `main` at `2658e90` |
+| HEROS `rlvr` tests | **94 total: 94 pass with torch; 81 pass + 13 skip without** | `unittest`, `main` at `cbee92a` |
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
 | GPU smoke run | **10 steps, 7 optimizer steps, mean reward 0.339, 4.15 GB peak** | RTX 2060, `runs/2026-11-02-gpu-smoke-1.5b/` |
 | 500-step run | **500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB peak** | `runs/2026-11-02-a3-500-qwen1.5b/` |
@@ -42,6 +42,7 @@ claims that are already stale. The numbers below are the ones to use.
 | P02 idempotency | **64 concurrent processes → 1 handler call, 1 receipt, 63 replays; host-local** | `packages/agentic/test/agentic.test.mjs` |
 | P02 Merkle append | **p99 0.62 ms at 5200 signed receipts; incremental frontier** | `packages/agentic/bench/merkle-latency.mjs` |
 | P02 threat model | **10 threat rows; host-local lock and file-store limits documented** | `packages/agentic/THREAT_MODEL.md` |
+| P02 npm release candidate | **agentic 0.3.0; 9 files; 22.3 kB tarball; publish pending approval** | `packages/agentic/package.json` |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -129,6 +130,7 @@ AI_ENGINEERING_PORTFOLIO/
 | [#115](https://github.com/itsoumya-d/HEROS/pull/115) | `itsoumya-d/HEROS` | `5af0736` | `dc51441` | merged; 18/18 green |
 | [#116](https://github.com/itsoumya-d/HEROS/pull/116) | `itsoumya-d/HEROS` | `80daef1` | `d93e7d9` | merged; 18/18 green |
 | [#117](https://github.com/itsoumya-d/HEROS/pull/117) | `itsoumya-d/HEROS` | `ffdfc7e` | `2658e90` | merged; 20/20 green |
+| [#118](https://github.com/itsoumya-d/HEROS/pull/118) | `itsoumya-d/HEROS` | `2e63385` | `cbee92a` | merged; 20/20 green |
 | [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `7025352` | merged; 3/3 green |
 | [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `088c217` | merged; 2/2 green |
 
@@ -144,7 +146,7 @@ target-schema requirement check that rejects no-op migrations. #14 fixed the two
 real README contradictions. #15 added a design-only WGSL paged-attention note;
 it does not claim a kernel or a speedup.
 
-The post-merge `main` commit is `2658e90` (the 500-step run used `d38a603`); the
+The post-merge `main` commit is `cbee92a` (the 500-step run used `d38a603`); the
 full `rlvr` suite was re-run at 94 pass with torch and 81 pass + 13 skip without. A 10-step 1.5B GPU smoke then
 completed 7 optimizer steps at 4.15 GB peak. The 500-step single-arm run then
 finished 500 steps with 209 optimizer steps, mean reward 1.0203, and 4.16 GB
