@@ -1,0 +1,2 @@
+{"clip_fraction": null, "error_codes": {"OK": 2}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 1, "task_id": "heros-mig-0001"}
+{"clip_fraction": null, "error_codes": {"OK": 2}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 2, "task_id": "heros-mig-0002"}

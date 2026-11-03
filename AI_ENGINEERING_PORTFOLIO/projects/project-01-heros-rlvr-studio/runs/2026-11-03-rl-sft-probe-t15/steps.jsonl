@@ -1,0 +1,10 @@
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 1, "task_id": "heros-mig-0001"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 2, "task_id": "heros-mig-0002"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 1.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 3, "task_id": "heros-mig-0003"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 4, "task_id": "heros-mig-0004"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 5, "task_id": "heros-mig-0005"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 6, "task_id": "heros-mig-0006"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 7, "task_id": "heros-mig-0007"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 8, "task_id": "heros-mig-0008"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 9, "task_id": "heros-mig-0009"}
+{"clip_fraction": null, "error_codes": {"OK": 4}, "loss": null, "mean_kl": null, "mean_reward": 2.0, "reward_std": 0.0, "skip_reason": "zero_variance_group", "skipped": true, "step": 10, "task_id": "heros-mig-0010"}

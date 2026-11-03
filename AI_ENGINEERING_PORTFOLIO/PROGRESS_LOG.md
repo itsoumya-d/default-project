@@ -912,3 +912,30 @@ proofs, browser verification, p99 policy latency, 64-process idempotency,
 incremental Merkle root, threat model, and a release candidate. Remaining:
 owner approval to publish and the shell-script maintenance story.
 
+
+---
+
+## 2026-11-03 - Session 24: RL-from-SFT probe and adapter init
+
+PR #119 (`e4cfed4`) adds `RunnerConfig.adapter_path`, loads an existing PEFT
+adapter as trainable in `HFPolicy.load`, wires `train_qlora.py --adapter-path`,
+and adds temperature/completion/gradient-accumulation CLI controls. The `rlvr`
+suite is **95 pass**.
+
+GPU probes from the SFT adapter:
+
+| Run | Group | Temp | Steps | Completed | Reward pattern |
+|---|---:|---:|---:|---:|---|
+| smoke | 2 | 1.0 | 2 | 0 | 2.0, 2.0 |
+| probe | 4 | 1.2 | 10 | 0 | nine 2.0, one 1.0 |
+| probe | 4 | 1.5 | 10 | 0 | nine 2.0, one 1.0 |
+
+Every group was skipped as `zero_variance_group`. Sampling diversity exists at
+temperature 1.5 (4/8 unique) and 2.0 (8/8), but the deterministic reward stays
+constant, so DAPO has no advantage signal. The SFT adapter remains the accepted
+result; no RL improvement is claimed. Recorded in
+`projects/project-01-heros-rlvr-studio/RL_FROM_SFT.md`.
+
+Next: RL from the base model with the corrected reward, then a harder task
+distribution if variance is still too low.
+

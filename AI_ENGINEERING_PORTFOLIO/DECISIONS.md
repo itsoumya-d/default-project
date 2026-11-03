@@ -460,3 +460,32 @@ unpacked), with shasum `e36f6e8233ef9d0aa340e4a289cca1b1a50ca509`. The version i
 still unpublished; a tag would trigger provenance publishing. P02 remains
 "complete locally, publish pending" until the owner approves.
 
+
+---
+
+## ADR-020 - Do not force a 500-step RL-from-SFT run after zero-variance probes
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** PR #119 added `RunnerConfig.adapter_path`, so the RL runner can
+start from the SFT adapter. Three GPU probes were run on the first 10 training
+tasks: 2 steps at temperature 1.0/group 2, 10 steps at 1.2/group 4, and 10 steps
+at 1.5/group 4. Every group was skipped with `zero_variance_group`. The SFT
+policy scored 2.0 on nine tasks and a constant 1.0 on the type_narrowing task.
+Sampling was not frozen: temperature 1.5 produced 4/8 unique completions and
+2.0 produced 8/8, but the deterministic reward did not separate them.
+
+**Decision.** Do not run a 500-step RL-from-SFT job that would be almost
+entirely no-ops. Record the probe as a negative result in
+`projects/project-01-heros-rlvr-studio/RL_FROM_SFT.md`. Keep the SFT adapter as
+the accepted P01 result. The next RL experiment starts from the base model with
+the corrected requirement-check reward, where the base's low held-out score
+should create variance.
+
+**Consequences.** No RL-from-SFT adapter exists and no improvement is claimed.
+The four-arm ablation remains incomplete. GPU time is redirected to the
+base-model RL arm and, if needed, a harder task distribution. The negative
+result is itself evidence: a deterministic, coarse verifier can saturate after
+SFT and remove the learning signal.
+

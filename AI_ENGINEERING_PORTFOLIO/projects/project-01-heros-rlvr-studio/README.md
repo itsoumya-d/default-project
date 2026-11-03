@@ -4,7 +4,10 @@
 merged. The old RL adapter failed requirement satisfaction and is invalid. The
 SFT warm start scores **1.90 held-out reward** vs base **0.02**, with 45/50 tasks
 at the maximum 2.0 and manifest risk accuracy 0.90. The adapter and model card
-are local only; HF publication and the RL ablation are pending.
+are local only; HF publication remains. RL-from-SFT was probed and produced
+zero-variance groups, so **no RL improvement is claimed**; see
+[`RL_FROM_SFT.md`](RL_FROM_SFT.md). Next experiment: RL from base with the
+corrected reward.
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
@@ -21,7 +24,9 @@ SFT target generator is
 evaluation metric fix is
 [#109](https://github.com/itsoumya-d/HEROS/pull/109), merged at `1f047ad`; the
 reproducible SFT CLI is
-[#110](https://github.com/itsoumya-d/HEROS/pull/110), merged at `90f33a1`.
+[#110](https://github.com/itsoumya-d/HEROS/pull/110), merged at `90f33a1`; the
+adapter-init path is
+[#119](https://github.com/itsoumya-d/HEROS/pull/119), merged at `e4cfed4`.
 **Workspace copy:** `AI_ENGINEERING_PORTFOLIO/projects/project-01-heros-rlvr-studio/`
 (verifier, runner, tests, and the documents in `docs/`).
 
@@ -60,7 +65,7 @@ This project builds that bridge and then measures whether it trains.
 | Runner test suite | `tests/test_qlora_runner.py` | Schema bridge, recorder, fake-policy orchestration |
 | CPU-torch CI job | `.github/workflows/rlvr.yml` (#101) | Added |
 | `gpu` / `train` dependency extras | `rlvr/pyproject.toml` (#101 / #103) | Added |
-| 500-step ablation | — | **Not run** |
+| 500-step ablation | `RL_FROM_SFT.md` | **Negative probe:** RL-from-SFT had 0/10 variance groups; no RL adapter trained |
 | HF adapter | — | **Not uploaded** |
 
 The verifier is stdlib-only. PyTorch is imported lazily, so the default suite

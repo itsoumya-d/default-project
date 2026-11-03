@@ -57,10 +57,10 @@ eight weeks, do P01 → P06 → P08 and defer the rest.
 ### P01 — HEROS-RLVR-Studio
 
 **Problem.** Small code models hallucinate destructive SQL migrations
-(`DROP COLUMN` without backfill) and malformed MCP manifests. Existing
-`HEROS/rlvr` has 34 CPU tests but no GPU run. `HEROS-RL` already has a
-critic-free GRPO engine, a 500-case dataset, and TRL/Unsloth entry points, but no
-1.5B result.
+(`DROP COLUMN` without backfill) and malformed MCP manifests. `HEROS/rlvr` now
+has a tested CPU runner, a GPU SFT result, and an adapter-initialization path,
+but no validated RL improvement. `HEROS-RL` already has a critic-free GRPO
+engine, a 500-case dataset, and TRL/Unsloth entry points, but no 1.5B result.
 
 **Originality.** The reward is not a learned preference model; it is a
 deterministic SQLite shadow gate plus forge's risk contract. A migration is
@@ -85,12 +85,12 @@ reasoning eval. Do not call the generated set human-verified.
 | P2 | Architecture: rollout → shadow worker → receipt | **Done** |
 | P3 | `pyproject` extras: torch, peft, bitsandbytes | **Done**: `gpu` + `train` extras |
 | P4 | `gpu_trainer.py` with verifier + loss | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
-| P5 | `qlora_runner.py` loading Qwen2.5-Coder-1.5B | **Done on CPU** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU adapter untested |
-| P6 | 75+ tests | **94 now** |
-| P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | **SFT 1.90 held-out; RL arm negative; controlled RL-from-SFT pending** |
+| P5 | `qlora_runner.py` loading Qwen2.5-Coder-1.5B | **Done** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU SFT + adapter-init path exercised |
+| P6 | 75+ tests | **95 now** |
+| P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | **SFT 1.90 held-out; RL-from-SFT probe had 0/10 variance groups; RL-from-base with corrected reward next** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Colab/Kaggle notebook | Not started |
-| P10 | PR + HF adapter | SFT model card local; HF upload blocked on credentials |
+| P10 | PR + HF adapter | SFT model card local; adapter-init [#119](https://github.com/itsoumya-d/HEROS/pull/119) merged; HF upload blocked on credentials |
 
 **Acceptance gate.** 75+ tests green; 500-step run with a committed `run.json`
 (seed, hardware, loss curve, KL, clip fraction, reward variance, length); adapter
