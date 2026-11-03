@@ -988,3 +988,23 @@ P02 is complete locally except the npm publication, which requires owner
 approval. P01 has an accepted SFT result and documented RL negatives/weak
 results; the four-arm ablation is not claimed.
 
+
+---
+
+## 2026-11-03 - Session 27: P06 CPU reference and parity harness
+
+EdgeInfer PR #16 (`0d17672`) adds the Python CPU reference required before a
+WGSL paged-attention kernel:
+
+- `scripts/paged_attention_reference.py` â€” float32 online softmax over a
+  block-table KV cache (`block_size=16`);
+- `scripts/paged_attention_parity.py` â€” compares a candidate output to the
+  reference (`atol=2e-3`, `rtol=2e-2`), with deterministic synthetic cases;
+- `scripts/test_paged_attention.py` â€” **8 tests pass**, covering block
+  boundaries, block-table permutation, out-of-range slots, and tolerances;
+- CI job `Paged attention reference` runs the Python tests; PR CI = 3/3 green.
+
+This does **not** claim SmolLM2 parity, WebGPU correctness, a zero-readback
+trace, memory within 5%, or a two-device speedup. The WGSL kernel remains the
+next P06 step and must be gated by this harness.
+

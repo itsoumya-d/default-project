@@ -540,3 +540,32 @@ policy for when a bridge should be ported or deleted.
 encoding, and Bash-level test gaps are explicit. No bridge logic changed. P02's
 only remaining item is the npm publication, which needs owner approval.
 
+
+---
+
+## ADR-023 - Build the paged-attention CPU reference before any WGSL
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** EdgeInfer cannot pin `past_key_values` in a `GPUBuffer` behind
+`onnxruntime-web`; the design note requires owning the attention computation.
+A WGSL kernel without a reference would be unverifiable and would invite a
+speedup claim without evidence.
+
+**Decision.** Implement a Python float32 reference for the documented cache
+layout (`KV[block_id][slot][kv_head][head_dim]`, `block_size=16`) with online
+softmax and a logical-to-physical block table. Add a parity harness that
+compares a candidate output with `atol=2e-3`, `rtol=2e-2`, and a unittest suite
+covering block boundaries, table permutation, and out-of-range slots. MHA only;
+GQA is a follow-up.
+
+PR #16 adds the reference, harness, 8 passing tests, and a dedicated CI job. It
+does **not** add WGSL, model-level parity, a zero-readback trace, or a
+benchmark.
+
+**Consequences.** The next WGSL PR can be rejected by the harness. The P06 gate
+remains open: parity on 20 prompts, 0 KV `mapAsync`, memory within 5%, and
+two-device latency. JavaScript dependencies are installed only in CI; the local
+Node suite was not used as evidence for this change.
+

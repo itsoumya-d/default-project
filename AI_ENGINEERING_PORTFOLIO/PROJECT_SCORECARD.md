@@ -212,8 +212,13 @@ FP32 rerank) with zero readback.
 **Stack.** TypeScript, WGSL, onnxruntime-web ≥1.21.0, IndexedDB, Vitest,
 Playwright GPU runner, SmolLM2-135M/360M.
 
-**Phases.** Design note (PR #3, done) → CPU reference → WGSL paged kernel →
-parity harness → zero-readback trace → benchmark → 150+ tests → npm → HF Space.
+**Phases.** Design note (PR #3, done) → CPU reference (PR #16, done) → WGSL
+paged kernel → parity harness → zero-readback trace → benchmark → 150+ tests →
+npm → HF Space.
+
+**Current.** The float32 CPU reference and candidate-comparison harness are
+merged in PR #16 (`0d17672`); 8 Python tests pass and CI now has a dedicated
+job. No WGSL kernel, SmolLM2 parity, zero-readback trace, or benchmark exists.
 
 **Acceptance gate.** Parity with ORT on 20 prompts, 0 `mapAsync` on KV buffers,
 memory within 5% of the analytic KV size, p50/p95 on two devices, fallback flag.

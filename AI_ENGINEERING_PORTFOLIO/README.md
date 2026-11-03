@@ -47,6 +47,7 @@ claims that are already stale. The numbers below are the ones to use.
 | P02 threat model | **10 threat rows; host-local lock and file-store limits documented** | `packages/agentic/THREAT_MODEL.md` |
 | P02 npm release candidate | **agentic 0.3.0; 9 files; 22.3 kB tarball; publish pending approval** | `packages/agentic/package.json` |
 | P02 shell scripts | **11/11 shellcheck warning-level; maintenance policy merged** | `docs/shell-maintenance.md` |
+| P06 CPU reference | **Python float32 paged-attention reference; 8 tests; parity harness merged** | [edgeinfer#16](https://github.com/itsoumya-d/edgeinfer/pull/16) |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -139,6 +140,7 @@ AI_ENGINEERING_PORTFOLIO/
 | [#120](https://github.com/itsoumya-d/HEROS/pull/120) | `itsoumya-d/HEROS` | `74f3c05` | `61f6eec` | merged; 20/20 green |
 | [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `7025352` | merged; 3/3 green |
 | [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `088c217` | merged; 2/2 green |
+| [#16](https://github.com/itsoumya-d/edgeinfer/pull/16) | `itsoumya-d/edgeinfer` | `a5935b8` | `0d17672` | merged; 3/3 green |
 
 #101 added `gpu_trainer.py` (shadow verifier + Dr.GRPO/DAPO loss), 17 tests, a
 CPU-torch CI job, a benchmark protocol, and documentation. The PyTorch path
