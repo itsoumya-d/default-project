@@ -612,3 +612,33 @@ gate is still open and is the next engineering task: WGSL kernel, browser
 parity on 20 prompts, zero-readback trace, memory within 5%, two-device p50/p95.
 No claim may exceed that evidence. The absence of Mobbin MCP is recorded so
 future sessions do not assume it exists.
+
+---
+
+## ADR-024 - Ship an f32 correctness kernel before the f16 paged cache
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** The design note targets an f16 KV cache, but the first WGSL kernel
+had to be inspectable and comparable to the Python float32 reference. Implementing
+f16 storage and conversion before proving the addressing and online-softmax
+recurrence would mix two failure modes.
+
+**Decision.** Ship the first kernel with f32 storage, the same
+`KV[block][slot][kv_head][head_dim]` layout, online softmax, GQA head mapping,
+and a host-side status reset. Validate it in a real browser against the 20-case
+synthetic fixture from the Python reference. Defer f16 storage and the memory
+gate to the next iteration.
+
+The browser run passed **20/20** cases with max absolute error **8.43e-8** on
+Chrome 156 / NVIDIA Turing (RTX 2060), including MHA and GQA cases. The runtime
+capability check found no KV-sized buffer created with `COPY_SRC` or `MAP_READ`
+across 40 KV buffer creations; this is not a validation-layer `mapAsync` trace.
+
+**Consequences.** Addressing, GQA, block-table traversal, and online softmax are
+now covered by a real GPU test. The kernel is not wired into
+`EdgeInfer.generate()` and does not meet the memory gate; f16 storage, ORT
+prompt/logit parity, a validation-layer trace, two-device timing, Firefox, and
+a fallback flag remain open.
+

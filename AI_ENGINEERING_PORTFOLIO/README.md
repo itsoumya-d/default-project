@@ -48,6 +48,10 @@ claims that are already stale. The numbers below are the ones to use.
 | P02 npm release candidate | **agentic 0.3.0; 9 files; 22.3 kB tarball; publish pending approval** | `packages/agentic/package.json` |
 | P02 shell scripts | **11/11 shellcheck warning-level; maintenance policy merged** | `docs/shell-maintenance.md` |
 | P06 CPU reference | **Python float32 paged-attention reference; 8 tests; parity harness merged** | [edgeinfer#16](https://github.com/itsoumya-d/edgeinfer/pull/16) |
+| EdgeInfer JS tests | **113 pass after file-URL test portability fix** | `npm test` |
+| P06 Python reference | **10 paged-attention + 4 baseline validation tests pass** | `scripts/test_*.py` |
+| P06 ORT baseline | **20 prompts, 542 generated tokens, CPU ORT** | [edgeinfer#19](https://github.com/itsoumya-d/edgeinfer/pull/19) |
+| P06 WGSL kernel | **20/20 synthetic cases; max abs 8.43e-8; 40/40 clean KV creates** | [edgeinfer#20](https://github.com/itsoumya-d/edgeinfer/pull/20) |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -141,6 +145,10 @@ AI_ENGINEERING_PORTFOLIO/
 | [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `7025352` | merged; 3/3 green |
 | [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `088c217` | merged; 2/2 green |
 | [#16](https://github.com/itsoumya-d/edgeinfer/pull/16) | `itsoumya-d/edgeinfer` | `a5935b8` | `0d17672` | merged; 3/3 green |
+| [#17](https://github.com/itsoumya-d/edgeinfer/pull/17) | `itsoumya-d/edgeinfer` | `e519b3c` | `8d9e5cc` | merged; 3/3 green |
+| [#18](https://github.com/itsoumya-d/edgeinfer/pull/18) | `itsoumya-d/edgeinfer` | `72d264e` | `a501d55` | merged; 3/3 green |
+| [#19](https://github.com/itsoumya-d/edgeinfer/pull/19) | `itsoumya-d/edgeinfer` | `22b0510` | `96574e7` | merged; 3/3 green |
+| [#20](https://github.com/itsoumya-d/edgeinfer/pull/20) | `itsoumya-d/edgeinfer` | `a8bc9d8` | `31a2e77` | merged; 3/3 green |
 
 #101 added `gpu_trainer.py` (shadow verifier + Dr.GRPO/DAPO loss), 17 tests, a
 CPU-torch CI job, a benchmark protocol, and documentation. The PyTorch path

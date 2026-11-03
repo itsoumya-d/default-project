@@ -1084,3 +1084,35 @@ This does **not** claim SmolLM2 parity, WebGPU correctness, a zero-readback
 trace, memory within 5%, or a two-device speedup. The WGSL kernel remains the
 next P06 step and must be gated by this harness.
 
+
+---
+
+## 2026-11-03 - Session 28: P06 CPU, baseline, and WGSL kernel
+
+Five P06 PRs merged:
+
+- **#16** (`0d17672`): Python float32 paged-attention reference and candidate
+  comparison harness.
+- **#17** (`8d9e5cc`): Windows test imports use `pathToFileURL`; Node suite
+  reaches **113/113**.
+- **#18** (`a501d55`): GQA head mapping in the reference and dense baseline.
+- **#19** (`96574e7`): 20-prompt SmolLM2-135M-Instruct ORT baseline. The FP16
+  ONNX export ran through `onnxruntime-web` CPU with `past_key_values.*` /
+  `present.*` across 30 layers; the fixture records 542 generated tokens,
+  chosen logits, and top-5 logits. Four validator tests.
+- **#20** (`31a2e77`): f32 WGSL paged-attention kernel and browser harness.
+  One workgroup per query head, 64 invocations, online softmax, GQA mapping,
+  block table, host-reset status word.
+
+Browser evidence: **20/20 synthetic cases pass**, max abs **8.43e-8** on Chrome
+156 / NVIDIA Turing (RTX 2060), including MHA and GQA cases. Runtime capability
+check: **40/40** KV-sized buffer creations had no `COPY_SRC` or `MAP_READ`.
+This is not a validation-layer `mapAsync` trace.
+
+Verification: `npm test` **113/113**, typecheck pass, Python reference **10/10**,
+baseline validator **4/4**, `npm run pack:check` pass.
+
+Scope: kernel is f32, opt-in, and not wired into `EdgeInfer.generate()`. No ORT
+prompt/logit parity, f16 cache, validation trace, memory check, two-device
+benchmark, or speedup claim. The P06 gate remains open.
+
