@@ -1,0 +1,36 @@
+{
+  "config": {
+    "adapter_path": "",
+    "checkpoint_every": 50,
+    "clip_eps_high": 0.28,
+    "clip_eps_low": 0.2,
+    "dataset_path": "C:\\Users\\Soumya Debnath\\Documents\\Default Project\\repos\\HEROS-RL\\data\\heros_migration_500.jsonl",
+    "gradient_accumulation": 1,
+    "group_size": 4,
+    "kl_beta": 0.01,
+    "learning_rate": 1e-05,
+    "load_in_4bit": true,
+    "lora_alpha": 32,
+    "lora_r": 16,
+    "max_completion_tokens": 128,
+    "max_grad_norm": 1.0,
+    "max_prompt_tokens": 1024,
+    "max_steps": 10,
+    "model_name": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+    "output_dir": "C:\\Users\\Soumya Debnath\\Documents\\Default Project\\AI_ENGINEERING_PORTFOLIO\\projects\\project-01-heros-rlvr-studio\\runs\\2026-11-03-rl-base-probe",
+    "save_final": true,
+    "seed": 42,
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "environment": {
+    "cuda_available": true,
+    "cuda_device": "NVIDIA GeForce RTX 2060",
+    "platform": "Windows-10-10.0.21996-SP0",
+    "python": "3.11.13",
+    "sqlite": "3.50.4",
+    "torch": "2.14.1+cu130"
+  },
+  "git_commit": "unknown",
+  "started_at": "2026-11-03T02:37:41.190519+00:00"
+}

@@ -939,3 +939,31 @@ result; no RL improvement is claimed. Recorded in
 Next: RL from the base model with the corrected reward, then a harder task
 distribution if variance is still too low.
 
+
+---
+
+## 2026-11-03 - Session 25: 100-step RL from base
+
+Ran a 100-step corrected-reward RL pilot from the base model on rows 1-450:
+
+- 91/100 groups completed, 9 skipped;
+- training mean reward -0.2328 overall, -0.656 first 10, -0.044 last 10;
+- 21 OK completions out of 400; 70 REQUIREMENT_MISS, 66 SQL_EXEC_ERROR,
+  47 MISSING_BLOCKS;
+- mean loss 0.0259, max mean KL 0.0443.
+
+Held-out rows 451-500:
+
+| Model | Mean reward | OK | Risk acc | Loss acc | Requirement misses |
+|---|---:|---:|---:|---:|---:|
+| Base | 0.02 | 0.20 | 0.20 | 0.60 | 23 |
+| RL checkpoint-50 | 0.165 | 0.20 | 0.20 | 0.64 | 32 |
+| RL final (100) | 0.13 | 0.20 | 0.10 | 0.72 | 33 |
+| SFT | 1.90 | 1.00 | 0.90 | 0.90 | 0 |
+
+The RL arm removes missing-block failures and slightly reduces SQL execution
+errors, but remains far below SFT and worsens requirement misses and risk
+calibration. No RL adapter is published; the SFT adapter remains accepted.
+
+Recorded in `projects/project-01-heros-rlvr-studio/RL_BASE_100.md`.
+

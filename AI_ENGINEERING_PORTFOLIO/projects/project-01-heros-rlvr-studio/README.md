@@ -5,9 +5,10 @@ merged. The old RL adapter failed requirement satisfaction and is invalid. The
 SFT warm start scores **1.90 held-out reward** vs base **0.02**, with 45/50 tasks
 at the maximum 2.0 and manifest risk accuracy 0.90. The adapter and model card
 are local only; HF publication remains. RL-from-SFT was probed and produced
-zero-variance groups, so **no RL improvement is claimed**; see
-[`RL_FROM_SFT.md`](RL_FROM_SFT.md). Next experiment: RL from base with the
-corrected reward.
+zero-variance groups; a 100-step RL-from-base pilot reached only **0.13**
+held-out reward (0.165 at checkpoint-50) versus SFT **1.90**. **No RL gain is
+claimed.** See [`RL_FROM_SFT.md`](RL_FROM_SFT.md) and
+[`RL_BASE_100.md`](RL_BASE_100.md).
 **Repository of record:** `itsoumya-d/HEROS`. The verifier/loss PR is
 [#101](https://github.com/itsoumya-d/HEROS/pull/101), merged at `8a7951d`; the P5
 runner is [#103](https://github.com/itsoumya-d/HEROS/pull/103), merged at
@@ -65,7 +66,7 @@ This project builds that bridge and then measures whether it trains.
 | Runner test suite | `tests/test_qlora_runner.py` | Schema bridge, recorder, fake-policy orchestration |
 | CPU-torch CI job | `.github/workflows/rlvr.yml` (#101) | Added |
 | `gpu` / `train` dependency extras | `rlvr/pyproject.toml` (#101 / #103) | Added |
-| 500-step ablation | `RL_FROM_SFT.md` | **Negative probe:** RL-from-SFT had 0/10 variance groups; no RL adapter trained |
+| 500-step ablation | `RL_FROM_SFT.md`, `RL_BASE_100.md` | **SFT 1.90; RL-from-SFT 0/10 variance groups; RL-base 100-step 0.13 (0.165 at 50); no four-arm ablation** |
 | HF adapter | — | **Not uploaded** |
 
 The verifier is stdlib-only. PyTorch is imported lazily, so the default suite

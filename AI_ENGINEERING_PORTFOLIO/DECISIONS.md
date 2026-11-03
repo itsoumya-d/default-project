@@ -489,3 +489,30 @@ base-model RL arm and, if needed, a harder task distribution. The negative
 result is itself evidence: a deterministic, coarse verifier can saturate after
 SFT and remove the learning signal.
 
+
+---
+
+## ADR-021 - Treat the 100-step RL-from-base pilot as weak, not a win
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** The RL-from-SFT path had no learning signal (ADR-020). A 100-step
+RL-from-base run with the corrected reward was then executed on the first 450
+rows: 91/100 groups completed, training mean reward improved from -0.656 (first
+10) to -0.044 (last 10). Held-out greedy evaluation on rows 451-500 gave mean
+reward 0.13 for the final adapter and 0.165 for checkpoint-50, versus base 0.02
+and SFT 1.90. Risk accuracy was 0.10-0.20 versus 0.20 base and 0.90 SFT;
+REQUIREMENT_MISS rose to 32-33/50 versus 23 base.
+
+**Decision.** Report the run as a weak positive over base but not as an RL gain
+over SFT, and do not publish the RL adapter. Keep the SFT adapter as the accepted
+P01 result. Do not run a 500-step version unless a specific question justifies
+the compute; a longer run without a reward or task redesign is unlikely to close
+a 1.77-point reward gap.
+
+**Consequences.** P01 has a real SFT result, two documented RL negatives/weak
+results, and no four-arm ablation. The honest headline is that SFT dominates
+this deterministic-reward setup; RL needs a harder task distribution or finer
+partial credit before it can be claimed as an improvement.
+

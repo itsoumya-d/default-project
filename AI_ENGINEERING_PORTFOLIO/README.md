@@ -3,8 +3,8 @@
 Owner: **Soumya Debnath** (`itsoumya-d` on GitHub, `itssoumyad` on Hugging Face)
 Audit date: **2026-11-02**
 Status: **Stage 10 — SFT warm start succeeds locally (1.90 held-out);
-RL-from-SFT probe is a zero-variance negative; old RL adapter invalid;
-publication remains**
+RL-from-SFT probe is a zero-variance negative; a 100-step RL-from-base pilot
+reaches only 0.13; old RL adapter invalid; publication remains**
 
 This directory is the operating system for the portfolio transformation: the
 audit, the research map, the ten-project scorecard, the platform strategy, the
@@ -37,6 +37,7 @@ claims that are already stale. The numbers below are the ones to use.
 | Corrected reward | old adapter re-scores at 0.265, 40/50 `REQUIREMENT_MISS`; smoke has 9/20 misses | `runs/.../MODEL_CARD.md` |
 | SFT warm start | **500 steps; held-out 1.90 vs base 0.02; 45/50 at 2.0; risk 0.90** | `runs/2026-11-02-sft-warmstart/` |
 | P01 RL-from-SFT probe | **0/10 groups had reward variance; no RL adapter trained** | `projects/project-01-heros-rlvr-studio/RL_FROM_SFT.md` |
+| P01 RL-from-base pilot | **100 steps, 91 completed; held-out 0.13 vs base 0.02 vs SFT 1.90** | `projects/project-01-heros-rlvr-studio/RL_BASE_100.md` |
 | P02 adversarial corpus | **500 deterministic cases; 54 MCP tests pass** | `packages/mcp/test/*.test.mjs` |
 | P02 corpus package | **500 JSONL records, manifest, deterministic SHA-256, CI drift check** | `packages/mcp/corpus/` |
 | P02 signed proof | Ed25519 root/proof signing; browser PASS; tampered signature FAIL | `packages/agentic/web/verify-proof.html` |

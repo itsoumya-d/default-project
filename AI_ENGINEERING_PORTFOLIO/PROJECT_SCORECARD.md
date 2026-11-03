@@ -87,7 +87,7 @@ reasoning eval. Do not call the generated set human-verified.
 | P4 | `gpu_trainer.py` with verifier + loss | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` loading Qwen2.5-Coder-1.5B | **Done** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU SFT + adapter-init path exercised |
 | P6 | 75+ tests | **95 now** |
-| P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | **SFT 1.90 held-out; RL-from-SFT probe had 0/10 variance groups; RL-from-base with corrected reward next** |
+| P7 | 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO) | **SFT 1.90; RL-from-SFT 0/10 variance groups; RL-base 100-step 0.13 (0.165 at 50); no four-arm ablation** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Colab/Kaggle notebook | Not started |
 | P10 | PR + HF adapter | SFT model card local; adapter-init [#119](https://github.com/itsoumya-d/HEROS/pull/119) merged; HF upload blocked on credentials |
