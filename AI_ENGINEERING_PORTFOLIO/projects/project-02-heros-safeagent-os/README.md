@@ -1,10 +1,12 @@
 # Project 02 — HEROS-SafeAgent-OS
 
 **Rank:** 2 (score 97 **[P]**) · **Execution order:** 2 · **Window:** weeks 4–5
-**Status:** 500 adversarial cases implemented (289 existing + 211 new,
-[PR #111](https://github.com/itsoumya-d/HEROS/pull/111), merged at `7875f3a`);
-signed inclusion proofs, latency, 64-worker replay, and browser proof
-verification are missing.
+**Status:** 500 adversarial cases implemented
+([PR #111](https://github.com/itsoumya-d/HEROS/pull/111), merged at `7875f3a`).
+Ed25519 root/proof signing and a browser verifier are merged in
+[PR #112](https://github.com/itsoumya-d/HEROS/pull/112) (`d0e523f`); the browser
+accepted the signed proof and rejected a tampered signature. p99 latency and
+64-worker replay are still missing.
 
 ## Problem
 

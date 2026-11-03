@@ -18,7 +18,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 94 pass with torch; 81 pass + 13 skip without | **[V]** |
-| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
+| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#112](https://github.com/itsoumya-d/HEROS/pull/112), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
 | GPU runs | RL 500 steps found reward hacking; SFT warm start scores 1.90 held-out vs base 0.02; 45/50 at 2.0 | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
@@ -73,7 +73,7 @@ Commercial work is a separate track and is out of scope for this window.
 | 2 | Nov 9–15 | P01 SFT warm start + held-out eval + controlled RL-from-SFT | SFT 1.90 held-out; RL comparison recorded | Publish SFT only; defer RL ablation |
 | 3 | Nov 16–22 | P01 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO); MATH-500; HF adapter; W&B report | G3 + G4 for P01 | Ship 100-step negative result + protocol |
 | 4 | Nov 23–29 | P02 corpus 289 → 500 cases; Ed25519 Merkle design | Corpus runs in CI | Ship corpus only |
-| 5 | Nov 30–Dec 6 | P02 signed inclusion proofs; 64-worker WAL torture; threat model | 100% idempotency; proof verifies | Ship unsigned Merkle + threat model |
+| 5 | Nov 30-Dec 6 | P02 p99 latency + 64-worker WAL torture; threat model | 100% idempotency; signed proof browser-verified | Ship corpus + signed proof; defer torture |
 | 6 | Dec 7–13 | P06 CPU reference + parity harness; WGSL paged-decode draft | Parity harness green on CPU | Keep design note only |
 | 7 | Dec 14–20 | P06 WGSL kernel; zero-readback trace; two-device benchmark | G3 for P06 | Ship CPU reference + negative result |
 | 8 | Dec 21–27 | **Buffer / documentation debt**; portfolio site scaffold; no new flagship | Site builds; docs current | Rest — burnout is a risk |

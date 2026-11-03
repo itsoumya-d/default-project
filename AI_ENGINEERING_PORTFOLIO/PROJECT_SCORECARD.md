@@ -122,8 +122,10 @@ latency <4.5 ms, 100% idempotency consistency under 64 parallel replays, signed
 proof verifies in the browser.
 
 **Current.** 500 cases implemented (289 existing + 211 in PR #111); 53 MCP tests
-pass. `HEROS-Firewall` has 16 tests and a measured red-team result. The signature
-upgrade, p99 latency, 64-worker replay, and browser proof remain.
+pass. Ed25519 root/proof signing and a browser verifier are merged in PR #112
+(`d0e523f`); the browser accepted the signed proof and rejected a tampered
+signature. `HEROS-Firewall` has 16 tests and a measured red-team result. p99
+latency and 64-worker replay remain.
 
 **Hiring.** Anthropic MCP/safeguards, OpenAI safety systems, Scale AI, AWS
 Bedrock AgentCore.

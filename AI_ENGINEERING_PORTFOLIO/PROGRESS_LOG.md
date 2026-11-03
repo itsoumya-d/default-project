@@ -760,3 +760,27 @@ their own counts. Existing 289 + new 211 = 500.
 This closes the case-count part of the P02 gate. Still missing: Ed25519 signed
 inclusion proofs, p99 policy latency, 64-worker idempotency torture, browser
 proof verification, and a standalone public corpus package.
+
+---
+
+## 2026-11-03 - Session 18: Ed25519 signed proofs + browser verifier
+
+PR #112 (`d0e523f`) adds Ed25519 signing to the append-only Merkle log:
+
+- domain-separated root signatures (`HEROS-MERKLE-ROOT-v1\0`);
+- `signMerkleRoot`, `verifyMerkleRoot`, `signInclusionProof`,
+  `verifySignedInclusionProof`;
+- `createMerkleReceiptStore` accepts a signer and stores
+  `merkle_root_signature` + `signer_public_key`;
+- `store.signedInclusionProof` returns a signed proof;
+- `store.verify()` detects `MERKLE_ROOT_MISMATCH` and `SIGNATURE_MISMATCH`.
+
+Browser verifier: `packages/agentic/web/verify-proof.html` uses WebCrypto
+Ed25519 + SHA-256. Live browser check:
+
+- valid signed proof: **PASS**;
+- tampered signature: **FAIL** (`Merkle path: true; signature: false`).
+
+Agentic suite: **35 tests pass**. P02 now has 500 cases + signed proofs +
+browser verification. Remaining gate items: p99 policy latency <4.5 ms,
+64-worker idempotency torture, and a public corpus package.

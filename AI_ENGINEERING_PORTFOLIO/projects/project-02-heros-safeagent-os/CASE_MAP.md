@@ -2,8 +2,10 @@
 
 **Status:** **500/500 cases implemented and merged.** The original 289 are in
 `adversarial.test.mjs`; the 211 additions are in `corpus211.test.mjs`
-([PR #111](https://github.com/itsoumya-d/HEROS/pull/111), `7875f3a`). Signed
-proofs, latency, 64-worker replay, and browser verification remain.
+([PR #111](https://github.com/itsoumya-d/HEROS/pull/111), `7875f3a`). Ed25519
+signing and browser proof verification are merged in
+[PR #112](https://github.com/itsoumya-d/HEROS/pull/112), `d0e523f`; p99 latency
+and 64-worker replay remain.
 
 Source: `packages/mcp/test/adversarial.test.mjs` (289 counted cases) and the
 MCP/agentic harnesses.
