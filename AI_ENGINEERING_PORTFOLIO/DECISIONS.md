@@ -409,3 +409,30 @@ with an in-memory store.
 still rewrites its whole JSON file, `verify()` still recomputes every leaf, and
 inclusion proofs are still O(n) to generate. Those limits stay in the threat
 model; no persistent or distributed incremental tree is claimed.
+
+---
+
+## ADR-018 - Generate the public corpus from the executable tests
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** The P02 corpus existed only as test code. Hand-writing 500 JSON
+records would duplicate the cases and drift from the assertions. A static
+snapshot with no link to the tests would be hard to trust.
+
+**Decision.** Record cases from inside the existing test loops. When
+`HEROS_CORPUS_DIR` is set, `recorder.mjs` writes one JSONL file per worker; the
+normal test run leaves it as a no-op. `build.mjs` runs the two suites, validates
+13 group counts and 500 unique IDs, sorts the records, and writes
+`corpus.jsonl` plus `manifest.json` with a SHA-256. `npm run corpus:check`
+rebuilds and compares the committed files, and a dedicated CI job enforces it.
+
+Approval nonces are random in the live harness, so the dataset records
+`{"$runtime":"approval_nonce"}` with a `setup` object instead of pretending the
+token is fixed. Other JSON-lossy values use `$undefined` and `$number` markers.
+
+**Consequences.** The dataset is deterministic (same SHA-256 across rebuilds) and
+the tests remain authoritative. It captures inputs and expected verdicts, not
+observed responses; approval cases are scenarios that need the documented
+setup. Publishing to Hugging Face or npm still requires separate owner approval.

@@ -866,3 +866,29 @@ PR #116 (`d93e7d9`) removes the O(n) Merkle root recomputation:
 The earlier wrapper measured **33.8 ms** p99 at 5000 receipts. The file store
 still rewrites the whole JSON file, `verify()` is still O(n), and proofs are
 O(n) to generate; those limits are documented in the threat model.
+
+---
+
+## 2026-11-03 - Session 22: standalone P02 corpus package
+
+PR #117 (`2658e90`) packages the 500 adversarial cases as a dataset:
+
+- `packages/mcp/corpus/corpus.jsonl` â€” 500 records with input and expected
+  verdict;
+- `manifest.json` â€” 13 group counts, surface/ASI aggregates, source tests, and
+  SHA-256 `03f0608cb9b0d9b86c4216daa9843dbad05d353986c09b4e6247bb933462ba92`;
+- `recorder.mjs` â€” per-worker JSONL recorder, no-op in normal test runs;
+- `build.mjs` â€” runs both suites, validates counts/IDs, writes the package;
+- `corpus:build` / `corpus:check`, plus a dedicated CI drift job.
+
+Approval nonces are recorded as a runtime marker with a setup object; two
+consecutive builds produced the same SHA-256.
+
+`npm run test:mcp` = **54 pass** (including `corpus-package.test.mjs`);
+`npm run test` passed; PR #117 CI = **20/20 green**.
+
+P02 now has 500 executable cases, a 500-record package, signed proofs, browser
+verification, p99 policy latency, host-local 64-process idempotency, an
+incremental Merkle root, and a threat model. Remaining: npm release (approval)
+and the shell-script maintenance story.
+

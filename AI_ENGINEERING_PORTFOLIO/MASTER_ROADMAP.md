@@ -18,7 +18,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 94 pass with torch; 81 pass + 13 skip without | **[V]** |
-| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#112](https://github.com/itsoumya-d/HEROS/pull/112), [#113](https://github.com/itsoumya-d/HEROS/pull/113), [#114](https://github.com/itsoumya-d/HEROS/pull/114), [#115](https://github.com/itsoumya-d/HEROS/pull/115), [#116](https://github.com/itsoumya-d/HEROS/pull/116), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
+| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#112](https://github.com/itsoumya-d/HEROS/pull/112), [#113](https://github.com/itsoumya-d/HEROS/pull/113), [#114](https://github.com/itsoumya-d/HEROS/pull/114), [#115](https://github.com/itsoumya-d/HEROS/pull/115), [#116](https://github.com/itsoumya-d/HEROS/pull/116), [#117](https://github.com/itsoumya-d/HEROS/pull/117), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) all merged; CI green | **[V]** |
 | GPU runs | RL 500 steps found reward hacking; SFT warm start scores 1.90 held-out vs base 0.02; 45/50 at 2.0 | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
@@ -69,11 +69,11 @@ Commercial work is a separate track and is out of scope for this window.
 
 | Week | Dates | Primary deliverable | Exit gate | Fallback if blocked |
 |---:|---|---|---|---|
-| 1 | Nov 2-8 | PRs #101–#114 merged; P01 QLoRA + SFT + P02 500-case corpus | P01 SFT 1.90 held-out; 53 MCP tests; P02 500 cases | Start P02 signed proofs |
+| 1 | Nov 2-8 | PRs #101–#117 merged; P01 QLoRA + SFT + P02 corpus/package | P01 SFT 1.90 held-out; 54 MCP tests; P02 500 records | Start P02 signed proofs |
 | 2 | Nov 9–15 | P01 SFT warm start + held-out eval + controlled RL-from-SFT | SFT 1.90 held-out; RL comparison recorded | Publish SFT only; defer RL ablation |
 | 3 | Nov 16–22 | P01 500-step ablation (Base, SFT, GRPO, Dr.GRPO+DAPO); MATH-500; HF adapter; W&B report | G3 + G4 for P01 | Ship 100-step negative result + protocol |
-| 4 | Nov 23–29 | **Delivered early:** P02 corpus 289 → 500 cases; Ed25519 signing; browser verifier | 500 cases in CI; browser PASS | Ship corpus only |
-| 5 | Nov 30-Dec 6 | **Delivered early:** P02 p99 latency; host-local 64-process idempotency; incremental Merkle root; threat model | p99 0.245 ms policy; 0.62 ms signed Merkle; 64-process replay 1 handler/1 receipt | Ship corpus package; defer multi-host lock |
+| 4 | Nov 23–29 | **Delivered early:** P02 corpus 289 → 500 cases; Ed25519 signing; browser verifier; standalone JSONL package | 500 records + manifest; browser PASS; CI drift check | Ship corpus only |
+| 5 | Nov 30-Dec 6 | **Delivered early:** P02 p99 latency; host-local 64-process idempotency; incremental Merkle root; threat model | p99 0.245 ms policy; 0.62 ms signed Merkle; 64-process replay 1 handler/1 receipt | Prepare npm release candidate; defer multi-host lock |
 | 6 | Dec 7–13 | P06 CPU reference + parity harness; WGSL paged-decode draft | Parity harness green on CPU | Keep design note only |
 | 7 | Dec 14–20 | P06 WGSL kernel; zero-readback trace; two-device benchmark | G3 for P06 | Ship CPU reference + negative result |
 | 8 | Dec 21–27 | **Buffer / documentation debt**; portfolio site scaffold; no new flagship | Site builds; docs current | Rest — burnout is a risk |
@@ -126,6 +126,7 @@ inclusion proofs.
 |---|---|---|
 | Corpus audit | map 289 existing cases to OWASP ASI01–ASI10 | coverage table has no empty category |
 | New cases | +211 cases, deterministic seeds | 500 total, each with expected verdict |
+| Package | JSONL corpus + manifest + CI drift check | 500 records, deterministic SHA-256 |
 | Merkle | `packages/agentic/src/merkle.js` with domain-separated leaves | frontier root matches `merkleRoot` at every size; p99 0.62 ms signed append |
 | Signatures | Ed25519 sign/verify via `node:crypto` | browser verify path works |
 | Torture | 64-worker flock/WAL replay | host-local 64-process: 1 handler, 1 receipt; multi-host pending |

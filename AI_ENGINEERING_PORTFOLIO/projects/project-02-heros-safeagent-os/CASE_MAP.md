@@ -8,7 +8,9 @@ signing and browser proof verification are merged in
 latency is 0.245 ms ([PR #113](https://github.com/itsoumya-d/HEROS/pull/113)),
 and host-local 64-process idempotency is merged in
 [PR #115](https://github.com/itsoumya-d/HEROS/pull/115), `dc51441`; the threat
-model ships with it. The standalone corpus package remains.
+model ships with it. The 500 cases are packaged as a JSONL dataset with a
+manifest and CI drift check in
+[PR #117](https://github.com/itsoumya-d/HEROS/pull/117), `2658e90`.
 
 Source: `packages/mcp/test/adversarial.test.mjs` (289 counted cases) and the
 MCP/agentic harnesses.
