@@ -569,3 +569,46 @@ remains open: parity on 20 prompts, 0 KV `mapAsync`, memory within 5%, and
 two-device latency. JavaScript dependencies are installed only in CI; the local
 Node suite was not used as evidence for this change.
 
+
+---
+
+## ADR-024 - Record P06 #16 verification; Mobbin MCP and UI Skills are absent here
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** PR #16 (`0d17672`, merged; CI 4/4) added the paged-attention CPU
+reference, parity harness, and 8 tests, with ADR-023 recording the decision.
+However `PROGRESS_LOG.md` had no entry for it and two required documents were
+missing: `REPOSITORY_STRENGTH_INDEX.md` and `NEXT_ACTIONS.md`. Separately, the
+mission brief asks for the Mobbin MCP and UI Skills to be discovered and used.
+
+**Decision.**
+
+1. Verify, do not re-implement: re-ran `python -m unittest test_paged_attention`
+   (8/8 pass, 0.102 s) and a harness round-trip (generate 20 synthetic cases ->
+   reference-as-candidate -> `check` returns `ok: true`, 20/20 compared, 0
+   failures). These verify the harness end-to-end; they are **not** a WGSL,
+   SmolLM2, or speedup claim.
+2. Create the two missing documents. `REPOSITORY_STRENGTH_INDEX.md` scores all
+   30 public repositories on the brief's eight-category rubric; the eleven
+   elevated repositories carry evidence-based scores, the remaining nineteen
+   are marked `[P]` estimates and must not be quoted as measurements.
+   `NEXT_ACTIONS.md` ranks the next work and lists the owner-approval blockers.
+3. Mobbin MCP: **not installed** in this environment (no `mobbin` tools in the
+   tool catalogue; `list_mcp_resources` returns empty). No UI Skill exists
+   either (available skills: browser, kimi-webbridge, opencode, report).
+   Therefore Mobbin-based pattern research cannot be performed here; any UI
+   work must either use the owner's Mobbin access in a later session or proceed
+   from first principles with the `browser` skill for reference reading.
+   `Mobbin-UI-Compiler` remains fixture-only; do not invest until that changes.
+4. The Kimi WebBridge daemon had exited uncleanly; it was restarted on
+   127.0.0.1:10086 (v2.0.26; v2.0.32 available, upgrade is user-initiated).
+   GitHub PR #16 was verified live in the authenticated session: merged,
+   "4 / 4 checks OK".
+
+**Consequences.** The required document set is now complete (14/14). The P06
+gate is still open and is the next engineering task: WGSL kernel, browser
+parity on 20 prompts, zero-readback trace, memory within 5%, two-device p50/p95.
+No claim may exceed that evidence. The absence of Mobbin MCP is recorded so
+future sessions do not assume it exists.

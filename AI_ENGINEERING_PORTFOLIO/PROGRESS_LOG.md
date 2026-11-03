@@ -988,6 +988,82 @@ P02 is complete locally except the npm publication, which requires owner
 approval. P01 has an accepted SFT result and documented RL negatives/weak
 results; the four-arm ablation is not claimed.
 
+---
+
+## 2026-11-03 - Session 28: P06 #16 verification cross-check; required-document completion
+
+### Context
+
+Resumed from Session 26 (P02 complete locally; npm publish awaits approval).
+Live inspection showed that **PR #16** (`0d17672`, `feat(edgeinfer): add paged
+attention CPU reference`) had already been merged into `edgeinfer/main` at
+14:23 +0530 on 2026-11-03 with CI green (live PR page shows 4/4 checks OK;
+the parallel session's log entry records 3/3 — cosmetic discrepancy, noted).
+It had no `PROGRESS_LOG.md` entry at the time; the parallel session logged it
+separately as "Session 27" while this session was running, so this entry is
+numbered Session 28. The required documents `REPOSITORY_STRENGTH_INDEX.md` and
+`NEXT_ACTIONS.md` were missing and are created here.
+
+### Tool discovery (Task 1, completed)
+
+| Item | Result |
+|---|---|
+| Kimi WebBridge daemon | had exited uncleanly; restarted on 127.0.0.1:10086 (v2.0.26; v2.0.32 available, upgrade is user-initiated) |
+| GitHub PR #16 | verified live: merged, "4 / 4 checks OK" |
+| Mobbin MCP | **not installed** — no `mobbin` tools in catalogue; `list_mcp_resources` returns empty |
+| UI Skills | **none** — available skills: browser, kimi-webbridge, opencode, report |
+| `gh` CLI | still not installed; live checks used the authenticated Kimi session |
+| GPU | RTX 2060 visible to the host (from Session 06); no GPU job run this session |
+
+### Verification of PR #16 (no re-implementation)
+
+| Check | Result |
+|---|---|
+| `python -m unittest test_paged_attention -v` (edgeinfer/scripts) | **8 tests pass, 0.102 s** |
+| Parity round-trip: `generate` 20 synthetic cases, reference used as candidate, `check` | **`ok: true`, 20 compared, 0 failures** |
+
+These verify the harness end-to-end only. **Not claimed:** WGSL kernel,
+SmolLM2 token parity, zero-readback trace, memory bound, two-device latency,
+any speedup. MHA only; GQA is a follow-up.
+
+### Documents created
+
+- `REPOSITORY_STRENGTH_INDEX.md` — all 30 public repositories scored on the
+  brief's eight-category rubric. Eleven elevated repositories are evidence-based
+  (`[V]`/`[D]`); the other nineteen are marked `[P]` estimates and must not be
+  quoted as measurements. Elevated-set average **61.6**. Includes per-repo
+  strongest achievement, weakest area, missing capabilities, priority, effort,
+  hiring relevance, and a re-scoring protocol.
+- `NEXT_ACTIONS.md` — ranked queue; Section 1 lists the owner-approval blockers
+  (npm publish, HF adapter upload, corpus publication, profile pinning,
+  collection-description sync); Section 2 is the unblocked engineering queue
+  (P06 WGSL kernel first); Section 5 lists explicit non-goals.
+
+### Decisions
+
+- ADR-024 appended: record P06 #16 verification; Mobbin MCP / UI Skills absent;
+  required document set now 14/14.
+
+### State
+
+- Required document set: **14/14 present** (was 12).
+- P06: CPU reference + parity harness DONE and merged (#16); WGSL kernel not
+  started; P06 gate remains open.
+- P01: SFT adapter 1.90 held-out, local and unpublished; HF upload blocked on
+  token + approval.
+- P02: complete locally; `agentic@0.3.0` packed, **not published**.
+- No push, publish, upload, deploy, pin, or archive action was taken this
+  session. The workspace docs branch is uncommitted pending owner review.
+
+### Next checkpoint
+
+1. Owner reviews the workspace docs diff (RSI + NEXT_ACTIONS + ADR-024 + this
+   log) and approves the commit/push of `docs/ai-engineering-portfolio`.
+2. Owner decides the three release actions in NEXT_ACTIONS Section 1 (npm,
+   HF adapter, corpus) — each needs explicit approval.
+3. Engineering (not blocked): start the P06 WGSL kernel behind the parity
+   harness on a feature branch; do not claim any speedup before the gates pass.
+
 
 ---
 
