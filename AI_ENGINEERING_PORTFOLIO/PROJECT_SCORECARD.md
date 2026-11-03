@@ -213,15 +213,15 @@ FP32 rerank) with zero readback.
 Playwright GPU runner, SmolLM2-135M/360M.
 
 **Phases.** Design note (PR #3, done) → CPU reference (PR #16, done) → GQA
-(PR #18) → 20-prompt ORT baseline (PR #19) → f32 WGSL kernel (PR #20) → f16
-kernel → ORT prompt parity → zero-readback trace → benchmark → 150+ tests →
-npm → HF Space.
+(PR #18) → 20-prompt ORT baseline (PR #19) → f32 WGSL kernel (PR #20) → f16 KV
+cache (PR #21, done) → ORT prompt parity → zero-readback trace → benchmark →
+150+ tests → npm → HF Space.
 
-**Current.** The CPU reference, GQA support, 20-prompt ORT baseline, and f32
+**Current.** The CPU reference, GQA support, 20-prompt ORT baseline, and f16
 WGSL kernel are merged. Synthetic WebGPU parity is **20/20** on Chrome 156 /
-NVIDIA Turing with max abs **8.43e-8**; the runtime zero-readback capability
+NVIDIA Turing with max abs **4.79e-8**; the runtime zero-readback capability
 check passes **40/40**. Node tests are **113/113**; Python tests are **14**.
-f16 storage, SmolLM2 token/logit parity, a validation-layer trace, memory,
+SmolLM2 token/logit parity, a validation-layer trace, peak-memory accounting,
 two-device p50/p95, Firefox, and a fallback flag remain.
 
 **Acceptance gate.** Parity with ORT on 20 prompts, 0 `mapAsync` on KV buffers,

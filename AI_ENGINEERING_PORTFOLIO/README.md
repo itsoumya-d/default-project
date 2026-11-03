@@ -51,7 +51,7 @@ claims that are already stale. The numbers below are the ones to use.
 | EdgeInfer JS tests | **113 pass after file-URL test portability fix** | `npm test` |
 | P06 Python reference | **10 paged-attention + 4 baseline validation tests pass** | `scripts/test_*.py` |
 | P06 ORT baseline | **20 prompts, 542 generated tokens, CPU ORT** | [edgeinfer#19](https://github.com/itsoumya-d/edgeinfer/pull/19) |
-| P06 WGSL kernel | **20/20 synthetic cases; max abs 8.43e-8; 40/40 clean KV creates** | [edgeinfer#20](https://github.com/itsoumya-d/edgeinfer/pull/20) |
+| P06 WGSL kernel | **f16 KV; 20/20 synthetic; max abs 4.79e-8; 40/40 clean KV creates** | [edgeinfer#21](https://github.com/itsoumya-d/edgeinfer/pull/21) |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -149,6 +149,7 @@ AI_ENGINEERING_PORTFOLIO/
 | [#18](https://github.com/itsoumya-d/edgeinfer/pull/18) | `itsoumya-d/edgeinfer` | `72d264e` | `a501d55` | merged; 3/3 green |
 | [#19](https://github.com/itsoumya-d/edgeinfer/pull/19) | `itsoumya-d/edgeinfer` | `22b0510` | `96574e7` | merged; 3/3 green |
 | [#20](https://github.com/itsoumya-d/edgeinfer/pull/20) | `itsoumya-d/edgeinfer` | `a8bc9d8` | `31a2e77` | merged; 3/3 green |
+| [#21](https://github.com/itsoumya-d/edgeinfer/pull/21) | `itsoumya-d/edgeinfer` | `c460068` | `1b00c0a` | merged; 3/3 green |
 
 #101 added `gpu_trainer.py` (shadow verifier + Dr.GRPO/DAPO loss), 17 tests, a
 CPU-torch CI job, a benchmark protocol, and documentation. The PyTorch path

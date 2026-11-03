@@ -18,7 +18,7 @@ faked. If a gate fails, the project ships a smaller honest artifact or stops.
 | Strategy workspace | 12 documents, 10 project directories | **[V]** |
 | Project 01 code slice | verifier + Dr.GRPO/DAPO loss + QLoRA runner, 44 new tests | **[V]** |
 | HEROS `rlvr` suite | 94 pass with torch; 81 pass + 13 skip without | **[V]** |
-| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#112](https://github.com/itsoumya-d/HEROS/pull/112), [#113](https://github.com/itsoumya-d/HEROS/pull/113), [#114](https://github.com/itsoumya-d/HEROS/pull/114), [#115](https://github.com/itsoumya-d/HEROS/pull/115), [#116](https://github.com/itsoumya-d/HEROS/pull/116), [#117](https://github.com/itsoumya-d/HEROS/pull/117), [#118](https://github.com/itsoumya-d/HEROS/pull/118), [#119](https://github.com/itsoumya-d/HEROS/pull/119), [#120](https://github.com/itsoumya-d/HEROS/pull/120), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15), [#16](https://github.com/itsoumya-d/edgeinfer/pull/16), [#17](https://github.com/itsoumya-d/edgeinfer/pull/17), [#18](https://github.com/itsoumya-d/edgeinfer/pull/18), [#19](https://github.com/itsoumya-d/edgeinfer/pull/19), [#20](https://github.com/itsoumya-d/edgeinfer/pull/20) all merged; CI green | **[V]** |
+| Live PRs | [#101](https://github.com/itsoumya-d/HEROS/pull/101), [#103](https://github.com/itsoumya-d/HEROS/pull/103), [#104](https://github.com/itsoumya-d/HEROS/pull/104), [#105](https://github.com/itsoumya-d/HEROS/pull/105), [#106](https://github.com/itsoumya-d/HEROS/pull/106), [#107](https://github.com/itsoumya-d/HEROS/pull/107), [#108](https://github.com/itsoumya-d/HEROS/pull/108), [#109](https://github.com/itsoumya-d/HEROS/pull/109), [#110](https://github.com/itsoumya-d/HEROS/pull/110), [#111](https://github.com/itsoumya-d/HEROS/pull/111), [#112](https://github.com/itsoumya-d/HEROS/pull/112), [#113](https://github.com/itsoumya-d/HEROS/pull/113), [#114](https://github.com/itsoumya-d/HEROS/pull/114), [#115](https://github.com/itsoumya-d/HEROS/pull/115), [#116](https://github.com/itsoumya-d/HEROS/pull/116), [#117](https://github.com/itsoumya-d/HEROS/pull/117), [#118](https://github.com/itsoumya-d/HEROS/pull/118), [#119](https://github.com/itsoumya-d/HEROS/pull/119), [#120](https://github.com/itsoumya-d/HEROS/pull/120), [#14](https://github.com/itsoumya-d/peervault/pull/14), [#15](https://github.com/itsoumya-d/edgeinfer/pull/15), [#16](https://github.com/itsoumya-d/edgeinfer/pull/16), [#17](https://github.com/itsoumya-d/edgeinfer/pull/17), [#18](https://github.com/itsoumya-d/edgeinfer/pull/18), [#19](https://github.com/itsoumya-d/edgeinfer/pull/19), [#20](https://github.com/itsoumya-d/edgeinfer/pull/20), [#21](https://github.com/itsoumya-d/edgeinfer/pull/21) all merged; CI green | **[V]** |
 | GPU runs | RL 500 steps found reward hacking; SFT warm start scores 1.90 held-out vs base 0.02; RL-from-SFT probe had 0/10 variance groups; RL-base 100-step reaches 0.13 | **[V]** |
 | Public model artifacts | none | **[V]** |
 | `gh` CLI | not installed | **[V]** |
@@ -74,8 +74,8 @@ Commercial work is a separate track and is out of scope for this window.
 | 3 | Nov 16–22 | **Partially delivered:** P01 RL from base (100 steps) + SFT comparison | RL-base 0.13 vs base 0.02 vs SFT 1.90; no four-arm claim | Ship SFT + negative RL result; defer 500-step ablation |
 | 4 | Nov 23–29 | **Delivered early:** P02 corpus 289 → 500 cases; Ed25519 signing; browser verifier; standalone JSONL package | 500 records + manifest; browser PASS; CI drift check | Ship corpus only |
 | 5 | Nov 30-Dec 6 | **Delivered early:** P02 p99 latency; host-local 64-process idempotency; incremental Merkle root; threat model | p99 0.245 ms policy; 0.62 ms signed Merkle; 64-process replay 1 handler/1 receipt | Prepare npm release candidate; defer multi-host lock |
-| 6 | Dec 7–13 | **Delivered early:** P06 CPU reference, GQA, 20-prompt ORT baseline, f32 WGSL kernel | 20/20 synthetic WebGPU; 113 Node tests | Keep design note only |
-| 7 | Dec 14–20 | P06 f16 cache, ORT prompt parity, validation trace, two-device benchmark | G3 for P06 | Ship f32 kernel + negative result |
+| 6 | Dec 7–13 | **Delivered early:** P06 CPU reference, GQA, 20-prompt ORT baseline, f16 WGSL kernel | 20/20 synthetic WebGPU; 113 Node tests | Keep design note only |
+| 7 | Dec 14–20 | P06 ORT prompt parity, validation trace, two-device benchmark | G3 for P06 | Ship f16 kernel + negative result |
 | 8 | Dec 21–27 | **Buffer / documentation debt**; portfolio site scaffold; no new flagship | Site builds; docs current | Rest — burnout is a risk |
 | 9 | Dec 28–Jan 3 | P08 eager SAE + roofline baseline | Reconstruction `R²` measured | Delay P08 to week 10 |
 | 10 | Jan 4–10 | P08 fused Triton Top-K SAE; achieved bandwidth | Kernel parity + speedup measured | Ship eager SAE only |
@@ -153,8 +153,8 @@ documented negative result.
 | Fallback | feature flag | dense path still works |
 
 **Current (2026-11-03):** CPU reference, GQA, the 20-prompt ORT baseline, and the
-f32 WGSL kernel are merged. Synthetic WebGPU parity is **20/20** (max abs
-8.43e-8), and the runtime zero-readback capability check is **40/40**. f16
+f16 WGSL kernel are merged. Synthetic WebGPU parity is **20/20** (max abs
+4.79e-8), and the runtime zero-readback capability check is **40/40**. f16
 storage, ORT prompt/logit parity, a validation-layer trace, memory, two-device
 p50/p95, Firefox, and a fallback flag remain.
 

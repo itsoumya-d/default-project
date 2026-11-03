@@ -642,3 +642,27 @@ now covered by a real GPU test. The kernel is not wired into
 prompt/logit parity, a validation-layer trace, two-device timing, Firefox, and
 a fallback flag remain open.
 
+
+---
+
+## ADR-025 - Move the WGSL cache to f16 with f32 accumulation
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** The first WGSL kernel used f32 KV storage to isolate addressing and
+online-softmax bugs. The design target is f16 storage, and the memory gate cannot
+be evaluated with f32.
+
+**Decision.** Convert the KV storage buffers to `array<f16>` and keep f32
+accumulation. The host converts `Float32Array` inputs to IEEE-754 half bits and
+requires the `shader-f16` device feature, raising `WEBGPU_UNAVAILABLE` when it is
+missing. The 20-case fixture is generated from the same f16-rounded K/V values
+as the Python reference.
+
+**Consequences.** The kernel now matches the intended storage format. Chrome 156
+on the RTX 2060 passes **20/20** synthetic cases with max abs **4.79e-8** and
+still reports **40/40** KV buffer creations without `COPY_SRC`/`MAP_READ`.
+Peak-memory accounting, validation-layer trace, ORT token parity, two-device
+benchmark, Firefox, and a fallback flag remain open.
+

@@ -1116,3 +1116,28 @@ Scope: kernel is f32, opt-in, and not wired into `EdgeInfer.generate()`. No ORT
 prompt/logit parity, f16 cache, validation trace, memory check, two-device
 benchmark, or speedup claim. The P06 gate remains open.
 
+
+---
+
+## 2026-11-03 - Session 29: f16 paged-attention KV
+
+PR #21 (`1b00c0a`) moves the WebGPU paged-attention kernel to f16 KV storage
+with f32 accumulation:
+
+- WGSL `enable f16`; K/V cache buffers are `array<f16>`;
+- host converts `Float32Array` inputs to IEEE-754 half bits and requires
+  `shader-f16`;
+- fixture reference is generated from the same f16-rounded values;
+- browser harness requests `shader-f16`.
+
+Result on Chrome 156 / NVIDIA Turing (RTX 2060): **20/20** synthetic cases
+(MHA + GQA), max abs **4.79e-8**, **40/40** KV buffer creations without
+`COPY_SRC`/`MAP_READ`.
+
+Verification: `npm test` **113/113**, typecheck pass, Python reference
+**10/10**, `npm run pack:check` pass; PR CI 3/3 green.
+
+Still open: SmolLM2 token/logit parity, validation-layer `mapAsync` trace, peak
+memory within 5%, two-device p50/p95, Firefox, and a fallback flag. The kernel
+is opt-in and not wired into `EdgeInfer.generate()`.
+
