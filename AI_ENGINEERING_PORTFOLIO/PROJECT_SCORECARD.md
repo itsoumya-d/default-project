@@ -121,7 +121,7 @@ publish npm → threat model → PR → sync `HEROS-Firewall` Space.
 latency <4.5 ms, 100% idempotency consistency under 64 parallel replays, signed
 proof verifies in the browser.
 
-**Current.** 500 cases implemented (289 existing + 211 in PR #111); 53 MCP
+**Current.** 500 cases implemented (289 existing + 211 in PR #111); 54 MCP
 tests pass. Ed25519 root/proof signing and a browser verifier merged in PR #112
 (`d0e523f`); the browser accepted the signed proof and rejected a tampered
 signature. p99 policy latency is **0.245 ms** over 5000 samples (PR #113). The

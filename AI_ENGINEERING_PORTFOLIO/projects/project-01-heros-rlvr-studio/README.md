@@ -240,16 +240,18 @@ tests from the HEROS checkout, not from this directory.
 | P3 | Dependency extras | **Done** (`gpu` and `train` extras) |
 | P4 | Verifier + loss engine | **Done** ([#101](https://github.com/itsoumya-d/HEROS/pull/101)) |
 | P5 | `qlora_runner.py` for Qwen2.5-Coder-1.5B-Instruct | **Merged** ([#103](https://github.com/itsoumya-d/HEROS/pull/103)); GPU-smoked |
-| P6 | 75+ tests | **94 now** |
-| P7 | 500-step four-arm ablation | **RL arm negative; SFT warm start 1.90 held-out; RL-from-SFT and A0/A1/A2 pending** |
+| P6 | 75+ tests | **95 now** |
+| P7 | 500-step four-arm ablation | **SFT 1.90; RL-from-SFT 0/10 variance groups; RL-base 100-step 0.13; four-arm pending** |
 | P8 | Parallel shadow workers >1.8× step throughput | Not started |
 | P9 | Kaggle/Colab notebook | Not started |
-| P10 | HF adapter + model card | SFT model card local; HF upload blocked on credentials |
+| P10 | HF adapter + model card | SFT model card local; adapter-init [#119](https://github.com/itsoumya-d/HEROS/pull/119) merged; HF upload blocked on credentials |
 
 P7 now has a GPU path and an SFT result: RTX 2060, 4-bit 1.5B, 3.14 GB SFT peak.
 The four-arm ablation is still missing; the SFT arm is not a controlled RL
-comparison. P10 has a local model card but is blocked on the absent HF token. P8
-can start from the measured 500-step RL throughput.
+comparison. The RL-from-SFT probe had no learning signal and the 100-step
+RL-from-base pilot reached only 0.13 held-out, so neither is a win over SFT. P10
+has a local model card but is blocked on the absent HF token. P8 can start from
+the measured 500-step RL throughput.
 
 ### Acceptance evidence
 
