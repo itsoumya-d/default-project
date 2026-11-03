@@ -306,3 +306,47 @@ and may expose that 1.5B cannot satisfy many target schemas. That is the correct
 failure: the previous reward measured format compliance, not migration skill.
 The new gate is schema-level, not data-content-level; row hashing and PostgreSQL
 parity remain future work.
+
+---
+
+## ADR-014 - Measure policy latency separately from Merkle append cost
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** The first p99 benchmark wrapped the receipt store in
+`createMerkleReceiptStore` and measured 33.8 ms p99 at 5000 samples. That number
+looks like a policy-gate failure, but the wrapper recomputes the Merkle root over
+every leaf on each append, so the benchmark was measuring O(n) log maintenance,
+not validation or authorization.
+
+**Decision.** `npm run bench:policy` measures the in-process policy path with the
+O(1) memory receipt store: schema validation, authorization, handler execution,
+and receipt append. The signed Merkle wrapper is excluded and its cost is
+reported separately. The threshold remains p99 <4.5 ms for the policy path.
+
+**Consequences.** The policy path passes at **0.245 ms p99** over 5000 samples.
+The 33.8 ms Merkle figure is retained as a known scalability limit, not hidden.
+An incremental Merkle tree is required before the signed log can be claimed as
+high-throughput; until then, benchmark claims must name which path they cover.
+
+---
+
+## ADR-015 - Scope the idempotency lock to one process
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** `AgenticApp.execute` checked the receipt store for an idempotency
+key and then ran the handler. Two concurrent callers could both observe "no
+receipt", both execute, and both append. PR #114 adds an in-flight promise map
+so only the leader executes and followers replay the recorded response.
+
+**Decision.** Ship the in-process lock now and test 64 concurrent calls: one
+handler invocation, one receipt, 63 `_idempotent: true` responses. Do not claim
+cross-process idempotency from this test. The file store's flock/WAL behavior and
+a 64-worker cross-process torture test remain a separate deliverable.
+
+**Consequences.** The P02 gate's 64-way idempotency item is satisfied at the
+in-process level only. A multi-worker deployment still depends on the receipt
+store's locking and on a future cross-process test.

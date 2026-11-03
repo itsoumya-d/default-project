@@ -784,3 +784,34 @@ Ed25519 + SHA-256. Live browser check:
 Agentic suite: **35 tests pass**. P02 now has 500 cases + signed proofs +
 browser verification. Remaining gate items: p99 policy latency <4.5 ms,
 64-worker idempotency torture, and a public corpus package.
+
+---
+
+## 2026-11-03 - Session 19: P02 latency + idempotency
+
+PR #113 (`58173eb`) adds `npm run bench:policy`:
+
+| Metric | Value |
+|---|---:|
+| Samples | 5000 |
+| p50 | 0.0364 ms |
+| p95 | 0.0954 ms |
+| p99 | **0.245 ms** |
+| Max | 2.3768 ms |
+
+It measures validation + authorization + handler + an O(1) memory receipt
+append, and deliberately excludes the Merkle wrapper. Re-running with the
+signed Merkle wrapper gave p99 **33.8 ms** at 5000 receipts because the root is
+recomputed O(n) on every append. That is a real scalability limit, recorded in
+ADR-014, not a policy-latency result.
+
+PR #114 (`9ca2264`) adds an in-flight idempotency map to `AgenticApp`:
+
+- 64 concurrent requests with one key: **1 handler invocation, 1 receipt, 63
+  `_idempotent: true` responses**;
+- a concurrent different payload gets `IDEMPOTENCY_CONFLICT` and does not
+  execute;
+- `npm run test:agentic` = **37 pass**, `npm run test:mcp` = **53 pass**.
+
+Scope is in-process only (ADR-015). Cross-process 64-worker replay and the
+standalone public corpus package remain the P02 blockers.

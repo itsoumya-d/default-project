@@ -4,8 +4,11 @@
 `adversarial.test.mjs`; the 211 additions are in `corpus211.test.mjs`
 ([PR #111](https://github.com/itsoumya-d/HEROS/pull/111), `7875f3a`). Ed25519
 signing and browser proof verification are merged in
-[PR #112](https://github.com/itsoumya-d/HEROS/pull/112), `d0e523f`; p99 latency
-and 64-worker replay remain.
+[PR #112](https://github.com/itsoumya-d/HEROS/pull/112), `d0e523f`. p99 policy
+latency is 0.245 ms ([PR #113](https://github.com/itsoumya-d/HEROS/pull/113)),
+and the 64-way in-process idempotency lock is merged
+([PR #114](https://github.com/itsoumya-d/HEROS/pull/114)). Cross-process
+64-worker replay and the standalone corpus package remain.
 
 Source: `packages/mcp/test/adversarial.test.mjs` (289 counted cases) and the
 MCP/agentic harnesses.

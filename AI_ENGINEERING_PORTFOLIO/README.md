@@ -27,8 +27,8 @@ claims that are already stale. The numbers below are the ones to use.
 | Hugging Face datasets | **2** (`graphrag-questions-100`, `heros-migration-500`) | HF profile |
 | Hugging Face public models | **0** | HF profile |
 | HF collection | 1 (`HEROS AI Systems Portfolio`) | HF profile |
-| HEROS MCP tests | **46 test functions pass; 289 adversarial cases** | `npm run test:mcp` |
-| HEROS `rlvr` tests | **94 total: 94 pass with torch; 81 pass + 13 skip without** | `unittest`, `main` at `90f33a1` |
+| HEROS MCP tests | **53 tests pass; 500 adversarial cases** | `npm run test:mcp` |
+| HEROS `rlvr` tests | **94 total: 94 pass with torch; 81 pass + 13 skip without** | `unittest`, `main` at `9ca2264` |
 | HEROS-RL tests | **40 pass, 5 skipped** | `unittest` |
 | GPU smoke run | **10 steps, 7 optimizer steps, mean reward 0.339, 4.15 GB peak** | RTX 2060, `runs/2026-11-02-gpu-smoke-1.5b/` |
 | 500-step run | **500 steps, 209 optimizer steps, mean reward 1.0203, 4.16 GB peak** | `runs/2026-11-02-a3-500-qwen1.5b/` |
@@ -37,6 +37,8 @@ claims that are already stale. The numbers below are the ones to use.
 | SFT warm start | **500 steps; held-out 1.90 vs base 0.02; 45/50 at 2.0; risk 0.90** | `runs/2026-11-02-sft-warmstart/` |
 | P02 adversarial corpus | **500 deterministic cases; 53 MCP tests pass** | `packages/mcp/test/*.test.mjs` |
 | P02 signed proof | Ed25519 root/proof signing; browser PASS; tampered signature FAIL | `packages/agentic/web/verify-proof.html` |
+| P02 policy latency | **p99 0.245 ms over 5000 samples (<4.5 ms)** | `packages/agentic/bench/policy-latency.mjs` |
+| P02 idempotency | **64 concurrent in-process requests → 1 handler call, 1 receipt** | `packages/agentic/test/agentic.test.mjs` |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -119,6 +121,8 @@ AI_ENGINEERING_PORTFOLIO/
 | [#110](https://github.com/itsoumya-d/HEROS/pull/110) | `itsoumya-d/HEROS` | `35be490` | `90f33a1` | merged; 18/18 green |
 | [#111](https://github.com/itsoumya-d/HEROS/pull/111) | `itsoumya-d/HEROS` | `32fcc75` | `7875f3a` | merged; 18/18 green |
 | [#112](https://github.com/itsoumya-d/HEROS/pull/112) | `itsoumya-d/HEROS` | `093bac5` | `d0e523f` | merged; 18/18 green |
+| [#113](https://github.com/itsoumya-d/HEROS/pull/113) | `itsoumya-d/HEROS` | `b392270` | `58173eb` | merged; 18/18 green |
+| [#114](https://github.com/itsoumya-d/HEROS/pull/114) | `itsoumya-d/HEROS` | `5251894` | `9ca2264` | merged; 18/18 green |
 | [#14](https://github.com/itsoumya-d/peervault/pull/14) | `itsoumya-d/peervault` | `4ad241e` | `7025352` | merged; 3/3 green |
 | [#15](https://github.com/itsoumya-d/edgeinfer/pull/15) | `itsoumya-d/edgeinfer` | `2dd3bc0` | `088c217` | merged; 2/2 green |
 
@@ -134,7 +138,7 @@ target-schema requirement check that rejects no-op migrations. #14 fixed the two
 real README contradictions. #15 added a design-only WGSL paged-attention note;
 it does not claim a kernel or a speedup.
 
-The post-merge `main` commit is `d0e523f` (the 500-step run used `d38a603`); the
+The post-merge `main` commit is `9ca2264` (the 500-step run used `d38a603`); the
 full `rlvr` suite was re-run at 94 pass with torch and 81 pass + 13 skip without. A 10-step 1.5B GPU smoke then
 completed 7 optimizer steps at 4.15 GB peak. The 500-step single-arm run then
 finished 500 steps with 209 optimizer steps, mean reward 1.0203, and 4.16 GB
