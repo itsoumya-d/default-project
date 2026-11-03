@@ -1,7 +1,8 @@
 # Qwen2.5-Coder-1.5B — HEROS SFT warm start
 
 **Status:** local experiment; **not uploaded**. Supervised warm start, not an RL
-result and not a production migration model.
+result and not a production migration model. The RL probes are separate
+negative/weak experiments and are not part of this adapter.
 
 ## Model
 
@@ -54,11 +55,24 @@ Per-task breakdown:
 Research on verifier-driven migration post-training. The adapter must be
 compared with `forge` and a larger held-out set before any production use.
 
+## RL experiments (not part of this artifact)
+
+Two separate experiments started from this adapter or its base:
+
+- **RL-from-SFT:** 0/10 sampled groups had reward variance (`2.0` on nine tasks,
+  `1.0` on the type_narrowing task), so the runner skipped every group. No RL
+  adapter was trained. See [`RL_FROM_SFT.md`](../../RL_FROM_SFT.md).
+- **RL-from-base (100 steps, corrected reward):** held-out mean reward `0.13`
+  (`0.165` at checkpoint-50) versus base `0.02` and this SFT adapter `1.90`.
+  The RL arm removes missing-block failures but has worse risk calibration and
+  more requirement misses. It is not published and is not competitive with SFT.
+  See [`RL_BASE_100.md`](../../RL_BASE_100.md).
+
 ## Limitations
 
 - The SFT targets are programmatically generated, not human demonstrations.
 - 50 type_narrowing rows are excluded from training; SQLite cannot verify them.
 - The held-out result can be depressed by those unlearnable rows; report the
   per-hazard split.
-- No RL yet; no four-arm ablation; no model-quality claim.
+- RL probes are negative or weak; no four-arm ablation; no model-quality claim.
 - The adapter is local and unpublished; no external review.

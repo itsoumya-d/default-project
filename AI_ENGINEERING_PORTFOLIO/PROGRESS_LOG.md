@@ -967,3 +967,24 @@ calibration. No RL adapter is published; the SFT adapter remains accepted.
 
 Recorded in `projects/project-01-heros-rlvr-studio/RL_BASE_100.md`.
 
+
+---
+
+## 2026-11-03 - Session 26: shell maintenance and P01 result cleanup
+
+PR #120 (`61f6eec`) closes the P02 shell-script maintenance gap:
+
+- `docs/shell-maintenance.md` inventories all 11 scripts, their controls, known
+  gaps, change policy, and migration order;
+- `forge/eval-bridge.sh` and `zero-ecosystem/eval-harness/zeval.sh` were added
+  to the CI shellcheck list;
+- all 11 scripts pass `shellcheck -S warning` locally; CI is 20/20 green.
+
+The SFT model card now explicitly separates the RL probes: RL-from-SFT had 0/10
+variance groups, and RL-from-base 100 steps reached 0.13 held-out versus SFT
+1.90. No RL adapter is claimed or published.
+
+P02 is complete locally except the npm publication, which requires owner
+approval. P01 has an accepted SFT result and documented RL negatives/weak
+results; the four-arm ablation is not claimed.
+

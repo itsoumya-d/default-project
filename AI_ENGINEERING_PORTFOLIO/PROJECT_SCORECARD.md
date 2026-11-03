@@ -131,9 +131,10 @@ incremental: p99 **0.62 ms** at 5200 signed receipts (PR #116, `d93e7d9`). The
 500 cases are packaged as a 500-record JSONL dataset with a manifest and CI
 drift check (PR #117, `2658e90`). `@soumyadebnath1619/agentic@0.3.0` is a
 9-file, 22.3 kB release candidate with the threat model and changelog included
-(PR #118, `cbee92a`). `HEROS-Firewall` has 16 tests and a measured red-team
-result. **Gate met locally; corpus packaged; release candidate ready.**
-Remaining: publish approval and the shell-script maintenance story.
+(PR #118, `cbee92a`). The 11-script maintenance policy is merged with full
+shellcheck coverage (PR #120, `61f6eec`). `HEROS-Firewall` has 16 tests and a
+measured red-team result. **Gate met locally; corpus packaged; release candidate
+ready; shell maintenance documented.** Remaining: publish approval.
 
 **Hiring.** Anthropic MCP/safeguards, OpenAI safety systems, Scale AI, AWS
 Bedrock AgentCore.

@@ -1,7 +1,7 @@
 # Project 02 — HEROS-SafeAgent-OS
 
 **Rank:** 2 (score 97 **[P]**) · **Execution order:** 2 · **Window:** weeks 4–5
-**Status:** **P02 deliverables complete locally; npm release pending.** 500
+**Status:** **P02 deliverables complete locally; npm publish pending.** 500
 adversarial cases ([PR #111](https://github.com/itsoumya-d/HEROS/pull/111),
 `7875f3a`) are packaged as a 500-record JSONL dataset with a manifest and CI
 drift check ([PR #117](https://github.com/itsoumya-d/HEROS/pull/117),
@@ -12,27 +12,27 @@ Host-local 64-process idempotency and the threat model are merged
 ([PR #115](https://github.com/itsoumya-d/HEROS/pull/115), `dc51441`). Merkle
 append is incremental at p99 **0.62 ms** for 5200 signed receipts
 ([PR #116](https://github.com/itsoumya-d/HEROS/pull/116), `d93e7d9`).
-`@soumyadebnath1619/agentic@0.3.0` is prepared as a release candidate
-([PR #118](https://github.com/itsoumya-d/HEROS/pull/118), `cbee92a`): nine
-tarball files including `THREAT_MODEL.md` and `CHANGELOG.md`. Publication needs
-owner approval; the shell-script maintenance story remains.
+`@soumyadebnath1619/agentic@0.3.0` is a release candidate
+([PR #118](https://github.com/itsoumya-d/HEROS/pull/118), `cbee92a`), and the
+11-script maintenance policy is merged in
+[PR #120](https://github.com/itsoumya-d/HEROS/pull/120) (`61f6eec`), with all 11
+scripts in the CI shellcheck list. Publication needs owner approval.
 
 ## Problem
 
 An agent runtime needs a tamper-evident audit trail and a hard gate before
 destructive actions. HEROS now has a packaged 500-case adversarial corpus,
 Ed25519-signed Merkle receipts, a browser proof verifier, a measured p99 policy
-path, host-local cross-process idempotency, and a documented threat model. The
-remaining gaps are the npm release and a maintenance story for the 11 shell
-scripts (36.5% of code bytes).
+path, host-local cross-process idempotency, an incremental Merkle root, a
+threat model, and a shell-script maintenance policy. The only remaining P02
+item is the npm publication, which requires owner approval.
 
 ## Next action
 
 Publish `@soumyadebnath1619/agentic@0.3.0` after explicit owner approval, using
-the existing `agentic-v*` tag workflow and provenance. Then write the
-shell-script maintenance plan. Keep the remaining limits visible: the file store
-still rewrites its whole JSON file and `verify()` is O(n), even though Merkle
-root updates are O(log n).
+the existing `agentic-v*` tag workflow and provenance. Keep the remaining limits
+visible: the file store still rewrites its whole JSON file and `verify()` is
+O(n), even though Merkle root updates are O(log n).
 
 ## Deliverables
 
@@ -50,6 +50,9 @@ root updates are O(log n).
 - `@soumyadebnath1619/agentic@0.3.0` release candidate: nine files, 22.3 kB
   tarball, `THREAT_MODEL.md` + `CHANGELOG.md` included (PR #118). Publish is
   gated on owner approval.
+- Shell-script maintenance policy: 11-script inventory, controls, known gaps,
+  and migration order in `docs/shell-maintenance.md` (PR #120, `61f6eec`); all 11
+  now run shellcheck warning-level in CI.
 
 ## Gate
 

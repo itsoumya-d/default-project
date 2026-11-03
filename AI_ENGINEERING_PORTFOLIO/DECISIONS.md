@@ -516,3 +516,27 @@ results, and no four-arm ablation. The honest headline is that SFT dominates
 this deterministic-reward setup; RL needs a harder task distribution or finer
 partial credit before it can be claimed as an improvement.
 
+
+---
+
+## ADR-022 - Keep the Bash bridges but make their coverage explicit
+
+**Status:** Accepted
+**Date:** 2026-11-03
+
+**Context.** P02 listed 11 shell scripts (about 3,175 lines) as a maintenance
+risk. Two scripts were not in the CI shellcheck list, and there was no written
+policy for when a bridge should be ported or deleted.
+
+**Decision.** Keep the Bash bridges for Linux/WSL while Zero lacks stdin, but:
+
+- run `shellcheck -S warning` on all 11 scripts in CI;
+- document the inventory, controls, known gaps, change policy, and migration
+  order in `docs/shell-maintenance.md`;
+- state that the Node MCP package is the cross-platform path and the Bash
+  bridges are not macOS/native-Windows targets.
+
+**Consequences.** All 11 scripts are syntax/lint-covered and the duplication,
+encoding, and Bash-level test gaps are explicit. No bridge logic changed. P02's
+only remaining item is the npm publication, which needs owner approval.
+
