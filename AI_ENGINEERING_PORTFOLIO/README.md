@@ -22,7 +22,7 @@ claims that are already stale. The numbers below are the ones to use.
 
 | Fact | Verified state | Evidence |
 |---|---|---|
-| Public GitHub repositories | **30** | GitHub profile, 2026-11-02 |
+| Public GitHub repositories | **63** (30 at the 2026-11-02 audit; 61 at the 2026-11-04 browser count; 63 via API) | GitHub API `/users/itsoumya-d`, 2026-11-04 |
 | Repositories audited in depth | **11** | shallow clones + test runs |
 | Hugging Face Spaces | **11** | `huggingface.co/itssoumyad` |
 | Hugging Face datasets | **2** (`graphrag-questions-100`, `heros-migration-500`) | HF profile |
@@ -150,6 +150,14 @@ AI_ENGINEERING_PORTFOLIO/
 | [#19](https://github.com/itsoumya-d/edgeinfer/pull/19) | `itsoumya-d/edgeinfer` | `22b0510` | `96574e7` | merged; 3/3 green |
 | [#20](https://github.com/itsoumya-d/edgeinfer/pull/20) | `itsoumya-d/edgeinfer` | `a8bc9d8` | `31a2e77` | merged; 3/3 green |
 | [#21](https://github.com/itsoumya-d/edgeinfer/pull/21) | `itsoumya-d/edgeinfer` | `c460068` | `1b00c0a` | merged; 3/3 green |
+| [#15](https://github.com/itsoumya-d/peervault/pull/15) | `itsoumya-d/peervault` | `bc12ede` | `e22fb7f` | merged 2026-11-04; 6/6 green |
+| [#23](https://github.com/itsoumya-d/edgeinfer/pull/23) | `itsoumya-d/edgeinfer` | — | `89881a9` | merged 2026-11-04; 6/6 green |
+| [#1](https://github.com/itsoumya-d/RouteLLM-Gateway/pull/1) | `itsoumya-d/RouteLLM-Gateway` | — | `92083c8` | merged 2026-11-04 |
+
+#15 (peervault) is the Windows 11 handshake/streaming-memory log; #23 (edgeinfer)
+enforces a coverage floor; #1 (RouteLLM-Gateway) adds the OpenAI-compatible HTTP
+provider adapter. edgeinfer **#22** (real-geometry paged-attention parity) is
+still open and merge-ready.
 
 #101 added `gpu_trainer.py` (shadow verifier + Dr.GRPO/DAPO loss), 17 tests, a
 CPU-torch CI job, a benchmark protocol, and documentation. The PyTorch path

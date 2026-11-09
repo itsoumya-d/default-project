@@ -1141,3 +1141,745 @@ Still open: SmolLM2 token/logit parity, validation-layer `mapAsync` trace, peak
 memory within 5%, two-device p50/p95, Firefox, and a fallback flag. The kernel
 is opt-in and not wired into `EdgeInfer.generate()`.
 
+---
+
+## 2026-11-04 - Session 30: live 61-repo reconciliation, real-geometry parity, PR #22
+
+### Live inventory (Kimi browser, authenticated session)
+- GitHub profile header: **61 public repositories** (was 30 on 2026-11-03).
+  Page 1 = 30, page 2 = 30, page 3 = 1 (`craveai-privacy-policy`).
+  Newly visible: `loanflow`, `image2code-bench`, `allrtc`, `syncforge`,
+  `ContentForge-AI`, `mobile-native-design-system`, `flux-social`, `aeo_geo`,
+  `hostshift`, `swarmcompute`, `vulnhunter`, `meshauth`, `pulsenet`,
+  `greybox-codebase-single-file`, `syncplay`, `fieldlens__`, `zeroq`,
+  `cybermentor`, `EcoSphere`, `simbook`, `govpass`, `waitless`, `motion-mcp`,
+  `surface-karya`, `trimium`, `awesome-zero-server-saas`, `afeedi`, `Nest`,
+  `GRC-Tools`, `awesome-security-GRC`, `awesome-compliance`, `vc_idias`.
+  Missing from the old baseline: `FREED`, `ridge_shade`, `developer-utilities`,
+  `getsmscode-test` (renamed/archived/private until confirmed).
+- Hugging Face `itssoumyad`: 11 Spaces, 2 datasets, 0 models, 1 collection
+  ("Ten applied AI systems"). Unchanged.
+- Kimi bridge: running on 127.0.0.1:10086, v2.0.26 (v2.0.32 available,
+  user-initiated upgrade). `gh` still not installed.
+
+### RSI updates (`REPOSITORY_STRENGTH_INDEX.md`)
+- Inventory corrected from 30 → 61 public repos; §3 expanded to the 50
+  non-elevated repos with metadata [P] rows; vanished baseline rows held
+  pending confirmation.
+- edgeinfer re-scored **69 → 72 [V]**: evidence now covers #17 (Windows
+  `pathToFileURL`, 113/113), #18 (GQA), #19 (20-prompt SmolLM2 ORT baseline),
+  #20 (f32 WGSL kernel, 20/20, 8.43e-8), #21 (f16 KV, 20/20, 4.79e-8,
+  40/40 buffer-usage clean), plus local `adb3cb9` real-geometry parity.
+- Elevated-set average: 61.6 → **61.8**. Portfolio metrics row updated
+  (61 public repos; PRs #101–#120, #14, #15, #16–#21, plus `adb3cb9`).
+
+### P06 real-geometry parity (commit `adb3cb9`, branch `feat/p06-wgsl-parity`)
+Verified independently in this workspace:
+- `npm test`: **113/113 pass** (9536 ms).
+- Python suite: **14/14 pass** (0.105 s).
+- `node scripts/kv_memory_accounting.mjs`: analytic 2,949,120 vs total
+  2,950,080; **overhead 0.033%** — passes the 5% gate.
+- CPU oracle re-run: writes 20 reference rows.
+- Committed browser result (2026-11-04, Chrome 156, RTX 2060 / NVIDIA
+  Turing): **20/20 real-geometry cases, max abs 3.53e-8**, 40/40 KV buffer
+  creations without `COPY_SRC`/`MAP_READ`.
+
+### PR #22 — https://github.com/itsoumya-d/edgeinfer/pull/22
+- Head: `adb3cb9` (`feat/p06-wgsl-parity`), base `main` (`1b00c0a`).
+  8 files, +560/−6. Title: "feat(edgeinfer): add real-geometry
+  paged-attention parity". Description records evidence and non-claims.
+- CI run [41776945114](https://github.com/itsoumya-d/edgeinfer/actions/runs/41776945114):
+  **Status Success, total duration 28 s**. Jobs: "Paged attention
+  reference" (4 s), "Build & test (Node 22.x)", "Build & test (Node 24.x)"
+  (matrix: 2 jobs completed). Annotations: 3 Node 20 deprecation warnings,
+  3 ubuntu-latest notices.
+- PR page: "All checks have passed — 4 successful checks", "No conflicts
+  with base branch", mergeable automatically. Codex review failed to complete
+  (usage limit); CodeRabbit notes repo has <10 stars so no automatic review.
+
+### Still open (P06)
+- Full SmolLM2 token/logit decode parity (attention-geometry parity only).
+- Validation-layer `mapAsync` trace (zero-readback is a runtime buffer-usage
+  check).
+- Two-device p50/p95; Firefox; fallback flag wiring into the SDK.
+- PR #22 merge awaits owner approval (remote write).
+
+---
+
+## 2026-11-04 - Session 31: peervault Windows benchmark log, PR #15
+
+### Context
+PR #22 (edgeinfer) is green and merge-ready; merge awaits owner approval.
+This session advanced the next unblocked item: the committed benchmark log
+for peervault, the largest `[D]` gap in the highest-scored repo (83 [V]/[D]).
+
+### Environment
+- `repos/peervault/sdk`: `npm install` (98 packages) + `npm run build`
+  (tsup) — both passed. `node v22.18.0`, Windows 11 Pro, RTX 2060 host.
+- `cargo` / `rustc` are **not installed** on this host. The wasm artifact
+  `pqc/target/wasm32-unknown-unknown/release/peervault_mlkem768.wasm` was
+  absent, so `bench-pqc.mjs` failed with `ENOENT`. It was restored from the
+  checked-in base64 payload in `sdk/src/mlkem-wasm.generated.ts`
+  (49,446 bytes, `\x00asm` magic; byte-identical to the vendored payload).
+  No cargo was invoked.
+
+### Benchmark runs (2026-11-04)
+- `node scripts/bench-pqc.mjs` (250 KEM iterations, 50 handshakes):
+  - keygen mean 0.085 ms (11,710 ops/s)
+  - encapsulate mean 0.086 ms (11,612 ops/s)
+  - decapsulate mean 0.083 ms (12,025 ops/s)
+  - full handshake mean 2.252 ms (444 ops/s); p50 **2.221 ms**, p95 **2.668 ms**
+  - wasm_bytes: 49,446 (matches the checked-in core).
+  Compare Apple Silicon (same doc): handshake p50 0.836 ms, p95 1.082 ms.
+- `node --expose-gc scripts/bench-streaming-memory.mjs` (sparse-file /
+  discarding-sink, 1 GB, 16,384 chunks; not a real WebRTC transfer):
+  - sender: baseline 28.22 MB, peak 67.67 MB, delta **39.45 MB**
+  - receiver: baseline 53.36 MB, peak 69.45 MB, delta **16.09 MB**
+  Compare Apple Silicon: receiver 3.02 MB, sender 77.45 MB. Both runs
+  reported; no WebRTC throughput claimed.
+- `npm test`: **11 pass / 9 fail** on this host due to a Windows
+  `ERR_UNSUPPORTED_ESM_URL_SCHEME` import quirk (absolute paths without
+  `file://`), unrelated to the benchmarks. KATs were not re-run (needs cargo).
+
+### Commit and PR
+- Branch `feat/peervault-bench-windows`, commit `bc12ede` (docs + 2 JSON
+  only; no code, no crypto, no version bump). `sdk/dist/*` churn from the
+  local build was discarded.
+- PR [#15](https://github.com/itsoumya-d/peervault/pull/15) (opened via
+  Kimi browser): "All checks have passed — 4 successful checks", no conflicts,
+  mergeable. Body records the numbers, the wasm-restore note, and the
+  non-claims. Codex review hit the usage limit (as on edgeinfer #22).
+
+### Files
+- `sdk/bench-pqc.local.json`, `sdk/bench-memory.local.json` (raw outputs),
+  `docs/pqc-validation.md` (Windows 11 subsection).
+
+### Still open
+- PR #15 (peervault) and PR #22 (edgeinfer) merges await owner approval.
+- P06 remaining gates; 0 public HF models; npm 0.3.0 publish.
+
+---
+
+## 2026-11-04 - Session 32: P06 failed-ACK/retry prep (unblocked)
+
+### Context
+PR #22 (edgeinfer real-geometry parity) and PR #15 (peervault Windows bench)
+remain open and green; merges await explicit owner approval and are not
+performed here. HF remains 0 public models (needs token + approval); npm
+`agentic@0.3.0` publish awaits approval; P06 decode-parity / validation-trace
+/ two-device gates need browser/GPU work not claimable from an agent run.
+
+### What this session did (P06 prep, branch `feat/p06-decode-parity-prep`)
+Worked only from the existing real-geometry harness already on
+`feat/p06-decode-parity-prep`:
+- `scripts/smollm2_decode_prep.mjs` (177 lines): loads the 20-prompt ORT
+  baseline + real-geometry fixture + committed oracle reference; re-runs the
+  CPU online-softmax recurrence over all 20 cases and checks it matches the
+  committed reference within `atol=2e-3 / rtol=2e-2`; writes a prep manifest
+  mapping each baseline prompt (`prompt-01` … `prompt-20`) to its oracle case
+  with `pastLen`, `blockTable`, and baseline token count.
+- `scripts/fixtures/smollm2-decode-prep.json` (388 lines): the manifest.
+  This is **prep only** — it is not token/logit decode parity, and the kernel
+  remains an opt-in building block.
+
+### Verification (this session)
+- `node scripts/smollm2_decode_prep.mjs`: `oracleCheck: { ok: true,
+  failures: 0, maxAbs: 0 }`; `baseline: { cases: 20, totalTokens: 542 }`
+  (matches the committed 20-prompt baseline: 542 generated tokens per
+  `docs/wgsl-paged-attention.md`); 20 `promptToCase` rows (`prompt-01` →
+  `pastLen 37`, blockTable `[7,6,5,4,3,2,1,0]`, baselineTokens 8).
+- `npm test`: **113/113 pass** (9473 ms). Python suite: **14/14 pass**
+  (0.104 s).
+- Staged only the two new files on `feat/p06-decode-parity-prep`; no merge,
+  no submission, no claims.
+
+### Explicit non-claims
+- No WGSL decode-parity claim. Full SmolLM2 token/logit decode parity is
+  still blocked on chaining the kernel into a decoder and a browser/GPU run.
+- No validation-layer `mapAsync` trace; zero-readback remains the runtime
+  buffer-usage check.
+- No two-device p50/p95; no Firefox; no fallback wiring; no speedup.
+- No merge of PR #22/#15; no HF upload; no npm publish.
+
+### Next checkpoint
+1. Owner decides on merging PR #22 (edgeinfer) and PR #15 (peervault).
+2. Owner provides HF token + approval for the P01 SFT adapter upload, and
+   npm approval for `agentic@0.3.0`.
+3. Decode parity proper (browser/GPU) when the owner is at the machine.
+
+---
+
+## 2026-11-04 - Session 33: AGENTS.md spec adoption, ledger, tooling audit
+
+### Context
+The owner supplied a workspace engineering / portfolio / global career
+specification (`AGENTS.md`): public repos only (`itsoumya-d`), visa or
+100%-remote-from-India gate, per-country salary floors, Gmail pre-flight
+check, skill-gap prototypes, Revo CV generation, and the five-stage
+sequential pipeline. Owner choices this session: (1) Gmail MCP absent →
+create the ledger now, owner supplies Gmail export/connection, then source
+roles; (2) keep the ADR-008 approval gate — prepare locally, no push/merge/
+publish without explicit approval; (3) Global Remote first.
+
+### Tooling audit (verified this session)
+- Gmail MCP: **absent** — no Gmail tools in the catalogue, empty MCP
+  resource list. The Air New Zealand Rule cannot be executed until Gmail is
+  connected or the owner provides an export.
+- Mobbin MCP / UI Skills: absent (already recorded in ADR-024).
+- `websearch` tool: returns "No search results found" for every query this
+  session (job-board sourcing via search is unavailable; browser/WebBridge
+  or direct fetches are the fallback).
+- `pandoc` and `revo` binaries: not on PATH (the Revo CV pipeline cannot be
+  run until installed/located).
+- `gh` CLI: still not installed; `git` credential flow + browser used instead
+  (as before).
+
+### Files created / updated (local only, uncommitted)
+- `AI_ENGINEERING_PORTFOLIO/APPLIED_JOBS_AND_VISA_LEDGER.md` (new): the
+  duplicate/rejection firewall and the seven-step pre-flight procedure,
+  including the Air New Zealand entry (rejected for lacking local work
+  permission — brief-sourced, not yet Gmail-verified).
+- This entry; a `NEXT_ACTIONS.md` Stage-1 entry (see below).
+
+### Live state correction (GitHub API, unauthenticated, 2026-11-04)
+- `itsoumya-d` profile reports **63 public repositories** (not 61 in the
+  Session 30 count, not 30 in the 2026-11-02 audit). Two new public repos
+  since the RSI update: `dotnet-enterprise-api` and `default-project`.
+  RSI `§1` and the `README.md` fact table still say 61/30 — flagged in
+  `NEXT_ACTIONS.md` §3 for the next edit; this entry does not edit those
+  numbers without a full RSI re-count.
+- Newest pushed public prototypes (push order): `autopilot-fde` (2026-10-29),
+  `llm-control-plane` (2026-11-04 08:58Z), `RouteLLM-Gateway`,
+  `GraphRAG-CodeAudit`, `loanflow`, `edgeinfer` — all public, all cited by
+  URL only. No private repo was accessed.
+
+### Verification (this session)
+- HEROS `rlvr` suite (system Python, no torch): **95 tests, 82 pass, 13
+  skip** — matches the recorded `82 pass + 13 skip without torch`.
+- Workspace `git status`: docs branch `docs/ai-engineering-portfolio`,
+  ahead-behind clean; uncommitted diffs are the Session 30–32 RSI/PROGRESS
+  edits (already on disk before this session).
+- `repos/` state unchanged: HEROS clean `main`, peervault on
+  `feat/peervault-bench-windows`, edgeinfer on
+  `feat/p06-decode-parity-prep` with the two decode-prep files staged. No
+  new remote write was made; approval gate held.
+
+### Explicit non-claims
+- No job sourced, no application made, no CV generated, no prototype pushed.
+  Stage 1 (Gmail audit → role selection) is blocked on the owner's Gmail
+  export/connection; Stage 2–4 cannot start without a JD to target.
+- The ledger's Air New Zealand row is brief-sourced, not Gmail-verified.
+
+### Next checkpoint
+1. Owner provides Gmail access (MCP connection or an export of past
+   applications) → populate the ledger, dedupe, then source Global Remote
+   roles against the $65k floor.
+2. Owner decides on merging edgeinfer PR #22 and peervault PR #15 (still
+   green, still unmerged).
+3. Owner provides HF token + approval for the P01 SFT adapter upload, and
+   npm approval for `agentic@0.3.0`.
+
+---
+
+## 2026-11-04 - Session 34: inventory count 63, llm-control-plane deep-dive, metrics hardening
+
+### Inventory count corrected (verified)
+- Unauthenticated GitHub API `/users/itsoumya-d` on 2026-11-04:
+  `public_repos: 63`, `followers: 6`. The 2026-11-04 browser count of 61
+  missed `dotnet-enterprise-api` and `default-project` (both public, both
+  pushed 2026-11-04).
+- `README.md` fact row and `REPOSITORY_STRENGTH_INDEX.md` §1/§4 now say 63,
+  with both evidence dates retained. No private repository was read or
+  modified; every API/read/clone used public endpoints only.
+
+### llm-control-plane — first deep-dive outside the elevated eleven
+Public repo cloned shallowly to `repos/llm-control-plane`. Python 3.11.13;
+isolated venv at `%TEMP%\opencode\llm-cp-venv` (pytest, ruff, pytest-cov,
+fastapi, httpx installed with `uv pip`). Baseline:
+- `pytest`: **54 passed** (3.44 s); warning: Starlette `httpx` deprecation only.
+- `pytest --cov`: **94%** statements (1005 stmts, 61 missed), above the CI
+  gate of 90%.
+- `ruff check .`: clean.
+- CI inspected: matrix 3.9/3.11/3.12, ruff, coverage gate, compileall, and a
+  package-build job. Core is dependency-free; FastAPI is optional.
+
+### Prepared change — Prometheus exposition hardening (local only)
+Branch `feat/metrics-label-escaping`, commit **`8d958c7`** (not pushed):
+- `llm_control_plane/metrics.py`: `_escape_label_value` escapes `\\`, `"`,
+  and `\n`; `_validate_metric_name` enforces
+  `[a-zA-Z_:][a-zA-Z0-9_:]*`; label keys are validated against
+  `[a-zA-Z_][a-zA-Z0-9_]*`.
+- `tests/test_metrics.py` (new, 7 tests): quote/backslash/newline escaping,
+  injection payload stays on one line, invalid metric name, invalid label
+  name, observation `_count`/`_sum`/`_p50`/`_p95`, merge semantics, empty
+  registry.
+- Why it matters: a tenant id or model name containing a quote/newline could
+  corrupt the `/metrics` payload or inject samples. This is a real
+  production-readiness defect, not a cosmetic test count.
+
+### Verification after the change
+| Command | Result |
+|---|---|
+| `pytest -p no:cacheprovider` | **61 passed** (2.70 s) |
+| `pytest --cov=llm_control_plane` | **95%** (1018 stmts, 50 missed); metrics.py 95% |
+| `ruff check .` | **All checks passed** |
+| `git log -1` | `8d958c7 fix(metrics): escape Prometheus label values and validate names` |
+
+### RSI update
+- `REPOSITORY_STRENGTH_INDEX.md` gains §2b: **llm-control-plane 75** —
+  [V] on tests/CI/coverage, [P] on the subjective categories. §3 row changed
+  from 45 [P] to 75 [V] tests/CI with the prepared-fix note. Portfolio
+  metrics now report 63 public repos, 11 elevated + 1 verified deep-dive.
+- No score was raised for an unmerged change; the 75 describes the tested
+  baseline, and the prepared branch is listed separately.
+
+### Explicit non-claims
+- No push, PR, merge, publish, upload, or deploy. `feat/metrics-label-escaping`
+  exists only in `repos/llm-control-plane` on this machine.
+- No job sourced and no application made; Gmail remains the Stage-1 blocker.
+- The 75 is a rubric score, not a benchmark or an external validation.
+
+### Next checkpoint
+1. Owner reviews `8d958c7`; on approval, push the branch and open a PR.
+2. Owner provides Gmail export/access → Stage 1 role sourcing.
+3. Owner decides on edgeinfer PR #22 / peervault PR #15 and the HF/npm gates.
+
+---
+
+## 2026-11-04 - Session 35: autopilot-fde deep-dive, two prepared fixes, paper claim audit
+
+### Environment
+- Clone `repos/autopilot-fde` (public, depth 1, `main` at `72652a6`).
+- Isolated venv `%TEMP%\opencode\fde-venv` (Python 3.12; backend requirements +
+  pytest, pytest-cov, ruff via `uv pip`). Node 22.18.0 available; frontend
+  suite not run this session.
+
+### Baseline and findings
+The repo was carried in RSI §3 as a **35 [P]** "no action" row. That estimate
+was wrong by a wide margin. Verified locally:
+- **436 passed, 1 skipped, 154 subtests** (11.45 s) after the portability fix;
+  before it, **2 failed** on Windows.
+- **100% statement coverage** of `backend` (3,473 statements) against a CI gate
+  of 100%.
+- `ruff check backend/ tests/ scripts/`: clean.
+- CI inspected: Python 3.12/3.13/3.14, a separate real-LangGraph runtime job,
+  and frontend lint/vitest/typecheck/build. 34 backend test files; 19 frontend
+  test files.
+- Module surface: ingestion (Slack/IMAP/WhatsApp), deterministic discovery +
+  OCEL export, APS scoring with Monte Carlo, approval-gated LangGraph codegen,
+  MCP HTTP/server, cost attribution, PII scrubbing, Docker.
+
+### Prepared fix 1 — Windows portability (`fix/windows-portability`, `bccb8c3`)
+- `tests/test_units.py`: `assertIn("runs/training", str(path))` →
+  `path.as_posix()`. On Windows the path uses `\`, so the assertion failed.
+- `tests/test_publish_workflow.py`: the test shells out to `bash`/`sh` and
+  requires `jq`; it now skips unless `os.name != "nt"` and both binaries exist.
+  CI (Ubuntu, jq preinstalled) still executes it. This is a skip, not a
+  weakened assertion.
+- Not pushed; owner approval required.
+
+### Prepared fix 2 — paper claim scope (`fix/paper-synthetic-claims`, `265c25e`)
+A credibility finding, not a code bug. `paper/main.tex` said:
+- "the **first** system that **autonomously** performs the role of a Forward
+  Deployed Engineer";
+- "**empirical evaluation** across 8 **enterprise departments** and 158
+  multi-turn interaction traces";
+- "7 **verified** business processes";
+- "zero unsupervised critical **safety violations**".
+
+The README explicitly says the scenarios are fictional and the scores are model
+outputs, not measured customer outcomes; `backend/demo_data.py` is fixture data
+("8 business departments and 250+ events"). The table also lists 7 processes
+and 36 traces, not 158. Under ADR-006 this is an unsupported claim set.
+
+The prepared commit:
+- labels the section **"Synthetic Benchmark Evaluation"** and adds a
+  no-customer-data / simulator-output statement;
+- removes "first", "autonomously", "verified", and the unsupported 158 count;
+- scopes "zero critical violations" to "in simulation";
+- softens the conclusion to a reviewable reference architecture with production
+  validation as future work.
+
+This is a **draft correction for owner review**; the paper's arguments and
+formal definitions are unchanged. Research credibility is scored 4/10 until the
+correction is accepted (≈6 after).
+
+### Correction — README encoding
+The README's apparent `�` characters are a **Windows console rendering
+artifact**, not file corruption. Direct byte inspection (`read_bytes()` +
+SHA-256 vs `git cat-file -p HEAD:README.md`) shows byte-identical valid UTF-8
+containing `·` and `×`. A rewrite attempt was reverted via
+`git checkout -- README.md`; no README change was committed. Workspace items
+that assumed real encoding damage should verify bytes before editing.
+
+### RSI update
+- §2b now covers two verified deep-dives: **autopilot-fde 84** and
+  **llm-control-plane 75**.
+- §3 row changed from 35 [P] "no action" to 84 [V] tests/CI with both prepared
+  branches noted.
+- Portfolio metrics: 63 public repos, 11 elevated + 2 verified deep-dives.
+- No score was raised for an unmerged change; the 84 reflects the tested
+  baseline, with research at 4 pending the paper correction.
+
+### Verification commands (all local)
+| Command | Result |
+|---|---|
+| `pytest tests/ --ignore=tests/runtime` on `fix/windows-portability` (before fix) | 2 failed |
+| same on `fix/windows-portability` (after fix) | **436 passed, 1 skipped, 154 subtests** |
+| same on `fix/paper-synthetic-claims` | 2 failed (branch is based on `main`; it does not contain the portability fix — CI on Ubuntu is unaffected) |
+| `pytest ... --cov=backend` on `fix/windows-portability` | **100%** (3,473 stmts, 0 missed) |
+| `ruff check backend/ tests/ scripts/` | **All checks passed** |
+| `git log -1` (portability branch) | `bccb8c3` |
+| `git log -1` (paper branch) | `265c25e` |
+
+### Explicit non-claims
+- No push, PR, merge, publish, upload, or deploy.
+- The frontend lint/test/typecheck/build jobs were **not** re-run locally; the
+  claim is that CI defines them, not that they passed here.
+- Runtime (`tests/runtime/`) was not executed locally (needs the LangGraph
+  extra).
+- No judgement is made here about the paper's author affiliation or email.
+- No job sourced; Gmail remains the Stage-1 blocker.
+
+### Next checkpoint
+1. Owner reviews `bccb8c3` and `265c25e`; on approval, push and open PRs.
+2. Owner provides Gmail export/access → Stage 1 role sourcing.
+3. Owner decides on edgeinfer PR #22 / peervault PR #15 and the HF/npm gates.
+
+---
+
+## 2026-11-04 - Session 36: RouteLLM-Gateway [D]→[V], reproducible Pareto artifact
+
+### What was verified
+`repos/RouteLLM-Gateway` fast-forwarded to `92083c8` (public `main`; PR #1,
+HTTP provider). Local Windows 11 / Node 22.18.0:
+- `npm test`: **16/16 pass** at baseline.
+- `npm run evaluate`: reproduced the committed RESULTS table **exactly** —
+  always-strong 98.80% / $0.5000; always-weak 86.80% / $0.0500; router 97.20% /
+  $0.1868; router+cache 97.20% / $0.1530; cache hit 13.6%; threshold 0.74;
+  retention 98.38%; cost reduction 69.40%.
+- This is the first time the RouteLLM benchmark has been reproduced in this
+  workspace; the repo moves from `[D]` to `[V]/[D]` (mocks, not a real-model
+  benchmark) and 62 → **66**.
+
+### Finding — committed artifact was not byte-stable
+Running `npm run evaluate` left `results/pareto.json` dirty on every run:
+two float values changed in the last digit (`0.07750784705788455` →
+`...52`, `-0.009595645288350907` → `...893`) from platform accumulation order.
+The metrics table was unaffected, but a reviewer would see an unexplained diff
+after a "reproducible" run.
+
+### Prepared change — `feat/reproducible-pareto`, `d86f178` (not pushed)
+- `src/canonical.js`: `canonicalize()` recurses through arrays/objects and
+  rounds non-integer finite numbers to 12 decimals; integers, booleans, null,
+  and non-finite values pass through.
+- `scripts/evaluate.mjs`: writes `JSON.stringify(canonicalize(result), null,
+  2)` instead of the raw result.
+- `test/canonical.test.mjs` (3 tests): last-digit drift collapses to one value,
+  integers/non-finite/structure preserved, input not mutated.
+- `RESULTS.md`: adds a Windows 11 reproduction section with the exact metrics
+  and the float-drift note.
+- `README.md`: test count 16 → 19 and mentions canonical JSON rounding.
+
+### Verification
+| Command | Result |
+|---|---|
+| `npm test` (baseline) | 16/16 pass |
+| `npm test` (after change) | **19/19 pass** (298 ms) |
+| `npm run evaluate` run 1 | SHA-256 `424cc3e3…` |
+| `npm run evaluate` run 2 | SHA-256 `424cc3e3…` (identical) |
+| `git log -1` | `d86f178` |
+
+The two-run equality is same-host determinism. Cross-platform byte equality is
+argued from the 12-decimal rounding, not measured on a second OS.
+
+### RSI correction
+While updating the RouteLLM row, the elevated-set average was found to be
+wrong: the table sums to **711/11 = 64.6**, not the stated **61.8**. Corrected
+to **65.0** after RouteLLM 62→66 (715/11). This is an arithmetic correction,
+not a new measurement.
+
+### Explicit non-claims
+- No push, PR, merge, publish, upload, or deploy.
+- The benchmark still uses deterministic mock providers; no real model/API was
+  called.
+- No claim of cross-platform byte equality from measurement; only same-host
+  determinism was measured.
+- No job sourced; Gmail remains the Stage-1 blocker.
+
+### Next checkpoint
+1. Owner reviews `d86f178`; on approval, push and open a PR.
+2. Owner reviews the three autopilot-fde/llm-control-plane branches.
+3. Owner provides Gmail export/access → Stage 1 role sourcing.
+
+---
+
+## 2026-11-04 - Session 37: GraphRAG-CodeAudit [D]→[V], portable eval artifact
+
+### What was verified
+`repos/GraphRAG-CodeAudit` fast-forwarded to `f5677e3` (public `main`, new
+tree-sitter TS/JS extraction and `scripts/audit_repo.py`). Local Windows 11 /
+Python 3.11.13:
+- Initial run without tree-sitter: 16 passed, 6 errors (the new TS suite
+  requires the optional parsers). Installed
+  `tree-sitter>=0.25,<0.27`, `tree-sitter-javascript`, `tree-sitter-typescript`
+  into the existing venv.
+- After install: **22/22 pass** (1.31 s). After the local fix: **24/24**.
+- `python scripts/evaluate.py` reproduced the committed table exactly:
+  GraphRAG **7.58** vs flat **7.07**, comprehension 8.58/8.58, diversity
+  10.00/10.00, empowerment 4.01/2.28, directness 7.72/7.40, head-to-head
+  **64/100 (64.0%)**. GraphRAG moves from `[D]` to `[V]/[D]` and 59 → **63**.
+
+### Finding — committed artifact embedded a machine-specific path
+`experiments/eval_results.json` stored
+`/Users/soumyadebnath16/Developer/Shado/repos/.../data/sample_repo`, so any run
+on another machine changed the file. The metrics were identical; only the path
+differed.
+
+### Prepared change — `fix/reproducible-eval-label`, `c9b51e7` (not pushed)
+- `graphrag_audit/eval.py`: adds `repo_label(repo_path, root)` (POSIX relative
+  label when the repo is under the project root, absolute otherwise) and
+  `run_evaluation(..., label=None)` records it.
+- `scripts/evaluate.py`: passes `repo_label(args.repo, ROOT)`.
+- `tests/test_eval.py`: +2 tests (relative label, outside-root absolute;
+  evaluation records the supplied label).
+- `experiments/eval_results.json`: `repo` becomes `data/sample_repo`; two
+  consecutive runs are byte-identical.
+- `RESULTS.md`: tests 15 → 24 and a Windows reproduction section.
+
+### Verification
+| Command | Result |
+|---|---|
+| `pytest` before deps | 16 passed, 6 errors |
+| `pytest` after parser install | 22 passed |
+| `pytest` after fix | **24 passed** (0.16 s) |
+| `python scripts/evaluate.py` | table reproduced exactly |
+| `git log -1` | `c9b51e7` |
+| artifact | `repo: data/sample_repo`; stable across runs |
+
+### RSI correction
+Elevated-set sum is now **719/11 = 65.4** (RouteLLM 66 + GraphRAG 63). The
+pre-change table summed to 64.6, not the previously stated 61.8. This is
+recorded as an arithmetic correction, not a new measurement.
+
+### Explicit non-claims
+- No push, PR, merge, publish, upload, or deploy.
+- The judge is a deterministic rubric, not an LLM; the corpus is a 5-file
+  synthetic repo; Leiden is not installed (`louvain-fallback`).
+- No coverage gate exists in this repo; the local 88% figure is informational.
+- No job sourced; Gmail remains the Stage-1 blocker.
+
+### Next checkpoint
+1. Owner reviews `c9b51e7`; on approval, push and open a PR.
+2. Owner reviews `d86f178`, `8d958c7`, `bccb8c3`, `265c25e`.
+3. Owner provides Gmail export/access → Stage 1 role sourcing.
+
+---
+
+## 2026-11-04 - Session 38: Reflexion-SWE and HEROS-Firewall verified
+
+### Reflexion-SWE — 61 [D] → 64 [V]/[D]
+Public `main` was already current. Local Windows 11 / Python 3.11.13:
+- `pytest`: **37 passed, 3 skipped** in 5.23 s. The 3 skips are the Rust
+  sandbox tests (`rustc` is not installed); 37 + 3 = 40, matching `RESULTS.md`.
+- `python scripts/run_ablation.py` reproduced the mechanism table **exactly**:
+  base/no_testgen 0.000 pass@1 (1.00 attempts, 0.167 score), no_reflection
+  0.000 (3.00 attempts), full 1.000 (2.00 attempts), tf_grpo 1.000 (1.00
+  attempts), 6 priors from 24 rollouts.
+- `experiments/toy_ablation.json` was **already byte-stable** after the run
+  (`git status` clean), so no code change was needed and no branch was
+  prepared. This is the first repo in the sweep with nothing to fix.
+
+### HEROS-Firewall — 70 [D] → 72 [V]/[D]
+- `npm test`: **16/16 pass** in 167 ms.
+- `npm run redteam`: **FNR 0/1,000**, **FPR 0/200** exactly; policy p99
+  **0.230 ms** (macOS reference 0.103 ms — machine difference), total 27.68 ms.
+- The committed `results/redteam.json` changed only in `p99_ms`/`total_ms`,
+  which are machine-dependent. The historical macOS artifact was left intact.
+
+### Prepared change — `docs/windows-redteam-run`, `e0e8579` (not pushed)
+- Adds `results/redteam-windows.json` (raw Windows output) rather than
+  overwriting the macOS artifact.
+- Adds a Windows reproduction section to `RESULTS.md` with the FNR/FPR/p99
+  numbers and the same policy-layer-only caveat.
+
+### RSI update
+- Reflexion-SWE 61 → **64** (testing +2, docs +1).
+- HEROS-Firewall 70 → **72** (testing +1, docs +1).
+- Elevated-set average: **724/11 = 65.8** (was 65.4; the historical 61.8 was an
+  arithmetic error, pre-change true sum 64.6).
+
+### Verification commands (all local)
+| Command | Result |
+|---|---|
+| `pytest` (Reflexion-SWE) | 37 passed, 3 skipped |
+| `python scripts/run_ablation.py` | table reproduced; artifact clean |
+| `npm test` (HEROS-Firewall) | 16/16 pass |
+| `npm run redteam` | FNR 0, FPR 0, p99 0.230 ms |
+| `git log -1` (HEROS-Firewall) | `e0e8579` |
+
+### Explicit non-claims
+- No push, PR, merge, publish, upload, or deploy.
+- Reflexion's model-dependent Pass@1 / SWE-bench Lite / HumanEval numbers are
+  **not** reproduced and are not claimed.
+- HEROS-Firewall p99 excludes process spawn, downstream MCP, and network time.
+- No job sourced; Gmail remains the Stage-1 blocker.
+
+### Next checkpoint
+1. Owner reviews `e0e8579`; on approval, push and open a PR.
+2. Owner reviews the five other prepared branches.
+3. Owner provides Gmail export/access → Stage 1 role sourcing.
+
+---
+
+## 2026-11-04 - Session 39: Cloud-SaaS and Mobbin verified; PerfBench blocked by toolchain
+
+### HEROS-Cloud-SaaS — 47 [D] → 50 [V]/[D]
+- `pytest`: **6/6 pass** in 0.65 s.
+- `python scripts/evaluate.py` reproduced the PLLB table exactly: completion
+  **0.7000 → 1.0000** (**+30.00 pp**), receipt coverage 1.0/1.0, policy
+  applications 0/20, 4 drafts, 4 approved.
+- Only timings differ (`mean_ms` 0.038/0.032 vs macOS 0.030/0.017).
+- **Prepared locally (not pushed):** branch `docs/windows-eval-run`, commit
+  **`0096a7d`** — adds `results/eval-windows.json` and a Windows reproduction
+  section; the macOS artifact stays intact.
+
+### Mobbin-UI-Compiler — 45 [D] → 48 [V]/[D]
+- `npm test`: **10/10 pass** in 137 ms.
+- `node bin/mobbin-compile.mjs --surface all` regenerated all five surfaces.
+  Every generated file is **byte-identical to HEAD** (SHA-256 + `git cat-file`
+  comparison); the count/app list matches `RESULTS.md` (KYC 2, paywall 2,
+  dashboard 5, chat 2, billing 1).
+- No change needed; no branch prepared. The apparent dirty tree after
+  regeneration is Git's CRLF stat cache, not content drift.
+
+### Anthropic-PerfBench — 56 [D], not re-runnable here
+- The host has **no C compiler** (`cc`/`gcc`/`clang`), **no `make`**, and
+  **no `cargo`/`rustc`**.
+- The native results are Apple-Silicon NEON; the WASM path needs the Rust
+  toolchain. `make test`, `make bench`, and `make wasm-test` cannot run.
+- Score unchanged; the native/WASM numbers remain `[D]`. This is a toolchain
+  limitation, not a repo failure.
+
+### RSI update
+| Repo | Before | After |
+|---|---:|---:|
+| HEROS-Cloud-SaaS | 47 [D] | **50 [V]/[D]** |
+| Mobbin-UI-Compiler | 45 [D] | **48 [V]/[D]** |
+| Anthropic-PerfBench | 56 [D] | 56 [D] (blocked) |
+| Elevated average | 65.8 | **66.4** (730/11) |
+
+### Verification commands (all local)
+| Command | Result |
+|---|---|
+| `pytest` (Cloud-SaaS) | 6 passed |
+| `python scripts/evaluate.py` (Cloud-SaaS) | table reproduced exactly |
+| `npm test` (Mobbin) | 10/10 pass |
+| `node bin/mobbin-compile.mjs --surface all` | 5 surfaces; byte-identical output |
+| toolchain probe | cc/gcc/clang/make/cargo/rustc all missing |
+
+### Explicit non-claims
+- No push, PR, merge, publish, upload, or deploy.
+- Anthropic-PerfBench's native and WASM numbers were **not** reproduced.
+- Cloud-SaaS is still a deterministic simulation, not a customer deployment.
+- Mobbin still uses the fixture adapter; no live Mobbin MCP, no browser audit.
+- No job sourced; Gmail remains the Stage-1 blocker.
+
+### Next checkpoint
+1. Owner reviews `0096a7d`; on approval, push and open a PR.
+2. Owner reviews the six other prepared branches.
+3. Owner provides Gmail export/access → Stage 1 role sourcing.
+4. Optional: install a C/Rust toolchain to unblock PerfBench verification.
+
+---
+
+## 2026-11-04 - Session 40: live PR/HF reconciliation — peervault #15 merged
+
+### Hugging Face estate (public API)
+| Kind | Count | Evidence |
+|---|---:|---|
+| Spaces | **11** | `huggingface.co/api/spaces?author=itssoumyad` |
+| Datasets | **2** | `heros-migration-500`, `graphrag-questions-100` |
+| Models | **0** | `huggingface.co/api/models?author=itssoumyad` |
+
+Matches the recorded estate; no upload was made. The 11 Spaces are `heros-rl`,
+`reflexion-swe`, `graphrag-codeaudit`, `portfolio`, `edgeinfer-v2`,
+`peervault-pqc`, `heros-firewall`, `anthropic-perfbench`, `routellm-gateway`,
+`mobbin-ui-compiler`, `heros-cloud-saas`.
+
+### Pull-request state correction
+The workspace still said peervault #15 awaited approval. Live GitHub API:
+- **peervault #15 merged** 2026-11-04T12:25:14Z at `e22fb7f3`; 6/6 checks green
+  (SDK Node 22/24, Go relay, build, deploy).
+- **edgeinfer #23 merged** 2026-11-04T11:02:31Z at `89881a9` ("ci: enforce a
+  coverage floor"); 6/6 checks green.
+- **RouteLLM-Gateway #1 merged** 2026-11-04T10:39:45Z at `92083c8` (HTTP
+  provider adapter).
+- **edgeinfer #22 remains open** (`adb3cb9`); merge awaits owner approval.
+
+### Updates
+- `README.md` §4: added the three merged PRs and the note that #22 is open.
+- `NEXT_ACTIONS.md`: peervault benchmark item marked done; RSI 83 → 84.
+- `REPOSITORY_STRENGTH_INDEX.md`: peervault 84 (docs +1 for the merged,
+  verified benchmark log); elevated average **66.5** (731/11).
+
+### Explicit non-claims
+- No push, PR, merge, publish, upload, or deploy this session.
+- peervault's NIST KATs were not re-run (no `cargo` on this host); the
+  `[D]` part of its score remains.
+- No job sourced; Gmail remains the Stage-1 blocker.
+
+### Next checkpoint
+1. Owner decides on edgeinfer #22 (open, green).
+2. Owner reviews the seven prepared local branches.
+3. Owner provides Gmail export/access → Stage 1 role sourcing.
+
+---
+
+## 2026-11-09 - Session 41: branch/PR re-verify; no new code changes
+
+### Prepared-branch re-verification (all local, clean)
+| Repo | Branch | HEAD | Status |
+|---|---|---|---|
+| `llm-control-plane` | `feat/metrics-label-escaping` | `8d958c7` | clean |
+| `autopilot-fde` | `fix/windows-portability` | `bccb8c3` | clean |
+| `autopilot-fde` | `fix/paper-synthetic-claims` (separate, priority) | `265c25e` | clean |
+| `RouteLLM-Gateway` | `feat/reproducible-pareto` | `d86f178` | clean |
+| `GraphRAG-CodeAudit` | `fix/reproducible-eval-label` | `c9b51e7` | clean |
+| `HEROS-Firewall` | `docs/windows-redteam-run` | `e0e8579` | clean |
+| `HEROS-Cloud-SaaS` | `docs/windows-eval-run` | `0096a7d` | clean |
+
+`autopilot-fde` is currently checked out on `fix/windows-portability`; the
+paper-scope fix `265c25e` remains on its own branch from `main` (does not
+include `bccb8c3`) and is the higher-priority review item.
+
+### Live PR state (GitHub API, read-only)
+- **edgeinfer #22** `feat(edgeinfer): add real-geometry paged-attention parity`
+  (`adb3cb9`, base `main`): **open, not merged**, mergeable state unknown via
+  API — owner decision still pending.
+- Open PR search for `author:itsoumya-d` reports 434 results total; the bulk
+  are `Yc_ai` bot-generated PRs unrelated to this portfolio program. Only
+  edgeinfer #22 is in-scope.
+
+### Quick re-verification
+| Command | Result |
+|---|---|
+| `npm test` (HEROS, `main`) | **54 tests, 54 pass, 0 fail** |
+| HEROS-RL `pytest` | not re-run (no `pytest` in available Python envs this session) |
+| Anthropic-PerfBench | still blocked (no C compiler/make/cargo/rustc on host) |
+
+### RSI
+No score changes. Elevated average remains **66.5** (731/11); 10/11 elevated
+repos have locally verified evidence.
+
+### Explicit non-claims
+- No push, PR, merge, publish, upload, or deploy.
+- No job sourced/applied; Gmail MCP/export still required for Stage 1 pre-flight.
+- HEROS-RL and PerfBench results are carried forward from prior evidence, not
+  re-run this session.
+
+### Next checkpoint
+1. Owner decides on edgeinfer #22 (open).
+2. Owner reviews the seven prepared local branches (`265c25e` paper scope first).
+3. Owner provides Gmail export/access → Stage 1 Global Remote role sourcing.
+
