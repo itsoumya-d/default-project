@@ -1,0 +1,33 @@
+{
+  "env": {
+    "verbosity_bonus": 0.3,
+    "max_len": 200
+  },
+  "groups": 300,
+  "group_size": 8,
+  "seed": 42,
+  "arms": {
+    "grpo": {
+      "mean_length": 88.61208333333333,
+      "solve_rate": 0.8304166666666667,
+      "mean_reward": 0.9633347916666666,
+      "length_drift": 11.98708333333333,
+      "adv_length_corr": 0.5000351899236888,
+      "final_skill": 1.0,
+      "final_verbosity": 0.7737620483429938
+    },
+    "drgrpo": {
+      "mean_length": 88.61208333333333,
+      "solve_rate": 0.8304166666666667,
+      "mean_reward": 0.9633347916666666,
+      "length_drift": 11.98708333333333,
+      "adv_length_corr": 0.07161403574159092,
+      "final_skill": 0.48196671874999986,
+      "final_verbosity": 0.5111507914062499
+    }
+  },
+  "provenance": {
+    "python": "3.11.13",
+    "platform": "Windows-10-10.0.21996-SP0"
+  }
+}

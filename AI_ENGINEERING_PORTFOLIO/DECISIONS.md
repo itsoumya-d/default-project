@@ -140,6 +140,31 @@ the evaluation is complete.
 
 ---
 
+## D-2026-11-09-001 — Keep Dr.GRPO+DAPO, fix reward content before scaling RL steps
+
+**Status:** Accepted
+**Date:** 2026-11-09
+
+**Context.** P01's 100-step RL-from-base run already used Dr.GRPO centered
+advantages + DAPO asymmetric clipping (0.28/0.20) + k3 KL 0.01, and still
+failed: held-out ok_rate 0.20 (same as base), risk_accuracy 0.10. The
+literature review (`research/literature_reviews/length-difficulty-bias-rlvr.md`)
+shows the estimator corrections are necessary but not sufficient; the failure
+histogram (REQUIREMENT_MISS 33/50, SQL_EXEC_ERROR 7/50) proves reward content,
+not the estimator, is the binding constraint.
+
+**Decision.** Continue Dr.GRPO + DAPO + k3 KL. Freeze step-count scaling until
+a risk-calibration-weighted + requirement-weighted reward rerun (>250 steps,
+held-out 50 unchanged) beats base on risk_accuracy (gate: >0.20). Do not adopt
+U-statistic/learnable-length advantage variants until that gate is met.
+
+**Consequences.** The next GPU job is a reward-shaping rerun, not more steps of
+the current reward. The `rlvr-bias-probe` CPU experiment (this session)
+verifies the estimator half of the claim (length-bias removal) independently of
+the reward-content half.
+
+---
+
 ## ADR-007 — No fake kernels or placeholder benchmarks
 
 **Status:** Accepted
