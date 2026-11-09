@@ -53,6 +53,7 @@ claims that are already stale. The numbers below are the ones to use.
 | P06 ORT baseline | **20 prompts, 542 generated tokens, CPU ORT** | [edgeinfer#19](https://github.com/itsoumya-d/edgeinfer/pull/19) |
 | P06 WGSL kernel | **f16 KV; 20/20 synthetic; max abs 4.79e-8; 40/40 clean KV creates** | [edgeinfer#21](https://github.com/itsoumya-d/edgeinfer/pull/21) |
 | P06 raw candidate export | **20/20 raw WGSL outputs; Python checker validates all cases** | [edgeinfer#24](https://github.com/itsoumya-d/edgeinfer/pull/24) |
+| P06 runtime readback trace | **40 total map calls per harness; 0 KV map/mapped-range calls** | [edgeinfer#25](https://github.com/itsoumya-d/edgeinfer/pull/25) |
 | Published model weights | **0** | no HF upload |
 | Upstream PRs merged | **0** | no evidence in the audited repos |
 
@@ -153,7 +154,8 @@ AI_ENGINEERING_PORTFOLIO/
 | [#21](https://github.com/itsoumya-d/edgeinfer/pull/21) | `itsoumya-d/edgeinfer` | `c460068` | `1b00c0a` | merged; 3/3 green |
 | [#15](https://github.com/itsoumya-d/peervault/pull/15) | `itsoumya-d/peervault` | `bc12ede` | `e22fb7f` | merged 2026-11-04; 6/6 green |
 | [#23](https://github.com/itsoumya-d/edgeinfer/pull/23) | `itsoumya-d/edgeinfer` | — | `89881a9` | merged 2026-11-04; 6/6 green |
-| [#24](https://github.com/itsoumya-d/edgeinfer/pull/24) | `itsoumya-d/edgeinfer` | `1bc1d8a` | pending | open; decode-parity evidence prep |
+| [#24](https://github.com/itsoumya-d/edgeinfer/pull/24) | `itsoumya-d/edgeinfer` | `1bc1d8a` | `484aebb` | merged; decode-parity evidence prep |
+| [#25](https://github.com/itsoumya-d/edgeinfer/pull/25) | `itsoumya-d/edgeinfer` | `f147d3d` | `12c5c31` | merged; runtime KV readback trace |
 | [#1](https://github.com/itsoumya-d/RouteLLM-Gateway/pull/1) | `itsoumya-d/RouteLLM-Gateway` | — | `92083c8` | merged 2026-11-04 |
 
 #15 (peervault) is the Windows 11 handshake/streaming-memory log; #23 (edgeinfer)
