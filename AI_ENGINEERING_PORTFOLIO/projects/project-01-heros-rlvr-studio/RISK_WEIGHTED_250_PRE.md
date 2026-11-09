@@ -37,6 +37,9 @@ decision_accuracy, mean reward, error-code histogram regardless of outcome.
 - `runs/2026-11-09-risk-weighted-250/` (pending)
 - Smoke: `runs/2026-11-09-risk-weighted-smoke2` (5 steps, 3 completed — weights
   recorded in run.json; step-1 KL/STD match the unweighted run's trajectory).
+- Restart note: first launch reached step 77 (+ `checkpoint-50`) before a
+  server restart killed the process. The run was relaunched from step 0 with
+  the same seed, so the trajectory is expected to reproduce exactly.
 
 ## Expected time
 
