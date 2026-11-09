@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-09T07:20:13Z",
+  "generated_utc": "2026-11-09T07:56:54Z",
   "platform": "Windows-10-10.0.21996-SP0",
   "python": "3.11.13",
   "suite": "pytest tests -q -p no:cacheprovider (per-repo root)",
@@ -8,40 +8,40 @@
       "repo": "Anthropic-PerfBench",
       "dir": "repos\\Anthropic-PerfBench",
       "exit": 5,
-      "seconds": 3.3,
+      "seconds": 1.0,
       "tail": [
-        "no tests ran in 0.03s"
+        "no tests ran in 0.01s"
       ],
-      "summary": "no tests ran in 0.03s"
+      "summary": "no tests ran in 0.01s"
     },
     {
       "repo": "colpali-edge",
       "dir": "repos\\colpali-edge",
       "exit": 0,
-      "seconds": 3.5,
+      "seconds": 1.9,
       "tail": [
         ".........................                                                [100%]",
-        "25 passed in 0.38s"
+        "25 passed in 0.32s"
       ],
-      "summary": ".........................                                                [100%] 25 passed in 0.38s"
+      "summary": ".........................                                                [100%] 25 passed in 0.32s"
     },
     {
       "repo": "complaintgraph",
       "dir": "repos\\complaintgraph",
-      "exit": 2,
-      "seconds": 8.0,
+      "exit": 0,
+      "seconds": 7.4,
       "tail": [
-        "ERROR tests/test_themes.py",
-        "!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!",
-        "1 warning, 3 errors in 4.68s"
+        "",
+        "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+        "9 passed, 1 warning in 5.16s"
       ],
-      "summary": "ERROR tests/test_themes.py !!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!! 1 warning, 3 errors in 4.68s"
+      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 9 passed, 1 warning in 5.16s"
     },
     {
       "repo": "eleven-platform-core",
       "dir": "repos\\eleven-platform-core",
       "exit": 0,
-      "seconds": 6.3,
+      "seconds": 5.2,
       "tail": [
         "    from starlette.testclient import TestClient as TestClient  # noqa",
         "",
@@ -53,64 +53,62 @@
       "repo": "genai-tooling-evals",
       "dir": "repos\\genai-tooling-evals",
       "exit": 0,
-      "seconds": 4.1,
+      "seconds": 2.9,
       "tail": [
         "",
         "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
-        "17 passed, 1 warning in 2.32s"
+        "17 passed, 1 warning in 1.40s"
       ],
-      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 17 passed, 1 warning in 2.32s"
+      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 17 passed, 1 warning in 1.40s"
     },
     {
       "repo": "GraphRAG-CodeAudit",
       "dir": "repos\\GraphRAG-CodeAudit",
       "exit": 0,
-      "seconds": 4.3,
+      "seconds": 1.2,
       "tail": [
         "........................                                                 [100%]",
-        "24 passed in 1.06s"
+        "24 passed in 0.37s"
       ],
-      "summary": "........................                                                 [100%] 24 passed in 1.06s"
+      "summary": "........................                                                 [100%] 24 passed in 0.37s"
     },
     {
       "repo": "HEROS-Cloud-SaaS",
       "dir": "repos\\HEROS-Cloud-SaaS",
       "exit": 0,
-      "seconds": 7.5,
+      "seconds": 2.3,
       "tail": [
         "......                                                                   [100%]",
-        "6 passed in 1.91s"
+        "6 passed in 0.87s"
       ],
-      "summary": "......                                                                   [100%] 6 passed in 1.91s"
+      "summary": "......                                                                   [100%] 6 passed in 0.87s"
     },
     {
       "repo": "HEROS-RL",
       "dir": "repos\\HEROS-RL",
       "exit": 0,
-      "seconds": 2.2,
+      "seconds": 2.1,
       "tail": [
         "...............sssss....................                                 [100%]",
-        "35 passed, 5 skipped in 0.47s"
+        "35 passed, 5 skipped in 0.49s"
       ],
-      "summary": "...............sssss....................                                 [100%] 35 passed, 5 skipped in 0.47s"
+      "summary": "...............sssss....................                                 [100%] 35 passed, 5 skipped in 0.49s"
     },
     {
       "repo": "image2code-bench",
       "dir": "repos\\image2code-bench",
-      "exit": 2,
-      "seconds": 6.3,
+      "exit": 0,
+      "seconds": 3.7,
       "tail": [
-        "=========================== short test summary info ===========================",
-        "ERROR tests/test_outputs.py",
-        "!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!"
+        ".................                                                        [100%]"
       ],
-      "summary": "=========================== short test summary info =========================== ERROR tests/test_outputs.py !!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!"
+      "summary": ".................                                                        [100%]"
     },
     {
       "repo": "llm-control-plane",
       "dir": "repos\\llm-control-plane",
       "exit": 0,
-      "seconds": 10.2,
+      "seconds": 7.1,
       "tail": [
         "    from starlette.testclient import TestClient as TestClient  # noqa",
         "",
@@ -122,60 +120,60 @@
       "repo": "recare-ai-platform",
       "dir": "repos\\recare-ai-platform",
       "exit": 0,
-      "seconds": 8.1,
+      "seconds": 3.3,
       "tail": [
         "",
         "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
-        "37 passed, 1 warning in 3.89s"
+        "37 passed, 1 warning in 1.36s"
       ],
-      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 37 passed, 1 warning in 3.89s"
+      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 37 passed, 1 warning in 1.36s"
     },
     {
       "repo": "Reflexion-SWE",
       "dir": "repos\\Reflexion-SWE",
       "exit": 0,
-      "seconds": 46.9,
+      "seconds": 20.2,
       "tail": [
         "",
         "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
-        "40 passed, 1 warning in 43.29s"
+        "40 passed, 1 warning in 18.82s"
       ],
-      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 40 passed, 1 warning in 43.29s"
+      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 40 passed, 1 warning in 18.82s"
     },
     {
       "repo": "tabular-inference-platform",
       "dir": "repos\\tabular-inference-platform",
       "exit": 0,
-      "seconds": 8.0,
+      "seconds": 4.3,
       "tail": [
         "",
         "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
-        "32 passed, 1 warning in 3.26s"
+        "32 passed, 1 warning in 0.89s"
       ],
-      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 32 passed, 1 warning in 3.26s"
+      "summary": " -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html 32 passed, 1 warning in 0.89s"
     },
     {
       "repo": "project-01-heros-rlvr-studio",
       "dir": "AI_ENGINEERING_PORTFOLIO\\projects\\project-01-heros-rlvr-studio",
       "exit": 2,
-      "seconds": 2.1,
+      "seconds": 1.9,
       "tail": [
         "ERROR tests/test_qlora_runner.py",
         "!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!",
-        "2 errors in 0.42s"
+        "2 errors in 0.46s"
       ],
-      "summary": "ERROR tests/test_qlora_runner.py !!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!! 2 errors in 0.42s"
+      "summary": "ERROR tests/test_qlora_runner.py !!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!! 2 errors in 0.46s"
     },
     {
       "repo": "project-11-rlvr-bias-probe",
       "dir": "AI_ENGINEERING_PORTFOLIO\\projects\\project-11-rlvr-bias-probe",
       "exit": 0,
-      "seconds": 2.5,
+      "seconds": 1.3,
       "tail": [
         "......                                                                   [100%]",
-        "6 passed in 0.12s"
+        "6 passed in 0.07s"
       ],
-      "summary": "......                                                                   [100%] 6 passed in 0.12s"
+      "summary": "......                                                                   [100%] 6 passed in 0.07s"
     }
   ]
 }
