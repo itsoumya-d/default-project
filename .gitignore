@@ -15,3 +15,5 @@ Thumbs.db
 # Profile README staging clone
 profile-readme-work/
 _rlvr-bias-probe-pub/
+.venv-gpu/
+rlvr/src/heros_rlvr.egg-info/
